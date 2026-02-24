@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bastia Umbra - Salat</title>
+    <title>مواقيت الصلاة Bastia Umbra</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,108 +11,113 @@
 
     <style>
         :root {
-            --bg: #0b2328;
-            --card: #143d3d;
+            --bg-pro: #0b2328;
+            --green-pro: #143d3d;
             --gold: #c19b6c;
             --white: #ffffff;
+            --text-light: #f0f0f0;
         }
 
         body {
-            background-color: var(--bg);
+            background-color: var(--bg-pro);
             color: var(--white);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
         }
 
         /* Top Bar */
         .top-bar {
             width: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             box-sizing: border-box;
-            border-bottom: 1px solid var(--gold);
+            border-bottom: 2px solid var(--gold);
         }
 
-        .menu-btn {
-            font-size: 24px;
-            color: var(--gold);
-            cursor: pointer;
-            padding: 5px;
+        .menu-btn { font-size: 28px; color: var(--gold); cursor: pointer; }
+
+        /* Striscia Hadith Mobile */
+        .hadith-marquee {
+            background: var(--white);
+            color: var(--bg-pro);
+            width: 100%;
+            padding: 8px 0;
+            font-weight: bold;
+            font-size: 14px;
+            border-bottom: 2px solid var(--gold);
         }
 
-        /* Sidebar Menu */
+        /* Menu Sidebar */
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100%;
-            background: #081a1d;
-            z-index: 1000;
-            transition: 0.3s;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            border-right: 2px solid var(--gold);
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--bg-pro); z-index: 1000; transition: 0.3s;
+            padding: 40px 20px; box-sizing: border-box; border-right: 3px solid var(--gold);
         }
-
         .sidebar.open { left: 0; }
-
         .close-btn { font-size: 30px; color: var(--gold); cursor: pointer; }
 
-        /* Hero */
+        /* Hero Card */
         .hero {
-            width: 90%;
-            max-width: 400px;
-            background: linear-gradient(135deg, var(--card), #081a1d);
-            margin-top: 20px;
-            padding: 30px 20px;
-            border-radius: 30px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border: 1px solid rgba(193, 155, 108, 0.2);
+            width: 92%; max-width: 400px;
+            background: linear-gradient(135deg, var(--green-pro), #081a1d);
+            margin-top: 15px; padding: 25px 15px;
+            border-radius: 30px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border: 1px solid var(--white);
         }
 
-        .date-text { font-size: 14px; color: var(--gold); margin-bottom: 10px; }
-        #timer { font-size: 48px; font-weight: bold; margin: 10px 0; letter-spacing: 2px; }
+        .date-box { font-size: 15px; color: var(--white); margin-bottom: 5px; font-weight: bold; }
+        .hijri-date { color: var(--gold); font-size: 14px; margin-bottom: 15px; }
 
-        /* Prayer Table */
-        .prayer-table {
-            width: 90%;
-            max-width: 400px;
-            margin-top: 20px;
+        #timer { font-size: 55px; font-weight: 900; color: var(--white); margin: 5px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+
+        /* Icona Fanouss Animata */
+        .fanouss {
+            width: 60px; height: 60px;
+            margin: 10px auto;
+            filter: drop-shadow(0 0 10px var(--gold));
+            animation: swing 3s ease-in-out infinite;
         }
 
-        .row {
-            display: flex;
-            justify-content: space-between;
-            background: rgba(255,255,255,0.05);
-            margin-bottom: 10px;
-            padding: 15px 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.02);
+        @keyframes swing {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
         }
 
-        .row.active { border: 1px solid var(--gold); background: rgba(193, 155, 108, 0.1); }
-        .row b { color: var(--gold); }
+        /* Grande Link Mushaf */
+        .mushaf-container {
+            width: 92%; max-width: 400px; margin-top: 15px;
+        }
+        .mushaf-link {
+            display: block; background: var(--white); color: var(--bg-pro);
+            text-decoration: none; text-align: center;
+            padding: 20px; border-radius: 20px;
+            font-size: 24px; font-weight: 900;
+            border: 3px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        }
 
-        .btn-setting {
-            display: block;
-            width: 100%;
-            background: var(--gold);
-            border: none;
-            padding: 12px;
-            margin-top: 20px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
+        /* Prayer List */
+        .prayer-list { width: 92%; max-width: 400px; margin-top: 15px; padding-bottom: 30px; }
+        .prayer-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.1);
+            padding: 18px 20px; margin-bottom: 10px;
+            border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .prayer-row.active {
+            background: var(--white); color: var(--bg-pro);
+            border: 2px solid var(--gold); transform: scale(1.02);
+        }
+        .prayer-row b { font-size: 19px; }
+        .prayer-row span { font-size: 19px; font-weight: bold; }
+
+        .btn-side {
+            width: 100%; padding: 15px; background: var(--gold);
+            border: none; border-radius: 10px; font-weight: bold;
+            margin-top: 20px; cursor: pointer; color: var(--bg-pro);
         }
     </style>
 </head>
@@ -120,79 +125,62 @@
 
     <div class="sidebar" id="sidebar">
         <div class="close-btn" onclick="toggleMenu()">&times;</div>
-        <h2 style="color:var(--gold)">Impostazioni</h2>
-        <button class="btn-setting" onclick="enableNotif()">Attiva Notifiche</button>
-        <button class="btn-setting" style="background:#555" onclick="location.reload()">Reset App</button>
-        <br><br>
-        <a href="https://easyquran.com" style="color:var(--gold); text-decoration:none;">Apri Al Mushaf Al Mufassir</a>
+        <h2 style="color:var(--gold); text-align:center;">الإعدادات</h2>
+        <button class="btn-side" onclick="alert('Notifiche Attivate')">🔔 تفعيل الأذان (Attiva)</button>
+        <button class="btn-side" style="background:var(--white)" onclick="location.reload()">🔄 تحديث (Aggiorna)</button>
+        <div style="margin-top:40px; text-align:center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2319/2319830.png" width="80">
+        </div>
     </div>
 
     <div class="top-bar">
-        <div class="menu-btn" onclick="toggleMenu()">&#9776;</div>
-        <div style="font-weight:bold; color:var(--gold)">Bastia Umbra</div>
-        <div></div>
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
+        <div style="font-weight:bold; font-size:18px; color:var(--white)">Bastia Umbra</div>
+        <div style="width:30px"></div>
+    </div>
+
+    <div class="hadith-marquee">
+        <marquee scrollamount="5" direction="right">
+            قال ﷺ: مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ • قال ﷺ: تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً • قال ﷺ: إِذَا جَاءَ رَمَضَانُ فُتِحَتْ أَبْوَابُ الْجَنَّةِ
+        </marquee>
     </div>
 
     <div class="hero">
-        <div class="date-text" id="dates">Caricamento date...</div>
-        <div style="font-size:18px; font-weight:bold" id="next-name">Prossima Preghiera</div>
+        <div class="date-box" id="it-date">-- --- --</div>
+        <div class="hijri-date" id="ar-date">-- --- --</div>
+        
+        <img src="https://cdn-icons-png.flaticon.com/512/2319/2319830.png" class="fanouss" alt="Fanouss">
+        
+        <div style="font-size:18px; font-weight:bold; color:var(--gold)" id="next-label">المغرب</div>
         <div id="timer">00:00:00</div>
     </div>
 
-    <div class="prayer-table" id="table">
+    <div class="mushaf-container">
+        <a href="https://easyquran.com" target="_blank" class="mushaf-link">📖 Al Mushaf Al Mufassir</a>
+    </div>
+
+    <div class="prayer-list" id="list">
         </div>
 
     <script>
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // Dati Orari (Fissi per test)
-        const times = {
-            "Fajr": "05:36",
-            "Dhuhr": "12:24",
-            "Asr": "15:25",
-            "Maghrib": "17:54",
-            "Isha": "19:12"
+        const prayers = {
+            "f":"الفجر", "dh":"الظهر", "a":"العصر", "m":"المغرب", "i":"العشاء"
         };
+        
+        // Orari Bastia Umbra (Esempio)
+        const times = {"f":"05:36", "dh":"12:24", "a":"15:25", "m":"17:54", "i":"19:12"};
 
         function update() {
             const now = new Date();
             
             // Date
-            const itDate = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
-            document.getElementById('dates').innerText = itDate;
+            document.getElementById('it-date').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
+            document.getElementById('ar-date').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(now);
 
             let html = "";
             let found = false;
 
-            for(let p in times) {
-                const [h, m] = times[p].split(":");
-                const pTime = new Date(); pTime.setHours(h, m, 0);
-                const diff = pTime - now;
-
-                let active = "";
-                if (diff > 0 && !found) {
-                    active = "active";
-                    found = true;
-                    document.getElementById('next-name').innerText = p;
-                    const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-                    const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
-                    const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                    document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
-                }
-                html += `<div class="row ${active}"><b>${p}</b> <span>${times[p]}</span></div>`;
-            }
-            document.getElementById('table').innerHTML = html;
-        }
-
-        function enableNotif() {
-            alert("Sistema Attivato!");
-            toggleMenu();
-        }
-
-        setInterval(update, 1000);
-        update();
-    </script>
-</body>
-</html>
+            for(let k in times) {
+                const [h, m] = times[k].split
