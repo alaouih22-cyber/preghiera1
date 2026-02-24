@@ -1,13 +1,14 @@
 {
-  "name": "Bastia Umbra Prayers",
-  "short_name": "Preghiere",
+  "name": "Ramadan 2026",
+  "short_name": "Ramadan",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#eff6ff",
-  "theme_color": "#1e40af",
+  "background_color": "#004d40",
+  "theme_color": "#004d40",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2645/2645897.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2319/2319830.png",
       "sizes": "512x512",
       "type": "image/png"
     }
