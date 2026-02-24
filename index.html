@@ -44,3 +44,124 @@
         .hadith-marquee {
             background: var(--white); color: var(--bg-pro);
             width: 100%; padding: 10px 0; font-weight: bold; font-size: 14px;
+        }
+
+        /* Hero Card */
+        .hero {
+            width: 92%; max-width: 420px;
+            background: linear-gradient(135deg, var(--green-pro) 0%, #081a1d 100%);
+            margin-top: 20px; padding: 25px 15px;
+            border-radius: 35px; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3);
+        }
+        .it-date { font-size: 16px; color: var(--white); margin-bottom: 2px; }
+        .ar-date { color: var(--gold); font-size: 15px; margin-bottom: 15px; font-weight: bold; }
+        #timer { font-size: 58px; font-weight: 900; color: var(--white); margin: 10px 0; }
+        .main-icon { width: 80px; height: 80px; margin: 5px auto; filter: drop-shadow(0 0 8px var(--gold)); }
+
+        /* Mushaf Link */
+        .mushaf-box { width: 92%; max-width: 420px; margin-top: 20px; }
+        .mushaf-btn {
+            display: block; background: var(--white); color: var(--bg-pro);
+            text-decoration: none; text-align: center; padding: 22px;
+            border-radius: 25px; font-size: 26px; font-weight: 900;
+            border: 4px solid var(--gold); box-shadow: 0 8px 20px rgba(255,255,255,0.15);
+        }
+
+        /* Prayer Table */
+        .prayer-list { width: 92%; max-width: 420px; margin-top: 20px; padding-bottom: 40px; }
+        .prayer-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.08); padding: 18px 25px;
+            margin-bottom: 12px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .prayer-row.active {
+            background: var(--white); color: var(--bg-pro); border: 2px solid var(--gold);
+        }
+        .prayer-row b { font-size: 20px; }
+        .prayer-row span { font-size: 20px; font-weight: 900; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar" id="sidebar">
+        <div style="font-size:30px; color:var(--gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
+        <h2 style="color:var(--gold); text-align:center;">الإعدادات</h2>
+        <button style="width:100%; padding:15px; background:var(--gold); border:none; border-radius:10px; font-weight:bold; margin-top:20px;" onclick="alert('Attivato')">🔔 تفعيل الأذان</button>
+    </div>
+
+    <div class="top-bar">
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
+        <div style="font-weight:bold; font-size:18px;">Bastia Umbra</div>
+        <div style="width:30px"></div>
+    </div>
+
+    <div class="hadith-marquee">
+        <marquee scrollamount="5" direction="right">قال ﷺ: مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee>
+    </div>
+
+    <div class="hero">
+        <div class="it-date" id="it-date">-- --- --</div>
+        <div class="ar-date" id="ar-date">-- --- --</div>
+        <img src="https://cdn-icons-png.flaticon.com/512/1162/1162383.png" class="main-icon">
+        <div style="font-size:18px; font-weight:bold; color:var(--gold)" id="next-label">المتبقي لـ المغرب</div>
+        <div id="timer">00:00:00</div>
+    </div>
+
+    <div class="mushaf-box">
+        <a href="https://easyquran.com" target="_blank" class="mushaf-btn">📖 Al Mushaf Al Mufassir</a>
+    </div>
+
+    <div class="prayer-list" id="list"></div>
+
+    <script>
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        // Database orari caricato dal tuo calendario (Ramadan 2026 - Bastia Umbra)
+        const ramadanData = {
+            "25/2": {f:"05:35", sh:"06:53", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"},
+            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
+            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
+            "28/2": {f:"05:30", sh:"06:48", dh:"12:23", a:"15:28", m:"17:59", i:"19:17"}
+            // Aggiungere gli altri giorni seguendo lo stesso formato
+        };
+
+        const prayerNames = {f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء"};
+
+        function update() {
+            const now = new Date();
+            const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
+            const today = ramadanData[dateKey] || ramadanData["25/2"]; // Fallback per il test
+
+            // Date
+            document.getElementById('it-date').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
+            document.getElementById('ar-date').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(now);
+
+            let html = "";
+            let foundNext = false;
+
+            for(let k in prayerNames) {
+                const [h, m] = today[k].split(":");
+                const pTime = new Date(); pTime.setHours(h, m, 0);
+                let diff = pTime - now;
+
+                let active = "";
+                if (diff > 0 && !foundNext) {
+                    active = "active";
+                    foundNext = true;
+                    document.getElementById('next-label').innerText = "المتبقي لـ " + prayerNames[k];
+                    const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
+                    const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+                    const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
+                    document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
+                }
+                html += `<div class="prayer-row ${active}"><b>${prayerNames[k]}</b> <span>${today[k]}</span></div>`;
+            }
+            document.getElementById('list').innerHTML = html;
+        }
+
+        setInterval(update, 1000);
+        update();
+    </script>
+</body>
+</html>
