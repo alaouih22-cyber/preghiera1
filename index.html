@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e40af">
+    <link rel="manifest" href="manifest.json">
+    <title>Prayer App - Bastia Umbra</title>
+    <style>
+        /* ... (Il CSS rimane lo stesso del messaggio precedente) ... */
+        :root { --bg: #eff6ff; --primary: #1e40af; --accent: #059669; --card-bg: #ffffff; --text-dark: #0f172a; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .header { text-align: center; margin: 20px 0; }
+        .header h1 { margin: 0; color: var(--primary); font-size: 2.2rem; }
+        .live-info { font-size: 1.1rem; color: #64748b; margin-top: 5px; }
+        .top-controls { display: flex; gap: 10px; margin-bottom: 25px; width: 100%; max-width: 900px; }
+        .btn { flex: 1; padding: 14px; border-radius: 16px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-notif { background: var(--primary); color: white; }
+        .btn-stop { background: #ef4444; color: white; display: none; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 900px; }
+        .card { background: var(--card-bg); border-radius: 24px; padding: 20px; display: flex; justify-content: space-between; align-items: center; border: 2px solid transparent; box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.2s; }
+        .card.next { border-color: var(--accent); background: #f0fdf4; transform: scale(1.02); }
+        .name { font-size: 1.1rem; font-weight: 700; color: #64748b; }
+        .time { font-size: 2.2rem; font-weight: 900; color: var(--text-dark); }
+        .countdown { background: #dcfce7; color: var(--accent); padding: 5px 10px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; }
+        .footer-btn { margin-top: 30px; background: white; border: 1px solid #cbd5e1; padding: 10px 20px; border-radius: 12px; cursor: pointer; }
+        .table-view { display: none; width: 100%; max-width: 800px; background: white; margin-top: 20px; border-radius: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        td, th { padding: 12px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Bastia Umbra</h1>
+        <div class="live-info" id="clock">Inizializzazione...</div>
+    </div>
+
+    <div class="top-controls">
+        <button class="btn btn-notif" onclick="initApp()">🔔 Attiva Notifiche</button>
+        <button id="stop-btn" class="btn btn-stop" onclick="stopAdhan()">🔇 FERMA ADHAN</button>
+    </div>
+
+    <div class="grid" id="prayer-grid"></div>
+
+    <button class="footer-btn" onclick="toggleTable()">📅 Calendario Completo</button>
+
+    <div class="table-view" id="table-container">
+        <table>
+            <thead><tr><th>Data</th><th>Fajr</th><th>Dhuhr</th><th>Asr</th><th>Maghrib</th><th>Ishaa</th></tr></thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+
+<script>
+    // --- REGISTRAZIONE SERVICE WORKER PER APP ---
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
+
+    // (Inserisci qui tutto il resto del codice JavaScript precedente: prayerData, update(), etc.)
+    const prayerData = [{"d":"20/1","f":"06:13","dh":"12:22","a":"14:47","m":"17:07","i":"18:31"},{"d":"21/1","f":"06:13","dh":"12:22","a":"14:49","m":"17:09","i":"18:32"},{"d":"22/1","f":"06:12","dh":"12:23","a":"14:50","m":"17:10","i":"18:33"},{"d":"23/1","f":"06:12","dh":"12:23","a":"14:51","m":"17:11","i":"18:34"},{"d":"24/1","f":"06:11","dh":"12:23","a":"14:52","m":"17:13","i":"18:35"},{"d":"25/1","f":"06:10","dh":"12:23","a":"14:53","m":"17:14","i":"18:36"},{"d":"26/1","f":"06:10","dh":"12:23","a":"14:54","m":"17:15","i":"18:37"},{"d":"27/1","f":"06:09","dh":"12:24","a":"14:55","m":"17:16","i":"18:38"},{"d":"28/1","f":"06:08","dh":"12:24","a":"14:56","m":"17:18","i":"18:40"},{"d":"29/1","f":"06:07","dh":"12:24","a":"14:57","m":"17:19","i":"18:41"},{"d":"30/1","f":"06:06","dh":"12:24","a":"14:59","m":"17:20","i":"18:42"},{"d":"31/1","f":"06:06","dh":"12:24","a":"15:00","m":"17:22","i":"18:43"},{"d":"1/2","f":"06:05","dh":"12:24","a":"15:01","m":"17:23","i":"18:44"},{"d":"2/2","f":"06:04","dh":"12:25","a":"15:02","m":"17:24","i":"18:46"},{"d":"3/2","f":"06:03","dh":"12:25","a":"15:03","m":"17:26","i":"18:47"},{"d":"4/2","f":"06:02","dh":"12:25","a":"15:04","m":"17:27","i":"18:48"},{"d":"5/2","f":"06:01","dh":"12:25","a":"15:05","m":"17:28","i":"18:49"},{"d":"6/2","f":"06:00","dh":"12:25","a":"15:06","m":"17:30","i":"18:50"},{"d":"7/2","f":"05:59","dh":"12:25","a":"15:07","m":"17:31","i":"18:51"},{"d":"8/2","f":"05:57","dh":"12:25","a":"15:08","m":"17:33","i":"18:53"},{"d":"9/2","f":"05:56","dh":"12:25","a":"15:10","m":"17:34","i":"18:54"},{"d":"10/2","f":"05:55","dh":"12:25","a":"15:11","m":"17:35","i":"18:55"},{"d":"11/2","f":"05:54","dh":"12:25","a":"15:12","m":"17:37","i":"18:56"},{"d":"12/2","f":"05:53","dh":"12:25","a":"15:13","m":"17:38","i":"18:58"},{"d":"13/2","f":"05:51","dh":"12:25","a":"15:14","m":"17:39","i":"18:59"},{"d":"14/2","f":"05:50","dh":"12:25","a":"15:15","m":"17:41","i":"19:00"},{"d":"15/2","f":"05:49","dh":"12:25","a":"15:16","m":"17:42","i":"19:01"},{"d":"16/2","f":"05:48","dh":"12:25","a":"15:17","m":"17:43","i":"19:02"},{"d":"17/2","f":"05:46","dh":"12:25","a":"15:18","m":"17:44","i":"19:04"}];
+    const adhan = new Audio('https://www.islamcan.com/audio/adhan/azan1.mp3');
+    let notifiedFor = "";
+    function playAdhan() { document.getElementById('stop-btn').style.display = 'flex'; adhan.currentTime = 0; adhan.play(); }
+    function initApp() { Notification.requestPermission(); adhan.play().then(() => { adhan.pause(); adhan.currentTime = 0; }); document.querySelector('.btn-notif').innerText = "✅ Audio Pronto"; }
+    function stopAdhan() { adhan.pause(); adhan.currentTime = 0; document.getElementById('stop-btn').style.display = 'none'; }
+    function toggleTable() { const el = document.getElementById('table-container'); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+    function update() {
+        const now = new Date(); const dateKey = now.getDate() + "/" + (now.getMonth() + 1); document.getElementById('clock').innerText = now.toLocaleTimeString();
+        const today = prayerData.find(p => p.d === dateKey); if(!today) return;
+        const prayers = [{n: "Fajr", t: today.f}, {n: "Dhuhr", t: today.dh}, {n: "Asr", t: today.a}, {n: "Maghrib", t: today.m}, {n: "Ishaa", t: today.i}];
+        let html = ''; let foundNext = false;
+        prayers.forEach(p => {
+            const [h, m] = p.t.split(':'); const pDate = new Date(); pDate.setHours(parseInt(h), parseInt(m), 0);
+            const diff = pDate - now; let isNext = false; let countdown = "";
+            if(diff > 0 && !foundNext) { isNext = true; foundNext = true; const hh = Math.floor(diff/3600000); const mm = Math.floor((diff%3600000)/60000); countdown = `${hh}h ${mm}m`; }
+            html += `<div class="card ${isNext ? 'next' : ''}" onclick="playAdhan()"><div><div class="name">${p.n}</div><div class="time">${p.t}</div></div><div>${isNext ? `<div class="countdown">Mancano ${countdown}</div>` : ''}</div></div>`;
+            if(Math.abs(diff) < 2000 && notifiedFor !== (p.n + p.t)) { notifiedFor = p.n + p.t; if(Notification.permission === 'granted') new Notification("Tempo di " + p.n); playAdhan(); }
+        });
+        document.getElementById('prayer-grid').innerHTML = html;
+    }
+    const body = document.getElementById('table-body');
+    prayerData.forEach(p => { body.innerHTML += `<tr><td>${p.d}</td><td>${p.f}</td><td>${p.dh}</td><td>${p.a}</td><td>${p.m}</td><td>${p.i}</td></tr>`; });
+    setInterval(update, 1000); update();
+</script>
+</body>
+</html>
