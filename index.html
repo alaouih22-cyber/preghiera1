@@ -1,9 +1,16 @@
+</html>
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muslim Pro Style</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#004d40">
+    
     <style>
         :root {
             --dark-green: #004d40;
@@ -18,33 +25,36 @@
             flex-direction: column;
             align-items: center;
             color: #333;
+            -webkit-tap-highlight-color: transparent;
         }
         /* Header */
         .header {
             background: var(--dark-green);
             color: white;
             width: 100%;
-            padding: 15px 0;
+            padding: 20px 0;
             text-align: center;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         marquee {
             background: #00332a;
             color: var(--gold);
-            padding: 5px 0;
+            padding: 8px 0;
+            font-size: 0.9rem;
         }
         /* Countdown Card */
         .hero {
             background: linear-gradient(135deg, var(--dark-green), #00695c);
-            width: 90%;
+            width: 85%;
             max-width: 400px;
             margin: 20px 0;
-            padding: 25px;
-            border-radius: 20px;
+            padding: 30px;
+            border-radius: 25px;
             color: white;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 30px rgba(0,77,64,0.3);
         }
         #timer {
             font-size: 3.5rem;
@@ -52,6 +62,7 @@
             direction: ltr;
             margin: 10px 0;
             display: block;
+            letter-spacing: 2px;
         }
         /* List */
         .list {
@@ -60,29 +71,37 @@
         }
         .card {
             background: white;
-            margin-bottom: 10px;
-            padding: 15px 20px;
-            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 18px 25px;
+            border-radius: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
         }
+        .card:active { transform: scale(0.98); }
         .card b { font-size: 1.2rem; color: var(--dark-green); }
-        .card span { font-size: 1.4rem; font-weight: bold; }
-        .active { border: 2px solid var(--gold); background: #e0f2f1; }
+        .card span { font-size: 1.4rem; font-weight: bold; color: #444; }
+        .active { 
+            border: 2px solid var(--gold); 
+            background: #e0f2f1; 
+            box-shadow: 0 0 15px rgba(193, 155, 108, 0.4);
+        }
         /* Button */
         .btn {
             background: var(--gold);
             color: white !important;
             text-decoration: none;
-            width: 80%;
+            width: 85%;
+            max-width: 380px;
             text-align: center;
-            padding: 15px;
+            padding: 18px;
             border-radius: 50px;
             font-weight: bold;
-            margin: 20px 0 40px 0;
+            margin: 25px 0 50px 0;
             display: block;
+            box-shadow: 0 5px 15px rgba(193, 155, 108, 0.3);
         }
     </style>
 </head>
@@ -92,7 +111,7 @@
     <marquee>قال ﷺ: تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً • مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee>
 
     <div class="hero">
-        <div id="p-name" style="color: var(--gold); font-weight: bold;">جاري التحميل...</div>
+        <div id="p-name" style="color: var(--gold); font-weight: bold; font-size: 1.1rem;">جاري التحميل...</div>
         <div id="timer">00:00:00</div>
     </div>
 
@@ -103,7 +122,7 @@
     </a>
 
 <script>
-    // Dati per Bastia Umbra (Febbraio/Marzo)
+    // Dati aggiornati 2026
     const data = [
         {"d":"24/2","f":"05:36","dh":"12:24","a":"15:25","m":"17:54","i":"19:12"},
         {"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},
@@ -119,29 +138,50 @@
         const now = new Date();
         const dK = now.getDate() + "/" + (now.getMonth() + 1);
         const today = data.find(x => x.d === dK);
-        if(!today) return;
+        
+        if(!today) {
+            document.getElementById("p-name").innerText = "لا توجد بيانات لهذا اليوم";
+            return;
+        }
 
-        const pr = [{n:"Fajr",t:today.f},{n:"Dhuhr",t:today.dh},{n:"Asr",t:today.a},{n:"Maghrib",t:today.m},{n:"Ishaa",t:today.i}];
-        let h="", next=false;
+        const pr = [
+            {n:"Fajr",t:today.f},
+            {n:"Dhuhr",t:today.dh},
+            {n:"Asr",t:today.a},
+            {n:"Maghrib",t:today.m},
+            {n:"Ishaa",t:today.i}
+        ];
+
+        let h="", nextFound=false;
 
         pr.forEach(p => {
             const [hrs, min] = p.t.split(":");
-            const pD = new Date(); pD.setHours(hrs, min, 0);
+            const pD = new Date(); 
+            pD.setHours(parseInt(hrs), parseInt(min), 0);
+            
             const diff = pD - now;
 
-            if(diff > 0 && !next) {
-                next = true;
+            if(diff > 0 && !nextFound) {
+                nextFound = true;
                 document.getElementById("p-name").innerText = "المتبقي لـ " + names[p.n];
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                 const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
                 document.getElementById("timer").innerText = hh + ":" + mm + ":" + ss;
             }
-            const active = (diff <= 0 && diff > -900000);
+            
+            const active = (diff <= 0 && diff > -1800000); // Attivo per 30 minuti dopo l'orario
             h += `<div class="card ${active?'active':''}"><b>${names[p.n]}</b><span>${p.t}</span></div>`;
         });
+
+        if(!nextFound) {
+             document.getElementById("p-name").innerText = "انتهت صلوات اليوم";
+             document.getElementById("timer").innerText = "00:00:00";
+        }
+
         document.getElementById("grid").innerHTML = h;
     }
+    
     setInterval(up, 1000);
     up();
 </script>
