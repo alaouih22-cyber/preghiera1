@@ -1,16 +1,19 @@
-</html>
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Muslim Pro Style</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ramadan 2026</title>
+    
+    <link rel="manifest" href="manifest.json">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ramadan">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2319/2319830.png">
+
     <meta name="theme-color" content="#004d40">
-    
+
     <style>
         :root {
             --dark-green: #004d40;
@@ -18,7 +21,7 @@
             --bg: #f4f7f6;
         }
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             margin: 0;
             display: flex;
@@ -26,6 +29,7 @@
             align-items: center;
             color: #333;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         /* Header */
         .header {
@@ -122,7 +126,7 @@
     </a>
 
 <script>
-    // Dati aggiornati 2026
+    // Dati Orari Preghiere
     const data = [
         {"d":"24/2","f":"05:36","dh":"12:24","a":"15:25","m":"17:54","i":"19:12"},
         {"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},
@@ -170,7 +174,7 @@
                 document.getElementById("timer").innerText = hh + ":" + mm + ":" + ss;
             }
             
-            const active = (diff <= 0 && diff > -1800000); // Attivo per 30 minuti dopo l'orario
+            const active = (diff <= 0 && diff > -1800000); 
             h += `<div class="card ${active?'active':''}"><b>${names[p.n]}</b><span>${p.t}</span></div>`;
         });
 
@@ -184,6 +188,11 @@
     
     setInterval(up, 1000);
     up();
+
+    // Registrazione Service Worker per rendere l'app disponibile offline
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
 </script>
 </body>
 </html>
