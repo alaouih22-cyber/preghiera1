@@ -1,218 +1,32 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ramadan 2026</title>
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#004d40">
-
-    <style>
-        :root {
-            --dark-green: #004d40;
-            --gold: #c19b6c;
-            --bg: #f4f7f6;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #333;
-            user-select: none;
-        }
-        .header {
-            background: var(--dark-green);
-            color: white;
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.4rem;
-        }
-        marquee {
-            background: #00332a;
-            color: var(--gold);
-            padding: 8px 0;
-            font-size: 0.9rem;
-        }
-        .hero {
-            background: linear-gradient(135deg, var(--dark-green), #00695c);
-            width: 85%;
-            max-width: 400px;
-            margin: 20px 0;
-            padding: 30px;
-            border-radius: 25px;
-            color: white;
-            text-align: center;
-            box-shadow: 0 15px 30px rgba(0,77,64,0.3);
-        }
-        #timer {
-            font-size: 3.5rem;
-            font-weight: bold;
-            direction: ltr;
-            margin: 10px 0;
-            display: block;
-        }
-        .list { width: 90%; max-width: 400px; }
-        .card {
-            background: white;
-            margin-bottom: 12px;
-            padding: 18px 25px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .card b { font-size: 1.2rem; color: var(--dark-green); }
-        .card span { font-size: 1.4rem; font-weight: bold; color: #444; }
-        .active { border: 2px solid var(--gold); background: #e0f2f1; }
-
-        /* Bottone Notifiche */
-        #notif-btn {
-            background: var(--gold);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            cursor: pointer;
-            display: none; /* Appare solo se serve il permesso */
-        }
-        
-        .btn {
-            background: var(--gold);
-            color: white !important;
-            text-decoration: none;
-            width: 85%;
-            max-width: 380px;
-            text-align: center;
-            padding: 18px;
-            border-radius: 50px;
-            font-weight: bold;
-            margin: 25px 0 50px 0;
-            display: block;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">رمضان 2026</div>
-    <marquee>قال ﷺ: تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً • مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee>
-
-    <div class="hero">
-        <button id="notif-btn" onclick="askPermission()">🔔 Attiva Notifiche Adhan</button>
-        <div id="p-name" style="color: var(--gold); font-weight: bold; font-size: 1.1rem;">جاري التحميل...</div>
-        <div id="timer">00:00:00</div>
-    </div>
-
-    <div class="list" id="grid"></div>
-
-    <a href="https://www.easyquran.com/quran-tajweed/warsh.html" target="_blank" class="btn">
-        📖 مصحف ورش ملون (EasyQuran)
-    </a>
-
 <script>
-    // Dati Orari Preghiere 2026
-    const data = [
-        {"d":"24/2","f":"05:36","dh":"12:24","a":"15:25","m":"17:54","i":"19:12"},
-        {"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},
-        {"d":"26/2","f":"05:33","dh":"12:24","a":"15:26","m":"17:56","i":"19:15"},
-        {"d":"27/2","f":"05:31","dh":"12:24","a":"15:27","m":"17:57","i":"19:16"},
-        {"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"},
-        {"d":"1/3","f":"05:28","dh":"12:23","a":"15:29","m":"18:00","i":"19:18"}
-    ];
-
-    const names = {"Fajr":"الفجر","Dhuhr":"الظهر","Asr":"العصر","Maghrib":"المغرب","Ishaa":"العشاء"};
-    let lastNotified = ""; 
-
-    // Gestione Notifiche
-    function askPermission() {
-        if ("Notification" in window) {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    document.getElementById('notif-btn').style.display = 'none';
-                    new Notification("Ottimo!", { body: "Le notifiche per l'Adhan sono attive." });
-                }
-            });
-        }
-    }
-
-    if ("Notification" in window && Notification.permission !== "granted") {
-        document.getElementById('notif-btn').style.display = 'inline-block';
-    }
-
-    function playNotification(prayerName) {
-        if (Notification.permission === "granted") {
-            new Notification("🌙 حان الآن وقت " + prayerName, {
-                body: "È il momento della preghiera di " + prayerName,
-                icon: "https://cdn-icons-png.flaticon.com/512/2319/2319830.png"
-            });
-            // Suono Adhan breve o Beep
-            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2861/2861-preview.mp3');
-            audio.play().catch(e => console.log("Audio bloccato dal browser"));
-        }
-    }
+    // ... (resto del codice precedente uguale)
 
     function up() {
         const now = new Date();
         const dK = now.getDate() + "/" + (now.getMonth() + 1);
         const today = data.find(x => x.d === dK);
-        
-        if(!today) {
-            document.getElementById("p-name").innerText = "لا توجد بيانات لهذا اليوم";
-            return;
-        }
+        if(!today) return;
 
-        const pr = [
-            {n:"Fajr",t:today.f}, {n:"Dhuhr",t:today.dh},
-            {n:"Asr",t:today.a}, {n:"Maghrib",t:today.m}, {n:"Ishaa",t:today.i}
-        ];
-
+        const pr = [{n:"Fajr",t:today.f}, {n:"Dhuhr",t:today.dh}, {n:"Asr",t:today.a}, {n:"Maghrib",t:today.m}, {n:"Ishaa",t:today.i}];
         let h="", nextFound=false;
 
         pr.forEach(p => {
             const [hrs, min] = p.t.split(":");
-            const pD = new Date(); 
-            pD.setHours(parseInt(hrs), parseInt(min), 0);
-            
+            const pD = new Date(); pD.setHours(parseInt(hrs), parseInt(min), 0);
             const diff = pD - now;
 
-            // Controllo se è scoccata l'ora esatta per la notifica
-            const currentTimeStr = now.getHours().toString().padStart(2,"0") + ":" + now.getMinutes().toString().padStart(2,"0");
-            if (currentTimeStr === p.t && lastNotified !== p.t) {
-                playNotification(names[p.n]);
-                lastNotified = p.t;
-            }
+            // --- LOGICA COUNTDOWN PERSONALIZZATO ---
+            // 30 minuti per Fajr (1800000 ms), 10 minuti per gli altri (600000 ms)
+            const postDurationMs = (p.n === "Fajr") ? 30 * 60 * 1000 : 10 * 60 * 1000;
 
-            if(diff > 0 && !nextFound) {
-                nextFound = true;
-                document.getElementById("p-name").innerText = "المتبقي لـ " + names[p.n];
-                const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-                const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
-                const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                document.getElementById("timer").innerText = hh + ":" + mm + ":" + ss;
-            }
-            
-            const active = (diff <= 0 && diff > -1800000); 
-            h += `<div class="card ${active?'active':''}"><b>${names[p.n]}</b><span>${p.t}</span></div>`;
-        });
-
-        if(!nextFound) {
-             document.getElementById("p-name").innerText = "انتهت صلوات اليوم";
-             document.getElementById("timer").innerText = "00:00:00";
-        }
-        document.getElementById("grid").innerHTML = h;
-    }
-    
-    setInterval(up, 1000);
-    up();
-</script>
-</body>
-</html>
+            if (diff <= 0 && diff > -postDurationMs) {
+                document.getElementById('post-timer').style.display = 'block';
+                const remaining = postDurationMs + diff;
+                const rM = Math.floor(remaining/60000).toString().padStart(2,"0");
+                const rS = Math.floor((remaining%60000)/1000).toString().padStart(2,"0");
+                document.getElementById('post-countdown').innerText = rM + ":" + rS;
+                
+                // Cambia colore al timer se è il Fajr per evidenziarlo
+                document.getElementById('post-timer').style.background = (p.n === "Fajr") ? "#00695c" : "#c19b6c";
+            } 
+            // ... (restante logica di notifica e timer principale)
