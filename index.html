@@ -7,14 +7,14 @@
     <style>
         :root {
             --primary: #1b4332;
-            --light-green: #f7fee7;
+            --light-green: #f0fdf4;
             --white: #ffffff;
             --accent: #2d6a4f;
-            --gold: #d4af37;
+            --gold: #c69b00;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             background-color: var(--light-green);
             color: var(--primary);
             margin: 0;
@@ -27,86 +27,62 @@
         /* Striscia Hadith */
         .hadith-ticker {
             background: var(--primary);
-            color: #ecfdf5;
+            color: white;
             padding: 12px 0;
             width: 100%;
             font-weight: bold;
-            font-size: 1rem;
-            white-space: nowrap;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            white-space: nowrap;
         }
-        .hadith-ticker span {
-            display: inline-block;
-            animation: marquee 30s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
+        .hadith-ticker marquee { width: 100%; }
 
         /* Countdown Gigante */
         .hero-countdown {
             background: var(--white);
             width: 90%;
-            max-width: 500px;
-            margin: 25px 0;
-            padding: 35px 20px;
-            border-radius: 40px;
+            max-width: 450px;
+            margin: 20px 0;
+            padding: 30px 15px;
+            border-radius: 30px;
             text-align: center;
             border: 4px solid var(--accent);
-            box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        #next-prayer-name { font-size: 1.6rem; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
-        #big-timer { font-size: 4.8rem; font-weight: 900; color: var(--primary); text-shadow: 2px 2px 4px rgba(0,0,0,0.05); }
+        #next-prayer-name { font-size: 1.5rem; color: var(--accent); margin-bottom: 5px; font-weight: bold; }
+        #big-timer { font-size: 4rem; font-weight: 900; color: var(--primary); direction: ltr; }
 
         /* Griglia Preghiere */
-        .grid { width: 90%; max-width: 500px; display: grid; gap: 15px; margin-bottom: 25px; }
+        .grid { width: 90%; max-width: 450px; display: grid; gap: 12px; }
         .card {
             background: var(--white);
-            padding: 22px;
-            border-radius: 25px;
+            padding: 18px;
+            border-radius: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            border-right: 10px solid var(--accent);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-right: 8px solid var(--accent);
         }
-        .card.active { background: #dcfce7; border-right-color: #ef4444; }
-        .card b { font-size: 1.5rem; }
-        .card .time { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
+        .card.active { border-right-color: #ef4444; background: #fee2e2; }
+        .card b { font-size: 1.3rem; }
+        .card .time { font-size: 1.6rem; font-weight: bold; color: var(--accent); }
 
-        /* Bottone Corano Warsh Tajwid Molawwan */
+        /* Bottone Corano Molawwan */
         .quran-btn {
-            background: linear-gradient(135deg, #2d6a4f, #1b4332);
-            color: var(--white);
+            background: var(--primary);
+            color: white;
             text-decoration: none;
-            padding: 18px 40px;
+            padding: 18px 30px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 1.3rem;
-            margin: 20px 0 50px 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 12px 25px rgba(27, 67, 50, 0.3);
+            font-size: 1.2rem;
+            margin: 30px 0;
             border: 2px solid var(--gold);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
 
     <div class="hadith-ticker">
-        <span>قال ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً» • «مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ» • «الصِّيَامُ جُنَّةٌ» </span>
-    </div>
-
-    <h1 style="color: var(--primary); margin-top: 30px; letter-spacing: 1px;">رمضان مبارك 2026</h1>
-
-    <div class="hero-countdown">
-        <div id="next-prayer-name">انتظار...</div>
-        <div id="big-timer">00:00:00</div>
-    </div>
-
-    <div class="grid" id="prayer-grid"></div>
-
-    <a href="https://www.quran7m.com/webapp/display/brows/4" target="_blank" class="quran-btn">
+        <marquee>قال ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً» • «مَنْ صَ
