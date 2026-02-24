@@ -1,7 +1,8 @@
 {
-  "name": "Ramadan 2026",
-  "short_name": "Ramadan",
-  "start_url": ".",
+  "name": "مواقيت الصلاة",
+  "short_name": "Al Mushaf",
+  "description": "Applicazione per il Corano e orari preghiera",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#004d40",
   "theme_color": "#004d40",
