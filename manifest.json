@@ -1,17 +1,15 @@
 {
-  "name": "مواقيت الصلاة",
-  "short_name": "Al Mushaf",
-  "description": "Applicazione per il Corano e orari preghiera",
+  "name": "مواقيت الصلاة Bastia Umbra",
+  "short_name": "Salat Bastia",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#004d40",
-  "theme_color": "#004d40",
+  "background_color": "#0b2328",
+  "theme_color": "#0b2328",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2319/2319830.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
