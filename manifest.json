@@ -1,8 +1,7 @@
 {
-  "name": "Ramadan Adhan 2026",
+  "name": "Ramadan 2026",
   "short_name": "Ramadan",
-  "description": "Orari preghiera e Adhan per Ramadan 2026",
-  "start_url": "index.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#004d40",
   "theme_color": "#004d40",
@@ -10,7 +9,8 @@
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2319/2319830.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
