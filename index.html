@@ -15,7 +15,6 @@
             --green-pro: #143d3d;
             --gold: #c19b6c;
             --white: #ffffff;
-            --text-light: #f0f0f0;
         }
 
         body {
@@ -26,161 +25,22 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Top Bar */
+        /* Top Bar & Menu */
         .top-bar {
-            width: 100%;
-            background: rgba(0,0,0,0.5);
-            padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-sizing: border-box;
-            border-bottom: 2px solid var(--gold);
+            width: 100%; background: rgba(0,0,0,0.6);
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-sizing: border-box; border-bottom: 2px solid var(--gold);
         }
-
         .menu-btn { font-size: 28px; color: var(--gold); cursor: pointer; }
 
-        /* Striscia Hadith Mobile */
-        .hadith-marquee {
-            background: var(--white);
-            color: var(--bg-pro);
-            width: 100%;
-            padding: 8px 0;
-            font-weight: bold;
-            font-size: 14px;
-            border-bottom: 2px solid var(--gold);
-        }
-
-        /* Menu Sidebar */
         .sidebar {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background: var(--bg-pro); z-index: 1000; transition: 0.3s;
+            position: fixed; top: 0; left: -290px; width: 280px; height: 100%;
+            background: var(--bg-pro); z-index: 1000; transition: 0.4s;
             padding: 40px 20px; box-sizing: border-box; border-right: 3px solid var(--gold);
         }
         .sidebar.open { left: 0; }
-        .close-btn { font-size: 30px; color: var(--gold); cursor: pointer; }
 
-        /* Hero Card */
-        .hero {
-            width: 92%; max-width: 400px;
-            background: linear-gradient(135deg, var(--green-pro), #081a1d);
-            margin-top: 15px; padding: 25px 15px;
-            border-radius: 30px; text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            border: 1px solid var(--white);
-        }
-
-        .date-box { font-size: 15px; color: var(--white); margin-bottom: 5px; font-weight: bold; }
-        .hijri-date { color: var(--gold); font-size: 14px; margin-bottom: 15px; }
-
-        #timer { font-size: 55px; font-weight: 900; color: var(--white); margin: 5px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-
-        /* Icona Fanouss Animata */
-        .fanouss {
-            width: 60px; height: 60px;
-            margin: 10px auto;
-            filter: drop-shadow(0 0 10px var(--gold));
-            animation: swing 3s ease-in-out infinite;
-        }
-
-        @keyframes swing {
-            0%, 100% { transform: rotate(-10deg); }
-            50% { transform: rotate(10deg); }
-        }
-
-        /* Grande Link Mushaf */
-        .mushaf-container {
-            width: 92%; max-width: 400px; margin-top: 15px;
-        }
-        .mushaf-link {
-            display: block; background: var(--white); color: var(--bg-pro);
-            text-decoration: none; text-align: center;
-            padding: 20px; border-radius: 20px;
-            font-size: 24px; font-weight: 900;
-            border: 3px solid var(--gold);
-            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
-        }
-
-        /* Prayer List */
-        .prayer-list { width: 92%; max-width: 400px; margin-top: 15px; padding-bottom: 30px; }
-        .prayer-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.1);
-            padding: 18px 20px; margin-bottom: 10px;
-            border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
-        }
-        .prayer-row.active {
+        /* Hadith Bar */
+        .hadith-marquee {
             background: var(--white); color: var(--bg-pro);
-            border: 2px solid var(--gold); transform: scale(1.02);
-        }
-        .prayer-row b { font-size: 19px; }
-        .prayer-row span { font-size: 19px; font-weight: bold; }
-
-        .btn-side {
-            width: 100%; padding: 15px; background: var(--gold);
-            border: none; border-radius: 10px; font-weight: bold;
-            margin-top: 20px; cursor: pointer; color: var(--bg-pro);
-        }
-    </style>
-</head>
-<body>
-
-    <div class="sidebar" id="sidebar">
-        <div class="close-btn" onclick="toggleMenu()">&times;</div>
-        <h2 style="color:var(--gold); text-align:center;">الإعدادات</h2>
-        <button class="btn-side" onclick="alert('Notifiche Attivate')">🔔 تفعيل الأذان (Attiva)</button>
-        <button class="btn-side" style="background:var(--white)" onclick="location.reload()">🔄 تحديث (Aggiorna)</button>
-        <div style="margin-top:40px; text-align:center;">
-            <img src="https://cdn-icons-png.flaticon.com/512/2319/2319830.png" width="80">
-        </div>
-    </div>
-
-    <div class="top-bar">
-        <div class="menu-btn" onclick="toggleMenu()">☰</div>
-        <div style="font-weight:bold; font-size:18px; color:var(--white)">Bastia Umbra</div>
-        <div style="width:30px"></div>
-    </div>
-
-    <div class="hadith-marquee">
-        <marquee scrollamount="5" direction="right">
-            قال ﷺ: مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ • قال ﷺ: تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً • قال ﷺ: إِذَا جَاءَ رَمَضَانُ فُتِحَتْ أَبْوَابُ الْجَنَّةِ
-        </marquee>
-    </div>
-
-    <div class="hero">
-        <div class="date-box" id="it-date">-- --- --</div>
-        <div class="hijri-date" id="ar-date">-- --- --</div>
-        
-        <img src="https://cdn-icons-png.flaticon.com/512/2319/2319830.png" class="fanouss" alt="Fanouss">
-        
-        <div style="font-size:18px; font-weight:bold; color:var(--gold)" id="next-label">المغرب</div>
-        <div id="timer">00:00:00</div>
-    </div>
-
-    <div class="mushaf-container">
-        <a href="https://easyquran.com" target="_blank" class="mushaf-link">📖 Al Mushaf Al Mufassir</a>
-    </div>
-
-    <div class="prayer-list" id="list">
-        </div>
-
-    <script>
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-
-        const prayers = {
-            "f":"الفجر", "dh":"الظهر", "a":"العصر", "m":"المغرب", "i":"العشاء"
-        };
-        
-        // Orari Bastia Umbra (Esempio)
-        const times = {"f":"05:36", "dh":"12:24", "a":"15:25", "m":"17:54", "i":"19:12"};
-
-        function update() {
-            const now = new Date();
-            
-            // Date
-            document.getElementById('it-date').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
-            document.getElementById('ar-date').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(now);
-
-            let html = "";
-            let found = false;
-
-            for(let k in times) {
-                const [h, m] = times[k].split
+            width: 100%; padding: 10px 0; font-weight: bold; font-size: 14px;
