@@ -11,75 +11,83 @@
 
     <style>
         :root {
-            --bg-pro: #0b2328;
+            --bg-dark: #0b2328;
             --green-pro: #143d3d;
             --gold: #c19b6c;
             --white: #ffffff;
+            --light-gray: #f4f4f4;
         }
 
         body {
-            background-color: var(--bg-pro);
+            background-color: var(--bg-dark);
             color: var(--white);
             font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Top Bar & Menu */
+        /* Top Bar */
         .top-bar {
-            width: 100%; background: rgba(0,0,0,0.6);
+            width: 100%; background: rgba(255,255,255,0.1);
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
             box-sizing: border-box; border-bottom: 2px solid var(--gold);
         }
         .menu-btn { font-size: 28px; color: var(--gold); cursor: pointer; }
 
+        /* Hadith Bar */
+        .hadith-marquee {
+            background: var(--white); color: var(--bg-dark);
+            width: 100%; padding: 8px 0; font-weight: bold; font-size: 13px;
+        }
+
+        /* Date Section */
+        .date-section {
+            text-align: center; margin-top: 15px; padding: 10px;
+        }
+        .it-date { font-size: 16px; color: var(--white); font-weight: bold; }
+        .ar-date { color: var(--gold); font-size: 14px; margin-top: 4px; }
+
+        /* Double Box Section (Countdown & Mushaf) */
+        .double-container {
+            display: flex; width: 92%; max-width: 450px; gap: 12px; margin-top: 15px;
+        }
+
+        .small-box {
+            flex: 1; background: var(--white); color: var(--bg-dark);
+            border-radius: 25px; padding: 20px 10px; text-align: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3); border: 2px solid var(--gold);
+            text-decoration: none;
+        }
+
+        .small-box h3 { margin: 0; font-size: 14px; color: var(--green-pro); font-weight: 800; }
+        #timer { font-size: 28px; font-weight: 900; color: var(--bg-dark); margin: 5px 0; }
+        .mushaf-icon { font-size: 40px; margin-bottom: 5px; }
+        .mushaf-text { font-size: 16px; font-weight: 900; color: var(--bg-dark); }
+
+        /* Prayer Table (Tema più chiaro) */
+        .prayer-list { width: 92%; max-width: 450px; margin-top: 20px; padding-bottom: 40px; }
+        .prayer-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.95); color: var(--bg-dark);
+            padding: 16px 20px; margin-bottom: 10px;
+            border-radius: 20px; border: 1px solid var(--gold);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .prayer-row.active {
+            background: var(--gold); color: var(--white);
+            transform: scale(1.03); font-weight: bold;
+        }
+        .prayer-row b { font-size: 18px; }
+        .prayer-row span { font-size: 18px; font-weight: 900; }
+
+        /* Sidebar */
         .sidebar {
             position: fixed; top: 0; left: -290px; width: 280px; height: 100%;
-            background: var(--bg-pro); z-index: 1000; transition: 0.4s;
+            background: var(--bg-dark); z-index: 1000; transition: 0.4s;
             padding: 40px 20px; box-sizing: border-box; border-right: 3px solid var(--gold);
         }
         .sidebar.open { left: 0; }
-
-        /* Hadith Bar */
-        .hadith-marquee {
-            background: var(--white); color: var(--bg-pro);
-            width: 100%; padding: 10px 0; font-weight: bold; font-size: 14px;
-        }
-
-        /* Hero Card */
-        .hero {
-            width: 92%; max-width: 420px;
-            background: linear-gradient(135deg, var(--green-pro) 0%, #081a1d 100%);
-            margin-top: 20px; padding: 25px 15px;
-            border-radius: 35px; text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3);
-        }
-        .it-date { font-size: 16px; color: var(--white); margin-bottom: 2px; }
-        .ar-date { color: var(--gold); font-size: 15px; margin-bottom: 15px; font-weight: bold; }
-        #timer { font-size: 58px; font-weight: 900; color: var(--white); margin: 10px 0; }
-        .main-icon { width: 80px; height: 80px; margin: 5px auto; filter: drop-shadow(0 0 8px var(--gold)); }
-
-        /* Mushaf Link */
-        .mushaf-box { width: 92%; max-width: 420px; margin-top: 20px; }
-        .mushaf-btn {
-            display: block; background: var(--white); color: var(--bg-pro);
-            text-decoration: none; text-align: center; padding: 22px;
-            border-radius: 25px; font-size: 26px; font-weight: 900;
-            border: 4px solid var(--gold); box-shadow: 0 8px 20px rgba(255,255,255,0.15);
-        }
-
-        /* Prayer Table */
-        .prayer-list { width: 92%; max-width: 420px; margin-top: 20px; padding-bottom: 40px; }
-        .prayer-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.08); padding: 18px 25px;
-            margin-bottom: 12px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .prayer-row.active {
-            background: var(--white); color: var(--bg-pro); border: 2px solid var(--gold);
-        }
-        .prayer-row b { font-size: 20px; }
-        .prayer-row span { font-size: 20px; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -87,29 +95,36 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:30px; color:var(--gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
         <h2 style="color:var(--gold); text-align:center;">الإعدادات</h2>
-        <button style="width:100%; padding:15px; background:var(--gold); border:none; border-radius:10px; font-weight:bold; margin-top:20px;" onclick="alert('Attivato')">🔔 تفعيل الأذان</button>
+        <button style="width:100%; padding:15px; background:var(--gold); border:none; border-radius:15px; font-weight:bold; margin-top:20px;">🔔 تفعيل الأذان</button>
     </div>
 
     <div class="top-bar">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
-        <div style="font-weight:bold; font-size:18px;">Bastia Umbra</div>
-        <div style="width:30px"></div>
+        <div style="font-weight:bold; font-size:18px; color:var(--white)">Bastia Umbra</div>
+        <img src="https://cdn-icons-png.flaticon.com/512/1162/1162383.png" width="30">
     </div>
 
     <div class="hadith-marquee">
         <marquee scrollamount="5" direction="right">قال ﷺ: مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee>
     </div>
 
-    <div class="hero">
+    <div class="date-section">
         <div class="it-date" id="it-date">-- --- --</div>
         <div class="ar-date" id="ar-date">-- --- --</div>
-        <img src="https://cdn-icons-png.flaticon.com/512/1162/1162383.png" class="main-icon">
-        <div style="font-size:18px; font-weight:bold; color:var(--gold)" id="next-label">المتبقي لـ المغرب</div>
-        <div id="timer">00:00:00</div>
     </div>
 
-    <div class="mushaf-box">
-        <a href="https://easyquran.com" target="_blank" class="mushaf-btn">📖 Al Mushaf Al Mufassir</a>
+    <div class="double-container">
+        <div class="small-box">
+            <h3 id="next-label">المغرب</h3>
+            <div id="timer">00:00:00</div>
+            <div style="font-size: 10px; opacity: 0.7;">الوقت المتبقي</div>
+        </div>
+
+        <a href="https://easyquran.com" target="_blank" class="small-box">
+            <div class="mushaf-icon">📖</div>
+            <div class="mushaf-text">المصحف</div>
+            <div style="font-size: 10px; opacity: 0.7;">المفسر</div>
+        </a>
     </div>
 
     <div class="prayer-list" id="list"></div>
@@ -117,13 +132,12 @@
     <script>
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // Database orari caricato dal tuo calendario (Ramadan 2026 - Bastia Umbra)
+        // Database orari (Bastia Umbra - Ramadan 2026)
         const ramadanData = {
-            "25/2": {f:"05:35", sh:"06:53", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"},
-            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
-            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
-            "28/2": {f:"05:30", sh:"06:48", dh:"12:23", a:"15:28", m:"17:59", i:"19:17"}
-            // Aggiungere gli altri giorni seguendo lo stesso formato
+            "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"},
+            "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
+            "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
+            "28/2": {f:"05:30", dh:"12:23", a:"15:28", m:"17:59", i:"19:17"}
         };
 
         const prayerNames = {f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء"};
@@ -131,9 +145,8 @@
         function update() {
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
-            const today = ramadanData[dateKey] || ramadanData["25/2"]; // Fallback per il test
+            const today = ramadanData[dateKey] || ramadanData["25/2"];
 
-            // Date
             document.getElementById('it-date').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
             document.getElementById('ar-date').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(now);
 
@@ -149,7 +162,7 @@
                 if (diff > 0 && !foundNext) {
                     active = "active";
                     foundNext = true;
-                    document.getElementById('next-label').innerText = "المتبقي لـ " + prayerNames[k];
+                    document.getElementById('next-label').innerText = prayerNames[k];
                     const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                     const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                     const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
