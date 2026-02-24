@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadan 2026 - Bastia Umbra</title>
+    <title>Ramadan 2026 - Warsh Tajweed</title>
     <style>
         :root {
-            --primary: #2d6a4f; /* Verde scuro */
-            --light-green: #d8f3dc; /* Verde chiaro bello */
+            --primary: #1b4332;
+            --light-green: #f7fee7;
             --white: #ffffff;
-            --accent: #ffb703; /* Oro per i dettagli */
-            --text-dark: #1b4332;
+            --accent: #2d6a4f;
+            --gold: #d4af37;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--light-green);
-            color: var(--text-dark);
+            color: var(--primary);
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            direction: rtl; /* Direzione Araba */
+            direction: rtl;
         }
 
         /* Striscia Hadith */
         .hadith-ticker {
             background: var(--primary);
-            color: var(--white);
+            color: #ecfdf5;
             padding: 12px 0;
             width: 100%;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             white-space: nowrap;
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .hadith-ticker span {
             display: inline-block;
-            animation: marquee 25s linear infinite;
+            animation: marquee 30s linear infinite;
         }
         @keyframes marquee {
             0% { transform: translateX(-100%); }
@@ -50,120 +50,63 @@
             background: var(--white);
             width: 90%;
             max-width: 500px;
-            margin: 20px 0;
-            padding: 30px;
-            border-radius: 30px;
+            margin: 25px 0;
+            padding: 35px 20px;
+            border-radius: 40px;
             text-align: center;
-            border: 3px solid var(--primary);
-            box-shadow: 0 15px 35px rgba(45, 106, 79, 0.2);
+            border: 4px solid var(--accent);
+            box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
         }
-        #next-prayer-name { font-size: 1.8rem; color: var(--primary); font-weight: bold; }
-        #big-timer { font-size: 4.5rem; font-weight: 900; margin: 10px 0; color: var(--primary); }
+        #next-prayer-name { font-size: 1.6rem; color: var(--accent); font-weight: bold; margin-bottom: 10px; }
+        #big-timer { font-size: 4.8rem; font-weight: 900; color: var(--primary); text-shadow: 2px 2px 4px rgba(0,0,0,0.05); }
 
         /* Griglia Preghiere */
-        .grid { width: 90%; max-width: 500px; display: grid; gap: 15px; margin-bottom: 30px; }
+        .grid { width: 90%; max-width: 500px; display: grid; gap: 15px; margin-bottom: 25px; }
         .card {
             background: var(--white);
-            padding: 20px;
-            border-radius: 20px;
+            padding: 22px;
+            border-radius: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border-right: 8px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            border-right: 10px solid var(--accent);
         }
-        .card.active { background: #ffeaae; border-right-color: var(--accent); transform: scale(1.03); }
-        .card b { font-size: 1.4rem; }
-        .card .time { font-size: 1.6rem; font-weight: bold; color: var(--primary); }
+        .card.active { background: #dcfce7; border-right-color: #ef4444; }
+        .card b { font-size: 1.5rem; }
+        .card .time { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
 
-        /* Bottone Corano Warsh */
+        /* Bottone Corano Warsh Tajwid Molawwan */
         .quran-btn {
-            background: var(--primary);
+            background: linear-gradient(135deg, #2d6a4f, #1b4332);
             color: var(--white);
             text-decoration: none;
-            padding: 15px 30px;
+            padding: 18px 40px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 40px;
+            font-size: 1.3rem;
+            margin: 20px 0 50px 0;
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 20px rgba(45, 106, 79, 0.3);
+            gap: 12px;
+            box-shadow: 0 12px 25px rgba(27, 67, 50, 0.3);
+            border: 2px solid var(--gold);
         }
     </style>
 </head>
 <body>
 
     <div class="hadith-ticker">
-        <span>قال ﷺ: «مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ» (رواه البخاري ومسلم) • «تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً» • «الصِّيَامُ جُنَّةٌ» </span>
+        <span>قال ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً» • «مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ» • «الصِّيَامُ جُنَّةٌ» </span>
     </div>
 
-    <h1 style="color: var(--primary); margin-top: 25px;">رمضان 2026</h1>
+    <h1 style="color: var(--primary); margin-top: 30px; letter-spacing: 1px;">رمضان مبارك 2026</h1>
 
     <div class="hero-countdown">
-        <div id="next-prayer-name">الصلاة القادمة</div>
+        <div id="next-prayer-name">انتظار...</div>
         <div id="big-timer">00:00:00</div>
     </div>
 
     <div class="grid" id="prayer-grid"></div>
 
-    <a href="https://quran.ksu.edu.sa/index.php?l=ar#sr=1&m=warsh" target="_blank" class="quran-btn">
-       📖 مصحف ورش ملون
-    </a>
-
-<script>
-    const prayerData = [
-        {"d":"24/2","f":"05:36","dh":"12:24","a":"15:25","m":"17:54","i":"19:12"},
-        {"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},
-        {"d":"26/2","f":"05:33","dh":"12:24","a":"15:26","m":"17:56","i":"19:15"},
-        {"d":"27/2","f":"05:31","dh":"12:24","a":"15:27","m":"17:57","i":"19:16"},
-        {"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"}
-    ];
-
-    const prayerNamesAr = { "Fajr": "الفجر", "Dhuhr": "الظهر", "Asr": "العصر", "Maghrib": "المغرب", "Ishaa": "العشاء" };
-
-    function update() {
-        const now = new Date();
-        const dKey = now.getDate() + "/" + (now.getMonth() + 1);
-        const today = prayerData.find(p => p.d === dKey);
-        if(!today) return;
-
-        const pr = [
-            {n:"Fajr", t:today.f}, {n:"Dhuhr", t:today.dh}, 
-            {n:"Asr", t:today.a}, {n:"Maghrib", t:today.m}, {n:"Ishaa", t:today.i}
-        ];
-
-        let html = '';
-        let nextFound = false;
-
-        pr.forEach(p => {
-            const [h, m] = p.t.split(':');
-            const pDate = new Date(); pDate.setHours(h, m, 0);
-            const diff = pDate - now;
-            const grace = (p.n === "Fajr") ? 30*60000 : 10*60000;
-            let isCurrent = (diff <= 0 && diff > -grace);
-            
-            if (diff > 0 && !nextFound) {
-                nextFound = true;
-                document.getElementById('next-prayer-name').innerText = "موعد " + prayerNamesAr[p.n];
-                const hh = Math.floor(diff/3600000).toString().padStart(2, '0');
-                const mm = Math.floor((diff%3600000)/60000).toString().padStart(2, '0');
-                const ss = Math.floor((diff%60000)/1000).toString().padStart(2, '0');
-                document.getElementById('big-timer').innerText = `${hh}:${mm}:${ss}`;
-            }
-
-            html += `
-                <div class="card ${isCurrent ? 'active' : ''}">
-                    <b>${prayerNamesAr[p.n]}</b>
-                    <div class="time">${p.t}</div>
-                </div>`;
-        });
-        document.getElementById('prayer-grid').innerHTML = html;
-    }
-
-    setInterval(update, 1000);
-    update();
-</script>
-</body>
-</html>
+    <a href="https://www.quran7m.com/webapp/display/brows/4" target="_blank" class="quran-btn">
