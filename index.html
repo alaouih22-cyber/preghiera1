@@ -15,79 +15,81 @@
             --green-pro: #143d3d;
             --gold: #c19b6c;
             --white: #ffffff;
-            --light-gray: #f4f4f4;
+            --light-bg: #f0f4f5;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--white);
-            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
         }
 
         /* Top Bar */
         .top-bar {
-            width: 100%; background: rgba(255,255,255,0.1);
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            width: 100%; background: rgba(255,255,255,0.05);
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
             box-sizing: border-box; border-bottom: 2px solid var(--gold);
         }
         .menu-btn { font-size: 28px; color: var(--gold); cursor: pointer; }
 
-        /* Hadith Bar */
+        /* Hadith Bar (Vivace) */
         .hadith-marquee {
             background: var(--white); color: var(--bg-dark);
             width: 100%; padding: 8px 0; font-weight: bold; font-size: 13px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* Date Section */
-        .date-section {
-            text-align: center; margin-top: 15px; padding: 10px;
-        }
+        /* Dates */
+        .date-container { text-align: center; margin: 15px 0; }
         .it-date { font-size: 16px; color: var(--white); font-weight: bold; }
-        .ar-date { color: var(--gold); font-size: 14px; margin-top: 4px; }
+        .ar-date { color: var(--gold); font-size: 14px; margin-top: 2px; }
 
-        /* Double Box Section (Countdown & Mushaf) */
-        .double-container {
-            display: flex; width: 92%; max-width: 450px; gap: 12px; margin-top: 15px;
+        /* Sezione Due Quadri (Countdown & Mushaf) */
+        .double-box-container {
+            display: flex; width: 92%; max-width: 450px; gap: 12px; margin-bottom: 20px;
         }
 
-        .small-box {
+        .box-card {
             flex: 1; background: var(--white); color: var(--bg-dark);
-            border-radius: 25px; padding: 20px 10px; text-align: center;
+            border-radius: 25px; padding: 15px; text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3); border: 2px solid var(--gold);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3); border: 2px solid var(--gold);
-            text-decoration: none;
+            text-decoration: none; min-height: 100px;
         }
 
-        .small-box h3 { margin: 0; font-size: 14px; color: var(--green-pro); font-weight: 800; }
-        #timer { font-size: 28px; font-weight: 900; color: var(--bg-dark); margin: 5px 0; }
-        .mushaf-icon { font-size: 40px; margin-bottom: 5px; }
-        .mushaf-text { font-size: 16px; font-weight: 900; color: var(--bg-dark); }
+        .box-card h3 { margin: 0; font-size: 14px; color: var(--green-pro); }
+        #timer { font-size: 26px; font-weight: 900; margin: 5px 0; color: #000; }
+        .mushaf-label { font-size: 18px; font-weight: 900; margin-top: 5px; }
 
-        /* Prayer Table (Tema più chiaro) */
-        .prayer-list { width: 92%; max-width: 450px; margin-top: 20px; padding-bottom: 40px; }
+        /* Prayer List (Più Bianco) */
+        .prayer-list { width: 92%; max-width: 450px; padding-bottom: 30px; }
         .prayer-row {
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.95); color: var(--bg-dark);
-            padding: 16px 20px; margin-bottom: 10px;
-            border-radius: 20px; border: 1px solid var(--gold);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95); color: #222;
+            padding: 15px 20px; margin-bottom: 10px;
+            border-radius: 18px; border: 1px solid var(--gold);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
         .prayer-row.active {
             background: var(--gold); color: var(--white);
-            transform: scale(1.03); font-weight: bold;
+            transform: scale(1.02); font-weight: bold; border: 2px solid var(--white);
         }
-        .prayer-row b { font-size: 18px; }
-        .prayer-row span { font-size: 18px; font-weight: 900; }
+        .prayer-row b { font-size: 17px; }
+        .prayer-row span { font-size: 17px; font-weight: 900; }
 
         /* Sidebar */
         .sidebar {
-            position: fixed; top: 0; left: -290px; width: 280px; height: 100%;
-            background: var(--bg-dark); z-index: 1000; transition: 0.4s;
-            padding: 40px 20px; box-sizing: border-box; border-right: 3px solid var(--gold);
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: var(--bg-dark); z-index: 1000; transition: 0.3s;
+            padding: 30px 20px; box-sizing: border-box; border-right: 3px solid var(--gold);
         }
         .sidebar.open { left: 0; }
+        .side-btn {
+            width: 100%; padding: 15px; background: var(--gold); border: none;
+            border-radius: 12px; font-weight: bold; color: var(--bg-dark); margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -95,35 +97,35 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:30px; color:var(--gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
         <h2 style="color:var(--gold); text-align:center;">الإعدادات</h2>
-        <button style="width:100%; padding:15px; background:var(--gold); border:none; border-radius:15px; font-weight:bold; margin-top:20px;">🔔 تفعيل الأذان</button>
+        <button class="side-btn" onclick="initNotifications()">🔔 تفعيل التنبيهات (Notifiche)</button>
+        <button class="side-btn" style="background:white" onclick="location.reload()">🔄 تحديث</button>
     </div>
 
     <div class="top-bar">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
-        <div style="font-weight:bold; font-size:18px; color:var(--white)">Bastia Umbra</div>
+        <div style="font-weight:bold; font-size:17px;">Bastia Umbra</div>
         <img src="https://cdn-icons-png.flaticon.com/512/1162/1162383.png" width="30">
     </div>
 
     <div class="hadith-marquee">
-        <marquee scrollamount="5" direction="right">قال ﷺ: مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee>
+        <marquee scrollamount="4" direction="right">قال ﷺ: مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee>
     </div>
 
-    <div class="date-section">
+    <div class="date-container">
         <div class="it-date" id="it-date">-- --- --</div>
         <div class="ar-date" id="ar-date">-- --- --</div>
     </div>
 
-    <div class="double-container">
-        <div class="small-box">
-            <h3 id="next-label">المغرب</h3>
+    <div class="double-box-container">
+        <div class="box-card">
+            <h3 id="next-label">...</h3>
             <div id="timer">00:00:00</div>
-            <div style="font-size: 10px; opacity: 0.7;">الوقت المتبقي</div>
+            <div style="font-size: 10px; opacity: 0.6;">المتبقي</div>
         </div>
-
-        <a href="https://easyquran.com" target="_blank" class="small-box">
-            <div class="mushaf-icon">📖</div>
-            <div class="mushaf-text">المصحف</div>
-            <div style="font-size: 10px; opacity: 0.7;">المفسر</div>
+        <a href="https://easyquran.com" target="_blank" class="box-card">
+            <div style="font-size: 30px;">📖</div>
+            <div class="mushaf-label">المصحف</div>
+            <div style="font-size: 10px; opacity: 0.6;">المفسر</div>
         </a>
     </div>
 
@@ -132,7 +134,6 @@
     <script>
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // Database orari (Bastia Umbra - Ramadan 2026)
         const ramadanData = {
             "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"},
             "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
@@ -141,6 +142,7 @@
         };
 
         const prayerNames = {f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء"};
+        let lastNotified = "";
 
         function update() {
             const now = new Date();
@@ -152,11 +154,18 @@
 
             let html = "";
             let foundNext = false;
+            const currentHm = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
 
             for(let k in prayerNames) {
                 const [h, m] = today[k].split(":");
                 const pTime = new Date(); pTime.setHours(h, m, 0);
                 let diff = pTime - now;
+
+                // Controllo per notifica testuale
+                if (today[k] === currentHm && lastNotified !== k) {
+                    sendNotification(prayerNames[k]);
+                    lastNotified = k;
+                }
 
                 let active = "";
                 if (diff > 0 && !foundNext) {
@@ -171,6 +180,28 @@
                 html += `<div class="prayer-row ${active}"><b>${prayerNames[k]}</b> <span>${today[k]}</span></div>`;
             }
             document.getElementById('list').innerHTML = html;
+        }
+
+        function initNotifications() {
+            Notification.requestPermission().then(p => {
+                if(p === 'granted') alert("التنبيهات مفعلة بنجاح!");
+            });
+        }
+
+        function sendNotification(name) {
+            if (Notification.permission === "granted") {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification("حان وقت صلاة " + name, {
+                        body: "حان الآن وقت الصلاة في باستيا أومبريا",
+                        icon: "https://cdn-icons-png.flaticon.com/512/1162/1162383.png",
+                        vibrate: [200, 100, 200]
+                    });
+                });
+            }
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
 
         setInterval(update, 1000);
