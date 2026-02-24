@@ -3,165 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ramadan 2026</title>
+    <title>Ramadan Premium 2026</title>
 
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2319/2319830.png">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2319/2319830.png">
     
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#004d40">
-
     <style>
-        :root { --dark-green: #004d40; --gold: #c19b6c; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; color: #333; overflow-x: hidden; }
-        
-        /* Header & Hadith */
-        .header { background: var(--dark-green); color: white; width: 100%; padding: 15px 0; text-align: center; font-weight: bold; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .hadith-container { background: #00332a; color: var(--gold); padding: 8px 0; width: 100%; font-size: 0.9rem; border-bottom: 2px solid var(--gold); }
+        :root {
+            --primary-dark: #00332a;
+            --gradient-start: #004d40;
+            --gradient-end: #00251a;
+            --gold: #c19b6c;
+            --soft-gold: #d4af37;
+            --white: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
 
-        /* Main Icon */
-        .app-icon { width: 80px; height: 80px; margin-top: 20px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)); }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(180deg, var(--gradient-start), var(--gradient-end));
+            background-attachment: fixed;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--white);
+            min-height: 100vh;
+        }
 
-        /* Timer Hero */
-        .hero { background: linear-gradient(135deg, var(--dark-green), #00695c); width: 85%; max-width: 400px; margin: 15px 0; padding: 20px; border-radius: 25px; color: white; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        #timer { font-size: 3.5rem; font-weight: bold; direction: ltr; margin: 5px 0; display: block; }
-        
-        .post-timer { background: var(--gold); color: white; padding: 10px; border-radius: 12px; margin-top: 10px; font-weight: bold; display: none; border: 1px solid rgba(255,255,255,0.3); }
+        /* Header Premium */
+        .header {
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            position: relative;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+        }
 
-        /* Controls */
-        .controls { background: white; width: 85%; max-width: 400px; padding: 15px; border-radius: 15px; margin-bottom: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .btn-gold { background: var(--gold); color: white; border: none; padding: 12px; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 1rem; }
-        .btn-stop { background: #d32f2f; display: none; }
-        .vol-box { direction: ltr; margin-top: 10px; }
-        input[type=range] { width: 100%; accent-color: var(--gold); }
+        .settings-icon {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
 
-        /* List */
-        .list { width: 90%; max-width: 400px; padding-bottom: 40px; }
-        .card { background: white; margin-bottom: 8px; padding: 12px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .active { border: 2px solid var(--gold); background: #e0f2f1; font-weight: bold; }
-    </style>
-</head>
-<body>
+        .hadith-container {
+            background: rgba(193, 155, 108, 0.15);
+            color: var(--gold);
+            padding: 10px 0;
+            width: 100%;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(193, 155, 108, 0.3);
+            overflow: hidden;
+        }
 
-    <div class="header">رمضان 2026 - RAMADAN</div>
+        /* Hero Timer - Stile Immagine */
+        .hero {
+            width: 88%;
+            max-width: 400px;
+            margin: 25px 0;
+            padding: 30px 20px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
 
-    <div class="hadith-container">
-        <marquee id="hadith-text" scrollamount="4"></marquee>
-    </div>
+        #p-name { color: var(--gold); font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; }
+        #timer { font-size: 3.8rem; font-weight: 900; letter-spacing: 2px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-    <img src="https://cdn-icons-png.flaticon.com/512/2319/2319830.png" class="app-icon" alt="Lantern">
+        .post-timer {
+            background: var(--gold);
+            color: var(--primary-dark);
+            padding: 12px;
+            border-radius: 15px;
+            margin-top: 15px;
+            font-weight: 800;
+            display: none;
+            box-shadow: 0 5px 15px rgba(193, 155, 108, 0.4);
+        }
 
-    <div class="hero">
-        <div id="p-name" style="color: var(--gold); font-weight: bold;">جاري التحميل...</div>
-        <div id="timer">00:00:00</div>
-        
-        <div id="post-box" class="post-timer">
-            <span id="post-label">ينتهي الوقت بعد:</span> 
-            <span id="post-countdown" style="direction: ltr; display: inline-block;">00:00</span>
-        </div>
-    </div>
+        /* Liste e Card Moderne */
+        .list { width: 90%; max-width: 420px; padding-bottom: 40px; }
+        .card {
+            background: var(--card-bg);
+            margin-bottom: 12px;
+            padding: 18px 25px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--primary-dark);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
 
-    <div class="controls">
-        <button id="notif-btn" class="btn-gold" onclick="askPermission()">🔔 Attiva Notifiche e Adhan</button>
-        <button id="stop-btn" class="btn-gold btn-stop" onclick="stopAdhan()">⏹ Fermare Adhan</button>
-        <div class="vol-box">
-            <label style="font-size:0.8rem; font-weight:bold; color:var(--dark-green)">🔊 VOLUME ADHAN</label>
-            <input type="range" id="volControl" min="0" max="1" step="0.1" value="0.7">
-        </div>
-    </div>
+        .card.active {
+            border: 3px solid var(--gold);
+            background: #fff;
+            transform: scale(1.03);
+        }
 
-    <div class="list" id="grid"></div>
+        .card b { font-size: 1.1rem; }
+        .card span { font-weight: 700; font-size: 1.1rem; color: var(--gradient-start); }
 
-<script>
-    // 1. Dati Ramadan 2026 (Lista completa)
-    const data = [{"d":"24/2","f":"05:36","dh":"12:24","a":"15:25","m":"17:54","i":"19:12"},{"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},{"d":"26/2","f":"05:33","dh":"12:24","a":"15:26","m":"17:56","i":"19:15"},{"d":"27/2","f":"05:31","dh":"12:24","a":"15:27","m":"17:57","i":"19:16"},{"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"},{"d":"1/3","f":"05:28","dh":"12:23","a":"15:29","m":"18:00","i":"19:18"},{"d":"2/3","f":"05:26","dh":"12:23","a":"15:30","m":"18:01","i":"19:20"},{"d":"3/3","f":"05:25","dh":"12:23","a":"15:31","m":"18:02","i":"19:21"},{"d":"4/3","f":"05:23","dh":"12:22","a":"15:32","m":"18:03","i":"19:22"},{"d":"5/3","f":"05:21","dh":"12:22","a":"15:32","m":"18:05","i":"19:23"},{"d":"6/3","f":"05:20","dh":"12:22","a":"15:33","m":"18:06","i":"19:25"},{"d":"7/3","f":"05:18","dh":"12:22","a":"15:34","m":"18:07","i":"19:26"},{"d":"8/3","f":"05:16","dh":"12:21","a":"15:35","m":"18:08","i":"19:27"},{"d":"9/3","f":"05:14","dh":"12:21","a":"15:35","m":"18:09","i":"19:28"},{"d":"10/3","f":"05:13","dh":"12:21","a":"15:36","m":"18:11","i":"19:30"},{"d":"11/3","f":"05:11","dh":"12:21","a":"15:37","m":"18:12","i":"19:31"},{"d":"12/3","f":"05:09","dh":"12:20","a":"15:37","m":"18:13","i":"19:32"},{"d":"13/3","f":"05:07","dh":"12:20","a":"15:38","m":"18:14","i":"19:33"},{"d":"14/3","f":"05:05","dh":"12:20","a":"15:39","m":"18:15","i":"19:35"},{"d":"15/3","f":"05:04","dh":"12:20","a":"15:40","m":"18:16","i":"19:36"},{"d":"16/3","f":"05:02","dh":"12:19","a":"15:40","m":"18:17","i":"19:37"},{"d":"17/3","f":"05:00","dh":"12:19","a":"15:41","m":"18:19","i":"19:39"},{"d":"18/3","f":"04:58","dh":"12:19","a":"15:41","m":"18:20","i":"19:40"},{"d":"19/3","f":"04:56","dh":"12:19","a":"15:42","m":"18:21","i":"19:41"},{"d":"20/3","f":"04:54","dh":"12:18","a":"15:43","m":"18:22","i":"19:43"},{"d":"21/3","f":"04:52","dh":"12:18","a":"15:43","m":"18:23","i":"19:44"},{"d":"22/3","f":"04:51","dh":"12:18","a":"15:44","m":"18:24","i":"19:45"},{"d":"23/3","f":"04:49","dh":"12:18","a":"15:44","m":"18:26","i":"19:46"},{"d":"24/3","f":"04:47","dh":"12:17","a":"15:45","m":"18:27","i":"19:48"},{"d":"25/3","f":"04:45","dh":"12:17","a":"15:45","m":"18:28","i":"19:49"}];
+        /* Koran Section Premium */
+        .koran-section {
+            background: rgba(255,255,255,0.05);
+            width: 85%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 25px;
+            margin-bottom: 25px;
+            border: 1px dashed var(--gold);
+            text-align: center;
+        }
 
-    const names = {"Fajr":"الفجر","Dhuhr":"الظهر","Asr":"العصر","Maghrib":"المغرب","Ishaa":"العشاء"};
-    const hadiths = ["قال ﷺ: مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ", "قال ﷺ: تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً", "قال ﷺ: لَلْخُلُوفُ فَمِ الصَّائِمِ أَطْيَبُ عِنْدَ اللَّهِ مِنْ رِيحِ الْمِسْكِ"];
-    document.getElementById('hadith-text').innerText = " • " + hadiths.join(" • ");
+        .koran-btn {
+            background: var(--gold);
+            color: white;
+            padding: 12px;
+            border-radius: 15px;
+            text-decoration: none;
+            display: block;
+            margin: 10px 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
 
-    let lastNotified = "";
-    const audio = new Audio('https://www.islamcan.com/audio/adhan/azan1.mp3');
-
-    // Funzione Notifiche e Audio
-    function askPermission() {
-        Notification.requestPermission().then(p => {
-            if(p === "granted") {
-                localStorage.setItem("adhanEnabled", "true");
-                document.getElementById('notif-btn').innerText = "✅ SISTEMA ATTIVO";
-                document.getElementById('notif-btn').style.background = "#2e7d32";
-                audio.play(); 
-                setTimeout(() => audio.pause(), 2000);
-            }
-        });
-    }
-
-    function stopAdhan() { audio.pause(); document.getElementById('stop-btn').style.display = 'none'; }
-
-    // Aggiornamento ogni secondo
-    function update() {
-        const now = new Date();
-        const dStr = now.getDate() + "/" + (now.getMonth() + 1);
-        const today = data.find(x => x.d === dStr);
-        if(!today) return;
-
-        const prayers = [{n:"Fajr",t:today.f}, {n:"Dhuhr",t:today.dh}, {n:"Asr",t:today.a}, {n:"Maghrib",t:today.m}, {n:"Ishaa",t:today.i}];
-        let listHTML = "", nextFound = false;
-
-        prayers.forEach(p => {
-            const [h, m] = p.t.split(":");
-            const pTime = new Date(); pTime.setHours(h, m, 0);
-            const diff = pTime - now;
-
-            // Countdown Post-Preghiera (30min Fajr / 10min altri)
-            const postDuration = (p.n === "Fajr") ? 30*60*1000 : 10*60*1000;
-            if (diff <= 0 && diff > -postDuration) {
-                document.getElementById('post-box').style.display = 'block';
-                const rem = postDuration + diff;
-                const rM = Math.floor(rem/60000).toString().padStart(2,"0");
-                const rS = Math.floor((rem%60000)/1000).toString().padStart(2,"0");
-                document.getElementById('post-countdown').innerText = rM + ":" + rS;
-                document.getElementById('post-label').innerText = "ينتهي وقت " + names[p.n] + " بعد:";
-            } else if (diff <= -postDuration && !nextFound) {
-                document.getElementById('post-box').style.display = 'none';
-            }
-
-            // Notifica Adhan
-            const timeStr = now.getHours().toString().padStart(2,"0") + ":" + now.getMinutes().toString().padStart(2,"0");
-            if (timeStr === p.t && lastNotified !== p.t) {
-                if(localStorage.getItem("adhanEnabled") === "true") {
-                    new Notification("🌙 " + names[p.n], { body: "حان الآن وقت صلاة " + names[p.n] });
-                    audio.volume = document.getElementById('volControl').value;
-                    audio.play();
-                    document.getElementById('stop-btn').style.display = 'block';
-                }
-                lastNotified = p.t;
-            }
-
-            // Timer Prossima Preghiera
-            if(diff > 0 && !nextFound) {
-                nextFound = true;
-                document.getElementById("p-name").innerText = "المتبقي لـ " + names[p.n];
-                const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-                const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
-                const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                document.getElementById("timer").innerText = hh + ":" + mm + ":" + ss;
-            }
-            const active = (diff <= 0 && diff > -1800000);
-            listHTML += `<div class="card ${active?'active':''}"><b>${names[p.n]}</b><span>${p.t}</span></div>`;
-        });
-        document.getElementById("grid").innerHTML = listHTML;
-    }
-
-    // Auto-caricamento stato attivo
-    if(localStorage.getItem("adhanEnabled") === "true") {
-        document.getElementById('notif-btn').innerText = "✅ SISTEMA ATTIVO";
-        document.getElementById('notif-btn').style.background = "#2e7d32";
-    }
-
-    setInterval(update, 1000);
-    update();
-</script>
-</body>
-</html>
+        /* Settings Popup */
+        #settings-panel {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -5
