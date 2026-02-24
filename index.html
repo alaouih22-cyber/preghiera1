@@ -1,38 +1,29 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ramadan 2026</title>
     <style>
-        body { background-color: #f0fdf4; color: #1b4332; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; direction: rtl; }
-        .header { background: #1b4332; color: white; width: 100%; padding: 15px; text-align: center; font-weight: bold; }
-        .timer-box { background: white; width: 85%; max-width: 400px; margin: 20px; padding: 20px; border-radius: 20px; border: 3px solid #2d6a4f; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        #timer { font-size: 3.5rem; font-weight: bold; color: #1b4332; direction: ltr; margin: 10px 0; }
+        body { background-color: #f0fdf4; color: #1b4332; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .header { background: #1b4332; color: white; width: 100%; padding: 10px; text-align: center; }
+        .hero { background: white; width: 85%; max-width: 400px; margin: 20px auto; padding: 20px; border-radius: 20px; border: 3px solid #2d6a4f; text-align: center; }
+        #timer { font-size: 3rem; font-weight: bold; direction: ltr; margin: 10px 0; }
         .grid { width: 90%; max-width: 400px; display: grid; gap: 10px; }
-        .card { background: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-right: 6px solid #2d6a4f; }
+        .card { background: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; border-right: 6px solid #2d6a4f; align-items: center; }
         .active { background: #fee2e2; border-right-color: #ef4444; }
-        .q-btn { background: #1b4332; color: white; text-decoration: none; padding: 15px 30px; border-radius: 50px; font-weight: bold; margin: 30px 0; border: 2px solid #c69b00; }
-    </marquee>
+        .btn { background: #1b4332; color: white; text-decoration: none; padding: 15px; border-radius: 30px; margin: 20px; font-weight: bold; border: 2px solid #c69b00; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <marquee>قال ﷺ: تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً • مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee>
-    </div>
-
-    <h1>رمضان 2026</h1>
-
-    <div class="timer-box">
-        <div id="p-name" style="font-size: 1.2rem;">جاري التحميل...</div>
+    <div class="header"><marquee>قال ﷺ: تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً • مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ</marquee></div>
+    <h2>رمضان 2026</h2>
+    <div class="hero">
+        <div id="p-name">جاري التحميل...</div>
         <div id="timer">00:00:00</div>
     </div>
-
     <div class="grid" id="grid"></div>
-
-    <a href="https://quran.com/warsh" target="_blank" class="quran-btn" style="background:#1b4332; color:white; padding:15px; border-radius:30px; margin:20px; text-decoration:none; font-weight:bold;">
-        📖 مصحf ورش ملون
-    </a>
+    <a href="https://www.alkher.com/quran/warsh-tajweed/" target="_blank" class="btn">📖 مصحف ورش ملون (تجويد)</a>
 
 <script>
     const data = [
@@ -40,7 +31,8 @@
         {"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},
         {"d":"26/2","f":"05:33","dh":"12:24","a":"15:26","m":"17:56","i":"19:15"},
         {"d":"27/2","f":"05:31","dh":"12:24","a":"15:27","m":"17:57","i":"19:16"},
-        {"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"}
+        {"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"},
+        {"d":"1/3","f":"05:28","dh":"12:23","a":"15:29","m":"18:00","i":"19:18"}
     ];
     const names = {"Fajr":"الفجر","Dhuhr":"الظهر","Asr":"العصر","Maghrib":"المغرب","Ishaa":"العشاء"};
 
@@ -50,20 +42,16 @@
         const today = data.find(x => x.d === dK);
         if(!today) return;
 
-        const prayers = [
-            {n:"Fajr", t:today.f}, {n:"Dhuhr", t:today.dh}, 
-            {n:"Asr", t:today.a}, {n:"Maghrib", t:today.m}, {n:"Ishaa", t:today.i}
-        ];
-
-        let html = ""; let foundNext = false;
+        const prayers = [{n:"Fajr",t:today.f},{n:"Dhuhr",t:today.dh},{n:"Asr",t:today.a},{n:"Maghrib",t:today.m},{n:"Ishaa",t:today.i}];
+        let html = ""; let found = false;
 
         prayers.forEach(p => {
             const [h, m] = p.t.split(":");
             const pD = new Date(); pD.setHours(h, m, 0);
             const diff = pD - now;
 
-            if(diff > 0 && !foundNext) {
-                foundNext = true;
+            if(diff > 0 && !found) {
+                found = true;
                 document.getElementById("p-name").innerText = "المتبقي لـ " + names[p.n];
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
@@ -71,12 +59,11 @@
                 document.getElementById("timer").innerText = hh + ":" + mm + ":" + ss;
             }
             const active = (diff <= 0 && diff > -600000);
-            html += `<div class="card ${active ? 'active' : ''}"><b>${names[p.n]}</b><span style="font-size:1.4rem; font-weight:bold;">${p.t}</span></div>`;
+            html += `<div class="card ${active?'active':''}"><b>${names[p.n]}</b><span>${p.t}</span></div>`;
         });
         document.getElementById("grid").innerHTML = html;
     }
-    setInterval(update, 1000);
-    update();
+    setInterval(update, 1000); update();
 </script>
 </body>
 </html>
