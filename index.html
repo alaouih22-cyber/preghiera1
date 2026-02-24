@@ -3,86 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1e40af">
+    <meta name="theme-color" content="#0d9488">
     <link rel="manifest" href="manifest.json">
-    <title>Prayer App - Bastia Umbra</title>
+    <title>Ramadan 2026 - Bastia Umbra</title>
     <style>
-        /* ... (Il CSS rimane lo stesso del messaggio precedente) ... */
-        :root { --bg: #eff6ff; --primary: #1e40af; --accent: #059669; --card-bg: #ffffff; --text-dark: #0f172a; }
+        :root { --bg: #f0fdfa; --primary: #134e4a; --accent: #0d9488; --gold: #b45309; --card-bg: #ffffff; --text-dark: #0f172a; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .header { text-align: center; margin: 20px 0; }
-        .header h1 { margin: 0; color: var(--primary); font-size: 2.2rem; }
-        .live-info { font-size: 1.1rem; color: #64748b; margin-top: 5px; }
+        .header { text-align: center; margin: 20px 0; border-bottom: 2px solid var(--accent); padding-bottom: 10px; width: 100%; max-width: 900px; }
+        .header h1 { margin: 0; color: var(--primary); font-size: 1.8rem; text-transform: uppercase; }
+        .live-info { font-size: 1.2rem; color: var(--gold); font-weight: bold; margin-top: 5px; }
         .top-controls { display: flex; gap: 10px; margin-bottom: 25px; width: 100%; max-width: 900px; }
-        .btn { flex: 1; padding: 14px; border-radius: 16px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn-notif { background: var(--primary); color: white; }
+        .btn { flex: 1; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-notif { background: var(--accent); color: white; }
         .btn-stop { background: #ef4444; color: white; display: none; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; max-width: 900px; }
-        .card { background: var(--card-bg); border-radius: 24px; padding: 20px; display: flex; justify-content: space-between; align-items: center; border: 2px solid transparent; box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.2s; }
-        .card.next { border-color: var(--accent); background: #f0fdf4; transform: scale(1.02); }
-        .name { font-size: 1.1rem; font-weight: 700; color: #64748b; }
-        .time { font-size: 2.2rem; font-weight: 900; color: var(--text-dark); }
-        .countdown { background: #dcfce7; color: var(--accent); padding: 5px 10px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; }
-        .footer-btn { margin-top: 30px; background: white; border: 1px solid #cbd5e1; padding: 10px 20px; border-radius: 12px; cursor: pointer; }
-        .table-view { display: none; width: 100%; max-width: 800px; background: white; margin-top: 20px; border-radius: 20px; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        td, th { padding: 12px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; width: 100%; max-width: 900px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--accent); box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
+        .card.next { border-left-color: var(--gold); background: #fffbeb; transform: scale(1.03); }
+        .card.active-prayer { border-left-color: #ef4444; background: #fee2e2; }
+        .name { font-size: 1rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .time { font-size: 2rem; font-weight: 900; color: var(--primary); }
+        .countdown { background: var(--gold); color: white; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.85rem; }
+        .countdown.active { background: #ef4444; }
+        .footer-btn { margin-top: 30px; background: white; border: 2px solid var(--accent); color: var(--accent); padding: 12px 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        .table-view { display: none; width: 100%; max-width: 800px; background: white; margin-top: 20px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: var(--accent); color: white; padding: 12px; }
+        td { padding: 10px; text-align: center; border-bottom: 1px solid #f1f5f9; }
     </style>
 </head>
 <body>
-
     <div class="header">
-        <h1>Bastia Umbra</h1>
-        <div class="live-info" id="clock">Inizializzazione...</div>
+        <h1>🌙 Ramadan 2026 - Bastia Umbra</h1>
+        <div class="live-info" id="clock">--:--:--</div>
     </div>
-
     <div class="top-controls">
-        <button class="btn btn-notif" onclick="initApp()">🔔 Attiva Notifiche</button>
+        <button class="btn btn-notif" onclick="initApp()">🔔 Attiva Audio</button>
         <button id="stop-btn" class="btn btn-stop" onclick="stopAdhan()">🔇 FERMA ADHAN</button>
     </div>
-
     <div class="grid" id="prayer-grid"></div>
-
     <button class="footer-btn" onclick="toggleTable()">📅 Calendario Completo</button>
-
     <div class="table-view" id="table-container">
         <table>
-            <thead><tr><th>Data</th><th>Fajr</th><th>Dhuhr</th><th>Asr</th><th>Maghrib</th><th>Ishaa</th></tr></thead>
+            <thead><tr><th>Giorno</th><th>Fajr</th><th>Dhuhr</th><th>Asr</th><th>Maghrib</th><th>Ishaa</th></tr></thead>
             <tbody id="table-body"></tbody>
         </table>
     </div>
-
 <script>
-    // --- REGISTRAZIONE SERVICE WORKER PER APP ---
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
-    }
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    
+    const prayerData = [
+        {"d":"18/2","f":"05:45","dh":"12:25","a":"15:19","m":"17:46","i":"19:05"},
+        {"d":"19/2","f":"05:43","dh":"12:25","a":"15:20","m":"17:47","i":"19:06"},
+        {"d":"20/2","f":"05:42","dh":"12:25","a":"15:21","m":"17:48","i":"19:07"},
+        {"d":"21/2","f":"05:41","dh":"12:25","a":"15:22","m":"17:50","i":"19:08"},
+        {"d":"22/2","f":"05:39","dh":"12:24","a":"15:23","m":"17:51","i":"19:10"},
+        {"d":"23/2","f":"05:38","dh":"12:24","a":"15:24","m":"17:52","i":"19:11"},
+        {"d":"24/2","f":"05:36","dh":"12:24","a":"15:25","m":"17:54","i":"19:12"},
+        {"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},
+        {"d":"26/2","f":"05:33","dh":"12:24","a":"15:26","m":"17:56","i":"19:15"},
+        {"d":"27/2","f":"05:31","dh":"12:24","a":"15:27","m":"17:57","i":"19:16"},
+        {"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"},
+        {"d":"1/3","f":"05:28","dh":"12:23","a":"15:29","m":"18:00","i":"19:18"},
+        {"d":"2/3","f":"05:27","dh":"12:23","a":"15:30","m":"18:01","i":"19:19"},
+        {"d":"3/3","f":"05:25","dh":"12:23","a":"15:31","m":"18:02","i":"19:21"},
+        {"d":"4/3","f":"05:23","dh":"12:23","a":"15:31","m":"18:04","i":"19:22"},
+        {"d":"5/3","f":"05:22","dh":"12:22","a":"15:32","m":"18:05","i":"19:23"},
+        {"d":"6/3","f":"05:20","dh":"12:22","a":"15:33","m":"18:06","i":"19:24"},
+        {"d":"7/3","f":"05:18","dh":"12:22","a":"15:34","m":"18:07","i":"19:26"},
+        {"d":"8/3","f":"05:17","dh":"12:22","a":"15:35","m":"18:09","i":"19:27"},
+        {"d":"9/3","f":"05:15","dh":"12:21","a":"15:35","m":"18:10","i":"19:28"},
+        {"d":"10/3","f":"05:13","dh":"12:21","a":"15:36","m":"18:11","i":"19:29"},
+        {"d":"11/3","f":"05:11","dh":"12:21","a":"15:37","m":"18:12","i":"19:31"},
+        {"d":"12/3","f":"05:09","dh":"12:21","a":"15:38","m":"18:13","i":"19:32"},
+        {"d":"13/3","f":"05:08","dh":"12:20","a":"15:38","m":"18:15","i":"19:33"},
+        {"d":"14/3","f":"05:06","dh":"12:20","a":"15:39","m":"18:16","i":"19:34"},
+        {"d":"15/3","f":"05:04","dh":"12:20","a":"15:40","m":"18:17","i":"19:36"},
+        {"d":"16/3","f":"05:02","dh":"12:20","a":"15:40","m":"18:18","i":"19:37"},
+        {"d":"17/3","f":"05:00","dh":"12:19","a":"15:41","m":"18:19","i":"19:38"},
+        {"d":"18/3","f":"04:59","dh":"12:19","a":"15:42","m":"18:21","i":"19:39"},
+        {"d":"19/3","f":"04:57","dh":"12:19","a":"15:42","m":"18:22","i":"19:41"}
+    ];
 
-    // (Inserisci qui tutto il resto del codice JavaScript precedente: prayerData, update(), etc.)
-    const prayerData = [{"d":"20/1","f":"06:13","dh":"12:22","a":"14:47","m":"17:07","i":"18:31"},{"d":"21/1","f":"06:13","dh":"12:22","a":"14:49","m":"17:09","i":"18:32"},{"d":"22/1","f":"06:12","dh":"12:23","a":"14:50","m":"17:10","i":"18:33"},{"d":"23/1","f":"06:12","dh":"12:23","a":"14:51","m":"17:11","i":"18:34"},{"d":"24/1","f":"06:11","dh":"12:23","a":"14:52","m":"17:13","i":"18:35"},{"d":"25/1","f":"06:10","dh":"12:23","a":"14:53","m":"17:14","i":"18:36"},{"d":"26/1","f":"06:10","dh":"12:23","a":"14:54","m":"17:15","i":"18:37"},{"d":"27/1","f":"06:09","dh":"12:24","a":"14:55","m":"17:16","i":"18:38"},{"d":"28/1","f":"06:08","dh":"12:24","a":"14:56","m":"17:18","i":"18:40"},{"d":"29/1","f":"06:07","dh":"12:24","a":"14:57","m":"17:19","i":"18:41"},{"d":"30/1","f":"06:06","dh":"12:24","a":"14:59","m":"17:20","i":"18:42"},{"d":"31/1","f":"06:06","dh":"12:24","a":"15:00","m":"17:22","i":"18:43"},{"d":"1/2","f":"06:05","dh":"12:24","a":"15:01","m":"17:23","i":"18:44"},{"d":"2/2","f":"06:04","dh":"12:25","a":"15:02","m":"17:24","i":"18:46"},{"d":"3/2","f":"06:03","dh":"12:25","a":"15:03","m":"17:26","i":"18:47"},{"d":"4/2","f":"06:02","dh":"12:25","a":"15:04","m":"17:27","i":"18:48"},{"d":"5/2","f":"06:01","dh":"12:25","a":"15:05","m":"17:28","i":"18:49"},{"d":"6/2","f":"06:00","dh":"12:25","a":"15:06","m":"17:30","i":"18:50"},{"d":"7/2","f":"05:59","dh":"12:25","a":"15:07","m":"17:31","i":"18:51"},{"d":"8/2","f":"05:57","dh":"12:25","a":"15:08","m":"17:33","i":"18:53"},{"d":"9/2","f":"05:56","dh":"12:25","a":"15:10","m":"17:34","i":"18:54"},{"d":"10/2","f":"05:55","dh":"12:25","a":"15:11","m":"17:35","i":"18:55"},{"d":"11/2","f":"05:54","dh":"12:25","a":"15:12","m":"17:37","i":"18:56"},{"d":"12/2","f":"05:53","dh":"12:25","a":"15:13","m":"17:38","i":"18:58"},{"d":"13/2","f":"05:51","dh":"12:25","a":"15:14","m":"17:39","i":"18:59"},{"d":"14/2","f":"05:50","dh":"12:25","a":"15:15","m":"17:41","i":"19:00"},{"d":"15/2","f":"05:49","dh":"12:25","a":"15:16","m":"17:42","i":"19:01"},{"d":"16/2","f":"05:48","dh":"12:25","a":"15:17","m":"17:43","i":"19:02"},{"d":"17/2","f":"05:46","dh":"12:25","a":"15:18","m":"17:44","i":"19:04"}];
     const adhan = new Audio('https://www.islamcan.com/audio/adhan/azan1.mp3');
     let notifiedFor = "";
+
     function playAdhan() { document.getElementById('stop-btn').style.display = 'flex'; adhan.currentTime = 0; adhan.play(); }
     function initApp() { Notification.requestPermission(); adhan.play().then(() => { adhan.pause(); adhan.currentTime = 0; }); document.querySelector('.btn-notif').innerText = "✅ Audio Pronto"; }
     function stopAdhan() { adhan.pause(); adhan.currentTime = 0; document.getElementById('stop-btn').style.display = 'none'; }
     function toggleTable() { const el = document.getElementById('table-container'); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+
     function update() {
-        const now = new Date(); const dateKey = now.getDate() + "/" + (now.getMonth() + 1); document.getElementById('clock').innerText = now.toLocaleTimeString();
-        const today = prayerData.find(p => p.d === dateKey); if(!today) return;
+        const now = new Date(); 
+        const dateKey = now.getDate() + "/" + (now.getMonth() + 1); 
+        document.getElementById('clock').innerText = now.toLocaleTimeString();
+        const today = prayerData.find(p => p.d === dateKey); 
+        if(!today) return;
+
         const prayers = [{n: "Fajr", t: today.f}, {n: "Dhuhr", t: today.dh}, {n: "Asr", t: today.a}, {n: "Maghrib", t: today.m}, {n: "Ishaa", t: today.i}];
         let html = ''; let foundNext = false;
+
         prayers.forEach(p => {
-            const [h, m] = p.t.split(':'); const pDate = new Date(); pDate.setHours(parseInt(h), parseInt(m), 0);
-            const diff = pDate - now; let isNext = false; let countdown = "";
-            if(diff > 0 && !foundNext) { isNext = true; foundNext = true; const hh = Math.floor(diff/3600000); const mm = Math.floor((diff%3600000)/60000); countdown = `${hh}h ${mm}m`; }
-            html += `<div class="card ${isNext ? 'next' : ''}" onclick="playAdhan()"><div><div class="name">${p.n}</div><div class="time">${p.t}</div></div><div>${isNext ? `<div class="countdown">Mancano ${countdown}</div>` : ''}</div></div>`;
-            if(Math.abs(diff) < 2000 && notifiedFor !== (p.n + p.t)) { notifiedFor = p.n + p.t; if(Notification.permission === 'granted') new Notification("Tempo di " + p.n); playAdhan(); }
+            const [h, m] = p.t.split(':'); 
+            const pDate = new Date(); pDate.setHours(parseInt(h), parseInt(m), 0);
+            const diff = pDate - now; 
+            let cardClass = ""; let countdownText = "";
+            const isFajr = p.n === "Fajr";
+            const gracePeriod = isFajr ? 30 * 60000 : 10 * 60000; 
+
+            if (diff <= 0 && diff > -gracePeriod) {
+                cardClass = "active-prayer";
+                const minsPast = Math.floor(Math.abs(diff) / 60000);
+                countdownText = `<div class="countdown active">Iniziata da ${minsPast}m</div>`;
+            } else if (diff > 0 && !foundNext) {
+                cardClass = "next"; foundNext = true;
+                const hh = Math.floor(diff/3600000); 
+                const mm = Math.floor((diff%3600000)/60000); 
+                countdownText = `<div class="countdown">Manca ${hh > 0 ? hh + 'h ' : ''}${mm}m</div>`;
+            }
+
+            html += `<div class="card ${cardClass}" onclick="playAdhan()"><div><div class="name">${p.n}</div><div class="time">${p.t}</div></div><div>${countdownText}</div></div>`;
+
+            if(Math.abs(diff) < 2000 && notifiedFor !== (p.n + p.t)) { 
+                notifiedFor = p.n + p.t; 
+                if(Notification.permission === 'granted') new Notification("Tempo di " + p.n); 
+                playAdhan(); 
+            }
         });
         document.getElementById('prayer-grid').innerHTML = html;
     }
-    const body = document.getElementById('table-body');
-    prayerData.forEach(p => { body.innerHTML += `<tr><td>${p.d}</td><td>${p.f}</td><td>${p.dh}</td><td>${p.a}</td><td>${p.m}</td><td>${p.i}</td></tr>`; });
+
+    const tableBody = document.getElementById('table-body');
+    prayerData.forEach(p => { tableBody.innerHTML += `<tr><td>${p.d}</td><td>${p.f}</td><td>${p.dh}</td><td>${p.a}</td><td>${p.m}</td><td>${p.i}</td></tr>`; });
     setInterval(update, 1000); update();
 </script>
 </body>
