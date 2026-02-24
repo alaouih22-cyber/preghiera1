@@ -1,157 +1,198 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مواقيت الصلاة Bastia Umbra</title>
+    <title>Bastia Umbra - Salat</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2319/2319830.png">
 
     <style>
         :root {
-            --muslim-pro-blue: #0b2328;
-            --muslim-pro-green: #143d3d;
+            --bg: #0b2328;
+            --card: #143d3d;
             --gold: #c19b6c;
-            --text-white: #ffffff;
-            --card-bg: rgba(255, 255, 255, 0.08);
+            --white: #ffffff;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-            background: linear-gradient(180deg, var(--muslim-pro-blue) 0%, #000000 100%);
-            color: var(--text-white);
+            background-color: var(--bg);
+            color: var(--white);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            min-height: 100vh;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            overflow-x: hidden;
         }
 
         /* Top Bar */
         .top-bar {
             width: 100%;
+            background: rgba(0,0,0,0.4);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-sizing: border-box;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-bottom: 1px solid var(--gold);
         }
 
-        .menu-icon {
-            font-size: 28px;
+        .menu-btn {
+            font-size: 24px;
+            color: var(--gold);
             cursor: pointer;
-            color: var(--gold);
-        }
-
-        .location-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--gold);
+            padding: 5px;
         }
 
         /* Sidebar Menu */
         .sidebar {
             position: fixed;
             top: 0;
-            right: -280px;
+            left: -280px;
             width: 280px;
             height: 100%;
-            background: var(--muslim-pro-blue);
-            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
-            transition: 0.3s;
+            background: #081a1d;
             z-index: 1000;
-            padding: 30px 20px;
+            transition: 0.3s;
+            padding: 40px 20px;
             box-sizing: border-box;
-            text-align: right;
+            border-right: 2px solid var(--gold);
         }
 
-        .sidebar.active { right: 0; }
+        .sidebar.open { left: 0; }
 
-        .sidebar h2 { color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 10px; }
+        .close-btn { font-size: 30px; color: var(--gold); cursor: pointer; }
 
-        .close-menu { font-size: 30px; cursor: pointer; display: block; margin-bottom: 20px; }
-
-        /* Hero Section */
+        /* Hero */
         .hero {
             width: 90%;
-            max-width: 450px;
+            max-width: 400px;
+            background: linear-gradient(135deg, var(--card), #081a1d);
+            margin-top: 20px;
+            padding: 30px 20px;
+            border-radius: 30px;
             text-align: center;
-            margin: 20px 0;
-            padding: 30px 15px;
-            background: url('https://www.transparenttextures.com/patterns/dark-matter.png'), linear-gradient(135deg, var(--muslim-pro-green), #0a1f1f);
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(193, 155, 108, 0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(193, 155, 108, 0.2);
         }
 
-        .dates { font-size: 14px; color: var(--gold); margin-bottom: 10px; }
-        #timer { font-size: 50px; font-weight: 900; margin: 10px 0; letter-spacing: 2px; }
-        .next-prayer-name { font-size: 20px; font-weight: bold; }
+        .date-text { font-size: 14px; color: var(--gold); margin-bottom: 10px; }
+        #timer { font-size: 48px; font-weight: bold; margin: 10px 0; letter-spacing: 2px; }
 
-        /* Prayer List */
-        .prayer-list { width: 90%; max-width: 450px; margin-bottom: 30px; }
-        .prayer-item {
+        /* Prayer Table */
+        .prayer-table {
+            width: 90%;
+            max-width: 400px;
+            margin-top: 20px;
+        }
+
+        .row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 18px 25px;
-            background: var(--card-bg);
-            margin-bottom: 12px;
-            border-radius: 18px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
+            background: rgba(255,255,255,0.05);
+            margin-bottom: 10px;
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.02);
         }
 
-        .prayer-item.active {
-            background: rgba(193, 155, 108, 0.15);
-            border: 1px solid var(--gold);
-        }
+        .row.active { border: 1px solid var(--gold); background: rgba(193, 155, 108, 0.1); }
+        .row b { color: var(--gold); }
 
-        .prayer-item b { font-size: 18px; }
-        .prayer-item span { font-size: 18px; font-weight: 900; color: var(--gold); }
-
-        /* Buttons & Settings */
-        .setting-item {
-            margin-bottom: 25px;
-            text-align: right;
-        }
-        .btn-action {
+        .btn-setting {
+            display: block;
             width: 100%;
-            padding: 12px;
             background: var(--gold);
             border: none;
+            padding: 12px;
+            margin-top: 20px;
             border-radius: 10px;
-            color: var(--muslim-pro-blue);
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 999;
         }
     </style>
 </head>
 <body>
 
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="close-btn" onclick="toggleMenu()">&times;</div>
+        <h2 style="color:var(--gold)">Impostazioni</h2>
+        <button class="btn-setting" onclick="enableNotif()">Attiva Notifiche</button>
+        <button class="btn-setting" style="background:#555" onclick="location.reload()">Reset App</button>
+        <br><br>
+        <a href="https://easyquran.com" style="color:var(--gold); text-decoration:none;">Apri Al Mushaf Al Mufassir</a>
+    </div>
 
     <div class="top-bar">
-        <div class="menu-icon" onclick="toggleMenu()">☰</div>
-        <div class="location-title">Bastia Umbra</div>
-        <div style="width:28px"></div> </div>
+        <div class="menu-btn" onclick="toggleMenu()">&#9776;</div>
+        <div style="font-weight:bold; color:var(--gold)">Bastia Umbra</div>
+        <div></div>
+    </div>
 
-    
+    <div class="hero">
+        <div class="date-text" id="dates">Caricamento date...</div>
+        <div style="font-size:18px; font-weight:bold" id="next-name">Prossima Preghiera</div>
+        <div id="timer">00:00:00</div>
+    </div>
+
+    <div class="prayer-table" id="table">
+        </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Dati Orari (Fissi per test)
+        const times = {
+            "Fajr": "05:36",
+            "Dhuhr": "12:24",
+            "Asr": "15:25",
+            "Maghrib": "17:54",
+            "Isha": "19:12"
+        };
+
+        function update() {
+            const now = new Date();
+            
+            // Date
+            const itDate = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
+            document.getElementById('dates').innerText = itDate;
+
+            let html = "";
+            let found = false;
+
+            for(let p in times) {
+                const [h, m] = times[p].split(":");
+                const pTime = new Date(); pTime.setHours(h, m, 0);
+                const diff = pTime - now;
+
+                let active = "";
+                if (diff > 0 && !found) {
+                    active = "active";
+                    found = true;
+                    document.getElementById('next-name').innerText = p;
+                    const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
+                    const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+                    const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
+                    document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
+                }
+                html += `<div class="row ${active}"><b>${p}</b> <span>${times[p]}</span></div>`;
+            }
+            document.getElementById('table').innerHTML = html;
+        }
+
+        function enableNotif() {
+            alert("Sistema Attivato!");
+            toggleMenu();
+        }
+
+        setInterval(update, 1000);
+        update();
+    </script>
+</body>
+</html>
