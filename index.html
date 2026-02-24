@@ -1,99 +1,116 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadan Modern App</title>
+    <title>Ramadan 2026 - Bastia Umbra</title>
     <style>
         :root {
-            --bg: #1a1a2e;
-            --card: #16213e;
-            --accent: #e94560;
-            --gold: #fbc531;
-            --text: #ffffff;
+            --primary: #2d6a4f; /* Verde scuro */
+            --light-green: #d8f3dc; /* Verde chiaro bello */
+            --white: #ffffff;
+            --accent: #ffb703; /* Oro per i dettagli */
+            --text-dark: #1b4332;
         }
+        
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-green);
+            color: var(--text-dark);
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            direction: rtl; /* Direzione Araba */
         }
 
-        /* Striscia Hadith Scorrevole */
+        /* Striscia Hadith */
         .hadith-ticker {
-            background: var(--gold);
-            color: #000;
-            padding: 10px 0;
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px 0;
             width: 100%;
             font-weight: bold;
             font-size: 1.1rem;
             white-space: nowrap;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            direction: rtl; /* Per l'arabo */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .hadith-ticker span {
             display: inline-block;
-            padding-left: 100%;
-            animation: marquee 30s linear infinite;
+            animation: marquee 25s linear infinite;
         }
         @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100%, 0); }
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         /* Countdown Gigante */
         .hero-countdown {
-            background: linear-gradient(135deg, var(--card), #0f3460);
+            background: var(--white);
             width: 90%;
             max-width: 500px;
             margin: 20px 0;
             padding: 30px;
-            border-radius: 25px;
+            border-radius: 30px;
             text-align: center;
-            border: 2px solid var(--gold);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 3px solid var(--primary);
+            box-shadow: 0 15px 35px rgba(45, 106, 79, 0.2);
         }
-        #next-prayer-name { font-size: 1.5rem; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; }
-        #big-timer { font-size: 4rem; font-weight: 900; margin: 10px 0; color: #fff; text-shadow: 0 0 20px var(--accent); }
+        #next-prayer-name { font-size: 1.8rem; color: var(--primary); font-weight: bold; }
+        #big-timer { font-size: 4.5rem; font-weight: 900; margin: 10px 0; color: var(--primary); }
 
         /* Griglia Preghiere */
-        .grid { width: 90%; max-width: 500px; display: grid; gap: 15px; }
+        .grid { width: 90%; max-width: 500px; display: grid; gap: 15px; margin-bottom: 30px; }
         .card {
-            background: var(--card);
+            background: var(--white);
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: 0.3s;
-            border-bottom: 4px solid transparent;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border-right: 8px solid var(--primary);
         }
-        .card.active { border-bottom-color: var(--accent); background: #251e3e; transform: scale(1.05); }
-        .card b { font-size: 1.2rem; }
-        .card .time { font-size: 1.5rem; font-weight: bold; color: var(--gold); }
+        .card.active { background: #ffeaae; border-right-color: var(--accent); transform: scale(1.03); }
+        .card b { font-size: 1.4rem; }
+        .card .time { font-size: 1.6rem; font-weight: bold; color: var(--primary); }
 
-        h1 { margin-top: 20px; font-size: 1.8rem; letter-spacing: 3px; }
+        /* Bottone Corano Warsh */
+        .quran-btn {
+            background: var(--primary);
+            color: var(--white);
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(45, 106, 79, 0.3);
+        }
     </style>
 </head>
 <body>
 
     <div class="hadith-ticker">
-        <span id="hadith-text">قال رسول الله ﷺ: «بُنِيَ الإِسْلَامُ عَلَى خَمْسٍ» (بخاري ومسلم) ... «تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً» (بخاري ومسلم) ... «مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ» (بخاري ومسلم)</span>
+        <span>قال ﷺ: «مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ» (رواه البخاري ومسلم) • «تَسَحَّرُوا فَإِنَّ فِي السُّحُورِ بَرَكَةً» • «الصِّيَامُ جُنَّةٌ» </span>
     </div>
 
-    <h1>RAMADAN 2026</h1>
+    <h1 style="color: var(--primary); margin-top: 25px;">رمضان 2026</h1>
 
     <div class="hero-countdown">
-        <div id="next-prayer-name">Caricamento...</div>
+        <div id="next-prayer-name">الصلاة القادمة</div>
         <div id="big-timer">00:00:00</div>
     </div>
 
     <div class="grid" id="prayer-grid"></div>
+
+    <a href="https://quran.ksu.edu.sa/index.php?l=ar#sr=1&m=warsh" target="_blank" class="quran-btn">
+       📖 مصحف ورش ملون
+    </a>
 
 <script>
     const prayerData = [
@@ -101,9 +118,10 @@
         {"d":"25/2","f":"05:35","dh":"12:24","a":"15:25","m":"17:55","i":"19:13"},
         {"d":"26/2","f":"05:33","dh":"12:24","a":"15:26","m":"17:56","i":"19:15"},
         {"d":"27/2","f":"05:31","dh":"12:24","a":"15:27","m":"17:57","i":"19:16"},
-        {"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"},
-        {"d":"1/3","f":"05:28","dh":"12:23","a":"15:29","m":"18:00","i":"19:18"}
+        {"d":"28/2","f":"05:30","dh":"12:23","a":"15:28","m":"17:59","i":"19:17"}
     ];
+
+    const prayerNamesAr = { "Fajr": "الفجر", "Dhuhr": "الظهر", "Asr": "العصر", "Maghrib": "المغرب", "Ishaa": "العشاء" };
 
     function update() {
         const now = new Date();
@@ -124,12 +142,11 @@
             const pDate = new Date(); pDate.setHours(h, m, 0);
             const diff = pDate - now;
             const grace = (p.n === "Fajr") ? 30*60000 : 10*60000;
-
             let isCurrent = (diff <= 0 && diff > -grace);
             
             if (diff > 0 && !nextFound) {
                 nextFound = true;
-                document.getElementById('next-prayer-name').innerText = "Prossima: " + p.n;
+                document.getElementById('next-prayer-name').innerText = "موعد " + prayerNamesAr[p.n];
                 const hh = Math.floor(diff/3600000).toString().padStart(2, '0');
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2, '0');
                 const ss = Math.floor((diff%60000)/1000).toString().padStart(2, '0');
@@ -138,10 +155,7 @@
 
             html += `
                 <div class="card ${isCurrent ? 'active' : ''}">
-                    <div>
-                        <b>${p.n}</b>
-                        ${isCurrent ? '<br><small>Tempo preghiera</small>' : ''}
-                    </div>
+                    <b>${prayerNamesAr[p.n]}</b>
                     <div class="time">${p.t}</div>
                 </div>`;
         });
