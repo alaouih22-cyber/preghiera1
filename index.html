@@ -36,19 +36,12 @@
         }
 
         .menu-icon {
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            font-size: 30px;
-            color: var(--mp-gold);
-            cursor: pointer;
+            position: absolute; left: 20px; top: 20px;
+            font-size: 30px; color: var(--mp-gold); cursor: pointer;
         }
 
         .ramadan-title {
-            color: var(--mp-gold);
-            font-size: 42px;
-            font-weight: 800;
-            margin: 0;
+            color: var(--mp-gold); font-size: 42px; font-weight: 800; margin: 0;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
         }
 
@@ -58,56 +51,44 @@
             background: linear-gradient(135deg, var(--mp-dark-green) 0%, var(--mp-light-green) 100%);
             border-radius: 24px; margin: -30px 0 20px 0; padding: 30px;
             color: var(--white); text-align: center;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.25);
-            z-index: 10;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.25); z-index: 10;
         }
 
         .stat-value { font-size: 34px; font-weight: 800; color: var(--mp-gold); }
 
-        /* LISTA PREGHIERE CON IQAMA */
+        /* LISTA PREGHIERE */
         .prayer-list { width: 90%; max-width: 500px; margin-bottom: 120px; }
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 20px 22px; margin-bottom: 12px;
+            background: var(--white); padding: 22px 25px; margin-bottom: 12px;
             border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            font-weight: 700;
+            font-weight: 700; transition: 0.3s;
         }
         .prayer-card.active { border: 2.5px solid var(--mp-gold); background: #fdfaf3; transform: scale(1.02); }
 
-        .iqama-label {
-            font-size: 13px;
-            color: #ff5252;
-            background: #ffebee;
-            padding: 4px 8px;
-            border-radius: 8px;
-            margin-left: 10px;
-            display: none; /* Nascosto di default */
+        .prayer-info { display: flex; align-items: center; gap: 12px; }
+        .prayer-icon { font-size: 24px; }
+
+        .iqama-countdown {
+            color: #ff5252; font-size: 13px; background: #ffebee;
+            padding: 4px 10px; border-radius: 10px; font-family: monospace;
+            border: 1px solid #ffcdd2; white-space: nowrap;
         }
-        .prayer-card.active .iqama-label { display: inline-block; }
 
         /* FOOTER HADITH LTR */
         .hadith-footer {
             position: fixed; bottom: 0; left: 0;
-            background: var(--mp-dark-green);
-            color: var(--mp-gold);
-            width: 100%; padding: 18px 0;
-            border-top: 3px solid var(--mp-gold);
-            overflow: hidden; z-index: 1000;
-            direction: ltr;
+            background: var(--mp-dark-green); color: var(--mp-gold);
+            width: 100%; padding: 18px 0; border-top: 3px solid var(--mp-gold);
+            overflow: hidden; z-index: 1000; direction: ltr;
         }
         .hadith-container { display: flex; width: fit-content; }
         .hadith-scroll {
-            display: inline-block;
-            white-space: nowrap;
-            padding-left: 50px;
-            font-weight: 600; font-size: 17px;
-            animation: scroll-ltr 60s linear infinite;
+            display: inline-block; white-space: nowrap; padding-left: 50px;
+            font-weight: 600; font-size: 17px; animation: scroll-ltr 60s linear infinite;
         }
 
-        @keyframes scroll-ltr {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(0%); }
-        }
+        @keyframes scroll-ltr { 0% { transform: translateX(-100%); } 100% { transform: translateX(0%); } }
 
         /* SIDEBAR */
         .sidebar {
@@ -172,7 +153,7 @@
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
         function initNotifications() {
-            Notification.requestPermission().then(p => { if(p==="granted") alert("Banner e Athan Sincronizzati!"); });
+            Notification.requestPermission().then(p => { if(p==="granted") alert("Sincronizzazione icone e banner completata!"); });
         }
 
         const hadiths = [
@@ -184,7 +165,15 @@
         document.getElementById('hadith-list1').innerText = content;
         document.getElementById('hadith-list2').innerText = content;
 
-        const prayerNames = { f: "الفجر", dh: "الظهر", a: "العصر", m: "المغرب", i: "العشاء" };
+        // PREGHIERE CON ICONE
+        const prayerData = {
+            f: { name: "الفجر", icon: "🌅" }, // Alba
+            dh: { name: "الظهر", icon: "☀️" }, // Sole pieno
+            a: { name: "العصر", icon: "🌤️" },  // Sole calante
+            m: { name: "المغرب", icon: "🌇" }, // Tramonto
+            i: { name: "العشاء", icon: "🌙" }  // Notte
+        };
+
         const times = { "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
         let lastNotified = "";
 
@@ -196,33 +185,37 @@
 
             let html = ""; let foundNext = false;
 
-            for (let k in prayerNames) {
+            for (let k in prayerData) {
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 
-                // Banner e Athan
+                // NOTIFICA BANNER + ATHAN
                 if (currentTimeStr === pTime && lastNotified !== k) {
                     lastNotified = k;
                     audio.play().catch(() => {});
                     if (Notification.permission === "granted") {
-                        new Notification("حان وقت الصلاة", { body: "صلاة " + prayerNames[k], requireInteraction: true });
+                        new Notification("حان وقت الصلاة", { body: "صلاة " + prayerData[k].name, requireInteraction: true });
                     }
                 }
 
                 let activeClass = "";
-                let iqamaText = "";
+                let kamaLabel = "";
 
-                // Se la preghiera è passata da meno di 10 minuti, mostra Iqama countdown
-                const diffMin = (now - pDate) / 60000;
-                if (diffMin >= 0 && diffMin < 10) {
-                    const remainingIqama = 10 - Math.floor(diffMin);
-                    iqamaText = `<span class="iqama-label">Iqama in ${remainingIqama}:00</span>`;
+                // IQAMA LOGIC: Fajr = 20m, Altri = 10m
+                const diffMs = now - pDate;
+                const diffMin = diffMs / 60000;
+                const iqamaDuration = (k === 'f') ? 20 : 10;
+                
+                if (diffMin >= 0 && diffMin < iqamaDuration) {
+                    const totalSecRem = (iqamaDuration * 60) - Math.floor(diffMs / 1000);
+                    const remM = Math.floor(totalSecRem / 60);
+                    const remS = (totalSecRem % 60).toString().padStart(2, '0');
+                    kamaLabel = `<span class="iqama-countdown">Iqama ${remM}:${remS}</span>`;
                 }
 
                 if (pDate > now && !foundNext) {
-                    foundNext = true; 
-                    activeClass = "active";
+                    foundNext = true; activeClass = "active";
                     const diff = pDate - now;
                     const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                     const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
@@ -232,11 +225,12 @@
 
                 html += `
                     <div class="prayer-card ${activeClass}">
-                        <span>${prayerNames[k]}</span>
-                        <div style="display:flex; align-items:center;">
-                            ${iqamaText}
-                            <span style="margin-right:15px; color:var(--mp-dark-green);">${pTime}</span>
+                        <div class="prayer-info">
+                            <span class="prayer-icon">${prayerData[k].icon}</span>
+                            ${kamaLabel}
+                            <span>${prayerData[k].name}</span>
                         </div>
+                        <span style="color:var(--mp-dark-green)">${pTime}</span>
                     </div>`;
             }
             document.getElementById('list-container').innerHTML = html;
