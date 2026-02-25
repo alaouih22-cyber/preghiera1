@@ -62,9 +62,10 @@
         .timer-main { font-size: 28px; font-weight: 900; color: var(--mp-dark-green); margin: 2px 0; }
         
         .date-section { flex: 1; text-align: center; padding-right: 10px; }
-        .date-box { background: #f9f4e8; border-radius: 12px; padding: 8px; border: 1px dashed var(--mp-gold); }
-        .greg-date { font-size: 13px; font-weight: bold; color: #666; display: block; }
-        .hijri-date { font-size: 14px; font-weight: 900; color: var(--mp-dark-green); display: block; margin-top: 3px; line-height: 1.2; }
+        .date-box { background: #f9f4e8; border-radius: 12px; padding: 6px; border: 1px dashed var(--mp-gold); }
+        .date-label { font-size: 10px; color: var(--mp-gold); font-weight: bold; display: block; margin-bottom: 2px; }
+        .greg-date { font-size: 12px; font-weight: bold; color: #666; display: block; border-bottom: 1px solid #eee; padding-bottom: 2px; margin-bottom: 2px; }
+        .hijri-date { font-size: 13px; font-weight: 900; color: var(--mp-dark-green); display: block; line-height: 1.2; }
 
         .prayer-list { width: 92%; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-bottom: 5px; }
         .prayer-card {
@@ -149,6 +150,7 @@
         <div class="date-section">
             <div class="date-box">
                 <span class="greg-date" id="greg-date">--/--/----</span>
+                <span class="date-label">التاريخ الهجري</span>
                 <span class="hijri-date" id="hijri-date">...</span>
             </div>
         </div>
@@ -215,14 +217,12 @@
             const now = new Date();
             
             // AGGIORNAMENTO DATE
-            // Gregoriana numerica
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
             document.getElementById('greg-date').innerText = `${day}/${month}/${year}`;
             
-            // CORREZIONE DATA EGIRA: FORZO IL CALENDARIO ISLAMICO IN LINGUA ARABA
-            // Questo garantisce che appaia Ramadan 1447 invece di Febbraio 2026
+            // FORZATURA CALENDARIO ISLAMICO (RAMADAN 1447)
             try {
                 const hijriDateStr = now.toLocaleDateString('ar-SA-u-ca-islamic-uma-nu-latn', {
                     day: 'numeric',
@@ -231,7 +231,6 @@
                 });
                 document.getElementById('hijri-date').innerText = hijriDateStr;
             } catch(e) {
-                // Fallback in caso di browser datati
                 document.getElementById('hijri-date').innerText = "رمضان ١٤٤٧";
             }
 
