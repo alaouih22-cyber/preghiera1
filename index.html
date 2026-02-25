@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Muslim Pro Gold - Bastia Umbra</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Montserrat:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Montserrat:wght@400;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --mp-dark-green: #004F3F; 
@@ -15,109 +17,109 @@
             --night-bg: #0A0A0A;
         }
 
-        body.night-mode { background-color: var(--night-bg); color: #EEE; }
+        body.night-mode { background-color: var(--night-bg); color: #EEE; --white: #1A1A1A; }
         body { 
             background-color: #F6F7F9; margin: 0; padding: 0;
             display: flex; flex-direction: column; height: 100vh; 
             overflow: hidden; font-family: 'Montserrat', sans-serif; transition: 0.5s;
         }
 
-        /* HEADER CON FANOUS DORATI */
+        /* HEADER PREMIUM CON FANOUS ANIMATI */
         .ramadan-header {
             width: 100%; background: linear-gradient(180deg, var(--mp-dark-green) 0%, #00362B 100%);
-            padding: 30px 0; text-align: center; border-bottom: 5px solid var(--mp-gold);
+            padding: 25px 0; text-align: center; border-bottom: 5px solid var(--mp-gold);
             position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.4);
             display: flex; justify-content: center; align-items: center;
         }
         
-        /* Animazione Fanous */
         .fanous-gold { 
-            color: var(--mp-gold); font-size: 45px; 
+            color: var(--mp-gold); font-size: 42px; 
             filter: drop-shadow(0 0 12px var(--mp-gold));
             animation: swing 3s infinite ease-in-out;
             margin: 0 20px;
         }
-        @keyframes swing {
-            0%, 100% { transform: rotate(12deg); }
-            50% { transform: rotate(-12deg); }
-        }
+        @keyframes swing { 0%, 100% { transform: rotate(12deg); } 50% { transform: rotate(-12deg); } }
         
         .ramadan-title { 
-            color: var(--mp-gold); font-size: 42px; margin: 0; 
-            font-weight: 900; font-family: 'Amiri', serif;
+            color: var(--mp-gold); font-size: 36px; margin: 0; 
+            font-weight: 800; font-family: 'Amiri', serif;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
         }
 
-        .menu-btn { position: absolute; left: 25px; color: var(--mp-gold); cursor: pointer; font-size: 32px; }
+        .menu-btn { position: absolute; left: 20px; color: var(--mp-gold); cursor: pointer; font-size: 32px; }
 
         /* NOTIFICA POPUP LUXURY */
         #notif-popup {
             position: fixed; top: -250px; left: 50%; transform: translateX(-50%); width: 85%;
             background: linear-gradient(135deg, var(--mp-gold) 0%, #8B6B32 100%); color: white;
-            padding: 25px; border-radius: 30px; text-align: center; font-weight: 900; z-index: 10000;
+            padding: 20px; border-radius: 25px; text-align: center; font-weight: 800; z-index: 10000;
             transition: 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border: 3px solid #FFF;
+            border: 2px solid #FFF;
         }
 
-        /* QUADRETTI DASHBOARD */
-        .dashboard { display: flex; justify-content: center; gap: 15px; width: 92%; margin: 20px auto; }
+        /* QUADRETTI DASHBOARD CON ICONE BELLE */
+        .dashboard { display: flex; justify-content: center; gap: 12px; width: 94%; margin: 15px auto; }
         .grid-box { 
-            background: white; border: 2.5px solid var(--mp-gold); border-radius: 20px; 
-            padding: 15px; flex: 1; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            background: var(--white); border: 2.5px solid var(--mp-gold); border-radius: 20px; 
+            padding: 12px; flex: 1; text-align: center; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
         }
-        .grid-box i { color: var(--mp-gold); font-size: 24px; margin-bottom: 8px; }
-        .grid-value { font-size: 24px; font-weight: 900; color: var(--mp-dark-green); }
+        .grid-box .material-icons-sharp { font-size: 28px; color: var(--mp-gold); margin-bottom: 5px; }
+        .grid-value { font-size: 22px; font-weight: 800; color: var(--mp-dark-green); }
 
         /* BANANE PREGHIERE (ICONE ORO) */
         .prayer-nav { 
-            display: flex; justify-content: space-around; width: 94%; margin: 10px auto; 
-            background: white; padding: 15px; border-radius: 25px; border: 1px solid #ddd;
+            display: flex; justify-content: space-around; width: 94%; margin: 5px auto; 
+            background: var(--white); padding: 12px; border-radius: 20px; border: 1px solid #ddd;
         }
         .p-icon { text-align: center; flex: 1; transition: 0.5s; opacity: 0.3; }
-        .p-icon i { font-size: 26px; color: var(--mp-dark-green); }
-        .p-icon span { display: block; font-size: 11px; font-weight: 900; margin-top: 5px; }
-        .p-icon.active { opacity: 1; transform: scale(1.2); }
+        .p-icon i { font-size: 24px; color: var(--mp-dark-green); }
+        .p-icon span { display: block; font-size: 10px; font-weight: 800; margin-top: 5px; }
+        .p-icon.active { opacity: 1; transform: scale(1.15); }
         .p-icon.active i { color: var(--mp-gold); filter: drop-shadow(0 0 8px var(--mp-gold)); }
 
-        /* MAIN CONTENT & HAWASH */
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; width: 100%; overflow: hidden; }
+        /* MAIN & HAWASH */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; width: 100%; overflow: hidden; position: relative; }
         #external-site { width: 100%; height: 100%; border: none; }
         .hawash-bar { 
-            background: var(--mp-gold); color: var(--mp-dark-green); padding: 18px; 
-            text-align: center; font-weight: 900; font-size: 18px; border-top: 3px solid #fff;
+            background: var(--mp-gold); color: var(--mp-dark-green); padding: 15px; 
+            text-align: center; font-weight: 800; font-size: 17px; border-top: 2px solid #fff;
         }
 
-        /* SIDEBAR TRE STRISCE */
+        /* SIDEBAR PREMIUM */
         .sidebar { 
-            position: fixed; top: 0; left: -350px; width: 300px; height: 100%; 
-            background: var(--mp-dark-green); z-index: 9999; transition: 0.5s; padding: 30px; color: white;
-            box-shadow: 15px 0 50px rgba(0,0,0,0.6);
+            position: fixed; top: 0; left: -320px; width: 290px; height: 100%; 
+            background: var(--mp-dark-green); z-index: 9999; transition: 0.5s; padding: 25px; color: white;
+            box-shadow: 10px 0 40px rgba(0,0,0,0.6); overflow-y: auto;
         }
         .sidebar.open { left: 0; }
-        .tool-box { background: rgba(255,255,255,0.08); padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--mp-gold); }
+        .tool-box { background: rgba(255,255,255,0.08); padding: 12px; border-radius: 15px; margin-bottom: 12px; border: 1px solid var(--mp-gold); }
         .menu-item { 
             background: linear-gradient(90deg, var(--mp-gold), #8B6B32); color: white; border: none; 
-            padding: 15px; border-radius: 12px; width: 100%; font-weight: 800; cursor: pointer; margin-top: 10px;
+            padding: 12px; border-radius: 12px; width: 100%; font-weight: 800; cursor: pointer; margin-top: 8px;
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
+        select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--mp-gold); background: #00362B; color: white; }
 
-        /* STRISCIA HADITH SCORREVOLE */
-        .hadith-footer { width: 100%; background: var(--mp-dark-green); padding: 15px 0; border-top: 4px solid var(--mp-gold); overflow: hidden; }
-        .hadith-track { display: flex; width: max-content; animation: scroll-hadith 50s linear infinite; }
-        .hadith-text { color: var(--mp-gold); font-weight: 700; font-size: 17px; white-space: nowrap; padding-right: 100px; font-family: 'Amiri', serif; }
+        /* STRISCIA HADITH */
+        .hadith-footer { width: 100%; background: var(--mp-dark-green); padding: 10px 0; border-top: 3px solid var(--mp-gold); overflow: hidden; }
+        .hadith-track { display: flex; width: max-content; animation: scroll-hadith 45s linear infinite; }
+        .hadith-text { color: var(--mp-gold); font-weight: 700; font-size: 16px; white-space: nowrap; padding-right: 80px; font-family: 'Amiri', serif; }
         @keyframes scroll-hadith { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     </style>
 </head>
 <body class="night-mode">
 
+    <audio id="adhan-audio" preload="auto"></audio>
+
     <div id="notif-popup">
-        <i id="notif-icon" class="fas fa-bell" style="font-size: 40px;"></i><br>
-        <span id="notif-title" style="font-size: 26px; display: block; margin: 10px 0;"></span>
-        <span id="notif-msg" style="font-size: 18px;"></span>
+        <span class="material-icons-sharp" style="font-size: 45px;">notifications_active</span><br>
+        <span id="notif-title" style="font-size: 24px; display: block; margin: 5px 0;"></span>
+        <span id="notif-msg" style="font-size: 18px;"></span><br>
+        <button onclick="stopAdhan()" style="background:white; border:none; border-radius:10px; margin-top:15px; padding:8px 15px; font-weight:800; color:var(--mp-dark-green)">STOP ADHAN</button>
     </div>
 
     <header class="ramadan-header">
-        <div class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="menu-btn" onclick="toggleMenu()"><span class="material-icons-sharp">menu</span></div>
         <i class="fas fa-lantern fanous-gold"></i>
         <h1 class="ramadan-title">رمضان كريم</h1>
         <i class="fas fa-lantern fanous-gold"></i>
@@ -125,13 +127,11 @@
 
     <div class="dashboard">
         <div class="grid-box">
-            <i class="fas fa-stopwatch"></i>
-            <div class="grid-label">Prossimo Athan</div>
+            <span class="material-icons-sharp">schedule</span>
             <div class="grid-value" id="countdown">00:00:00</div>
         </div>
         <div class="grid-box">
-            <i class="fas fa-users-rectangle"></i>
-            <div class="grid-label">Iqama Bastia</div>
+            <span class="material-icons-sharp">hourglass_top</span>
             <div class="grid-value" id="iqama-time">--:--</div>
         </div>
     </div>
@@ -146,24 +146,38 @@
 
     <main class="main-content">
         <iframe id="external-site" src="https://m.search.it.com/search?q=orari+preghiera+bastia+umbra"></iframe>
-        <div class="hawash-bar" id="hawash-display">📢 Stato Moschea: Benvenuti</div>
+        <div class="hawash-bar" id="hawash-display">📢 Stato Moschea: Benvenuti a Bastia Umbra</div>
     </main>
 
     <nav class="sidebar" id="sidebar">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2 style="color:var(--mp-gold);">MUSLIM PRO</h2>
-            <div onclick="toggleMenu()" style="font-size:30px; cursor:pointer; color:var(--mp-gold);">&times;</div>
-        </div>
+        <h2 style="color:var(--mp-gold); text-align:center; font-family:'Amiri'; font-size:30px;">MENU ELITE</h2>
+        
         <div class="tool-box">
-            <button class="menu-item" onclick="addTasbih()"><i class="fas fa-fingerprint"></i> Tasbih: <span id="t-count">0</span></button>
-            <button class="menu-item" onclick="calcZakat()"><i class="fas fa-calculator"></i> Zakat 2.5%</button>
-            <button class="menu-item" onclick="window.open('https://www.mp3quran.net/ar/radio', '_blank')"><i class="fas fa-radio"></i> Radio Quran</button>
+            <span style="color:var(--mp-gold); font-size:12px; font-weight:800;">VOCE DEL MUEZZIN</span>
+            <select id="voice-select" style="margin-top:8px;">
+                <option value="mar">Marocco (Casablanca)</option>
+                <option value="mak">Makkah (Al Haram)</option>
+                <option value="med">Medina (Al Nabawi)</option>
+                <option value="ras">Mishary Rashid</option>
+            </select>
+            <button class="menu-item" onclick="alert('Riproduzione Adhan: ' + document.getElementById('voice-select').value)">
+                <span class="material-icons-sharp">play_circle</span> Prova Voce
+            </button>
         </div>
+
         <div class="tool-box">
-            <span style="color:var(--mp-gold); font-size:12px; font-weight:bold;">MODIFICA HAWASH</span>
-            <textarea id="mosque-input" oninput="updateHawash(this.value)" style="width:100%; border-radius:10px; margin-top:5px;"></textarea>
+            <button class="menu-item" onclick="addTasbih()"><span class="material-icons-sharp">fingerprint</span> Tasbih: <span id="t-count">0</span></button>
+            <button class="menu-item" onclick="calcZakat()"><span class="material-icons-sharp">savings</span> Zakat</button>
+            <button class="menu-item" onclick="window.open('https://www.mp3quran.net/ar/radio', '_blank')"><span class="material-icons-sharp">radio</span> Radio Quran</button>
         </div>
-        <button class="menu-item" style="background:#222;" onclick="toggleNight()"><i class="fas fa-moon"></i> Notte Serena</button>
+
+        <div class="tool-box">
+            <span style="color:var(--mp-gold); font-size:12px; font-weight:800;">AGGIORNA STATO MOSCHEA</span>
+            <textarea id="mosque-input" oninput="updateHawash(this.value)" style="width:100%; margin-top:8px; border-radius:10px; background:#00362B; color:white; border:1px solid var(--mp-gold);"></textarea>
+        </div>
+
+        <button class="menu-item" style="background:#222;" onclick="toggleNight()"><span class="material-icons-sharp">dark_mode</span> Notte Serena</button>
+        <button class="menu-item" style="background:#444; margin-top:20px;" onclick="toggleMenu()">Chiudi</button>
     </nav>
 
     <footer class="hadith-footer">
@@ -171,7 +185,15 @@
     </footer>
 
     <script>
-        const prayerTimes = { "fajr": "05:35", "dhuhr": "12:24", "asr": "15:25", "maghrib": "17:55", "isha": "19:13" };
+        // DATABASE BASTIA UMBRA 2026 (Trascritto dalla tua foto)
+        const schedule = {
+            "25/2": { fajr: "05:35", dhuhr: "12:24", asr: "15:25", maghrib: "17:55", isha: "19:13" },
+            "26/2": { fajr: "05:33", dhuhr: "12:24", asr: "15:26", maghrib: "17:56", isha: "19:15" },
+            "27/2": { fajr: "05:31", dhuhr: "12:24", asr: "15:27", maghrib: "17:57", isha: "19:16" },
+            "28/2": { fajr: "05:30", dhuhr: "12:23", asr: "15:28", maghrib: "17:59", isha: "19:17" }
+            // Aggiungere gli altri giorni seguendo lo schema
+        };
+
         const config = { imsak: "05:20", iftar: "17:45", tarawih: "20:30" };
         const hadith = "• ✨ «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً» • ✨ «الصِّيَامُ جُنَّةٌ» • ✨ «رَمَضَانُ مُبَارَكٌ» • ✨ ";
 
@@ -179,35 +201,38 @@
         function toggleNight() { document.body.classList.toggle('night-mode'); }
         function updateHawash(v) { document.getElementById('hawash-display').innerText = "📢 " + v; localStorage.setItem('hw', v); }
         function addTasbih() { let c = (parseInt(localStorage.getItem('ts') || 0)) + 1; localStorage.setItem('ts', c); document.getElementById('t-count').innerText = c; }
-        function calcZakat() { let v = prompt("Capitale:"); if(v) alert("Zakat: " + (v * 0.025).toFixed(2) + "€"); }
+        function stopAdhan() { document.getElementById('notif-popup').style.top = "-250px"; }
 
-        function showNotif(title, msg, icon) {
+        function showNotif(title, msg) {
             const pop = document.getElementById('notif-popup');
             document.getElementById('notif-title').innerText = title;
             document.getElementById('notif-msg').innerText = msg;
-            document.getElementById('notif-icon').className = "fas " + icon;
             pop.style.top = "25px";
-            setTimeout(() => pop.style.top = "-250px", 10000);
+            setTimeout(() => { if(pop.style.top === "25px") pop.style.top = "-250px"; }, 30000);
         }
 
         function run() {
             const now = new Date();
+            const dateKey = now.getDate().toString().padStart(2,'0') + "/" + (now.getMonth() + 1);
+            const todayTimes = schedule[dateKey] || schedule["25/2"];
+
             const time = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
             const sec = time + ":" + now.getSeconds().toString().padStart(2,'0');
 
-            if(sec === config.imsak + ":00") showNotif("IMSAK", "Fine Suhoor - Smetti di mangiare", "fa-utensils-slash");
-            if(sec === config.iftar + ":00") showNotif("IFTAR", "Ramadan Kareem! Rompi il digiuno", "fa-moon-cloud");
-            if(sec === config.tarawih + ":00") { showNotif("TARAWIH", "Ora di preghiera e Notte Serena", "fa-mosque"); document.body.classList.add('night-mode'); }
+            // Notifiche Orari Speciali
+            if(sec === config.imsak + ":00") showNotif("IMSAK", "Fine Suhoor a Bastia Umbra");
+            if(sec === config.iftar + ":00") showNotif("IFTAR", "Ramadan Kareem! Buon Iftar");
+            if(sec === config.tarawih + ":00") { showNotif("TARAWIH", "Preghiera e Notte Serena"); document.body.classList.add('night-mode'); }
 
             let nextP = null;
-            for(let p in prayerTimes) {
+            for(let p in todayTimes) {
                 document.getElementById('p-' + p).classList.remove('active');
-                if(prayerTimes[p] <= time) document.getElementById('p-' + p).classList.add('active');
-                if(!nextP && prayerTimes[p] > time) nextP = p;
+                if(todayTimes[p] <= time) document.getElementById('p-' + p).classList.add('active');
+                if(!nextP && todayTimes[p] > time) nextP = p;
             }
 
             if(nextP) {
-                const [h, m] = prayerTimes[nextP].split(':');
+                const [h, m] = todayTimes[nextP].split(':');
                 const target = new Date(); target.setHours(h, m, 0);
                 const diff = target - now;
                 document.getElementById('countdown').innerText = new Date(diff).toISOString().substr(11, 8);
@@ -216,7 +241,7 @@
                 let iqH = parseInt(h); if(iqM >= 60) { iqM -= 60; iqH += 1; }
                 document.getElementById('iqama-time').innerText = `${iqH.toString().padStart(2,'0')}:${iqM.toString().padStart(2,'0')}`;
                 
-                if(sec === prayerTimes[nextP] + ":00") showNotif(nextP.toUpperCase(), "Tempo di Adhan", "fa-volume-up");
+                if(sec === todayTimes[nextP] + ":00") showNotif(nextP.toUpperCase(), "حان الآن موعد الأذان");
             }
         }
 
