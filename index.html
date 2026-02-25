@@ -181,29 +181,41 @@
         function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
-        // LOGICA NOTIFICHE BANNER (NON SVEGLIA)
+        // SISTEMA NOTIFICHE AGGIORNATO PER RISOLVERE IL PROBLEMA
         function initNotifications() { 
             if (!("Notification" in window)) {
-                alert("Il tuo browser non supporta le notifiche banner.");
+                alert("Browser non supportato");
                 return;
             }
+            
             Notification.requestPermission().then(p => { 
-                if(p==="granted") {
+                if(p === "granted") {
+                    // Sblocco audio forzato
+                    audio.play().then(() => {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }).catch(() => {});
+
                     new Notification("Muslim Pro Bastia", {
-                        body: "Le notifiche banner sono attive!",
-                        icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
+                        body: "✅ Banner attivati con successo!",
+                        icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
+                        badge: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
                     });
-                } 
+                } else {
+                    alert("Per favore, consenti le notifiche nelle impostazioni del browser.");
+                }
             }); 
         }
 
         function sendBannerNotification(prayerName) {
             if (Notification.permission === "granted") {
-                new Notification("Tempo di Preghiera", {
+                const options = {
                     body: `È il momento di ${prayerName} a Bastia Umbra`,
                     icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
-                    silent: false
-                });
+                    vibrate: [200, 100, 200],
+                    requireInteraction: true // Mantiene il banner finché non lo chiudi
+                };
+                new Notification("Tempo di Preghiera", options);
             }
         }
 
@@ -263,7 +275,6 @@
                     document.getElementById('timer-next').innerText = hh+":"+mm+":"+ss;
                 }
 
-                // INVIO NOTIFICA BANNER ALL'ORARIO DELLA PREGHIERA
                 if (currentTimeStr === pTime && lastNotified !== k) {
                     lastNotified = k; 
                     audio.play().catch(()=>{});
