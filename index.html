@@ -75,7 +75,7 @@
         }
         .prayer-card.active { border-left: 6px solid var(--mp-gold); background: #f0fdf4; }
 
-        /* FOOTER HADITH SCORREVOLE */
+        /* FOOTER HADITH SCORREVOLE - DA SINISTRA A DESTRA */
         .hadith-footer {
             position: fixed; bottom: 0; left: 0;
             background: var(--mp-dark-green);
@@ -87,13 +87,15 @@
 
         .hadith-scroll {
             display: inline-block;
-            animation: scroll-left-right 400s linear infinite;
+            /* Velocità aumentata (250s invece di 400s) */
+            animation: scroll-left-right 250s linear infinite;
             font-weight: 600; font-size: 16px;
         }
 
         @keyframes scroll-left-right {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+            /* Direzione Sinistra -> Destra */
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         /* SIDEBAR */
@@ -153,7 +155,6 @@
     <script>
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // Funzione per richiedere permessi notifiche
         function initNotifications() {
             Notification.requestPermission().then(permission => {
                 if (permission === "granted") alert("Notifiche attivate per Bastia Umbra!");
@@ -188,7 +189,6 @@
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 const diff = pDate - now;
 
-                // LOGICA NOTIFICA E ATHAN
                 if (currentTimeStr === prayerTime && lastNotified !== k) {
                     lastNotified = k;
                     document.getElementById('adhan-player').play();
@@ -210,7 +210,6 @@
                     document.getElementById('iqama-box').style.opacity = "0.3";
                 }
 
-                // Iqama
                 const iLimit = (k === 'f') ? 20 : 10;
                 const iDiff = now - pDate;
                 if (iDiff > 0 && iDiff < iLimit * 60000) {
