@@ -211,41 +211,26 @@
             i: { name: "العشاء", icon: "🌙" }
         };
 
+        // Associazione manuale date per garantire che il Ramadan appaia correttamente
+        const hijriMapping = {
+            "25/2": "08 رمضان 1447",
+            "26/2": "09 رمضان 1447",
+            "27/2": "10 رمضان 1447"
+        };
+
         const times = { "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
 
         function update() {
             const now = new Date();
-            
-            // 1. DATA GREGORIANA (25/02/2026)
             const d = String(now.getDate()).padStart(2, '0');
             const m = String(now.getMonth() + 1).padStart(2, '0');
             const y = now.getFullYear();
-            document.getElementById('greg-date-full').innerText = `${d}/${m}/${y}`;
-
-            // 2. DATA HIJRI FORZATA (Evita l'errore dell'immagine)
-            // Calcolo manuale semplificato per il Ramadan 1447
-            const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الآخر", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
-            
-            try {
-                // Proviamo il metodo standard con correzione per forzare l'arabo reale
-                let hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma-nu-latn', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                });
-                let hijriStr = hijriFormatter.format(now);
-                
-                // Se per errore il browser restituisce "febbraio", forziamo "رمضان"
-                if (hijriStr.includes("فبراير") || hijriStr.includes("February")) {
-                    document.getElementById('hijri-date-full').innerText = "٠٨ رمضان ١٤٤٧";
-                } else {
-                    document.getElementById('hijri-date-full').innerText = hijriStr;
-                }
-            } catch(e) {
-                document.getElementById('hijri-date-full').innerText = "٠٨ رمضان ١٤٤٧";
-            }
-
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
+
+            // Scrittura diretta delle date richiesta dall'utente
+            document.getElementById('greg-date-full').innerText = `${d}/${m}/${y}`;
+            document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "08 رمضان 1447";
+
             const today = times[dateKey] || times["25/2"];
             const currentTimeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
