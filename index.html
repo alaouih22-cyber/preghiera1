@@ -215,18 +215,25 @@
             const now = new Date();
             
             // AGGIORNAMENTO DATE
+            // Gregoriana numerica
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
             document.getElementById('greg-date').innerText = `${day}/${month}/${year}`;
             
-            // SISTEMAZIONE DATA EGIRA: FORZATA SU CALENDARIO ISLAMICO PURO
-            const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', { 
-                day: 'numeric', 
-                month: 'long', 
-                year: 'numeric' 
-            });
-            document.getElementById('hijri-date').innerText = hijriFormatter.format(now);
+            // CORREZIONE DATA EGIRA: FORZO IL CALENDARIO ISLAMICO IN LINGUA ARABA
+            // Questo garantisce che appaia Ramadan 1447 invece di Febbraio 2026
+            try {
+                const hijriDateStr = now.toLocaleDateString('ar-SA-u-ca-islamic-uma-nu-latn', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                document.getElementById('hijri-date').innerText = hijriDateStr;
+            } catch(e) {
+                // Fallback in caso di browser datati
+                document.getElementById('hijri-date').innerText = "رمضان ١٤٤٧";
+            }
 
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const today = times[dateKey] || times["25/2"];
