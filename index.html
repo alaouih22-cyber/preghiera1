@@ -4,217 +4,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مواقيت الصلاة Bastia Umbra</title>
-    
     <link rel="manifest" href="manifest.json">
     <style>
         :root {
-            --bg-dark: #071a1d;
-            --crystal-green: #00ffcc; /* Verde Cristallo Acceso */
-            --gold: #c19b6c;
+            --bg-pistachio: #93c572; /* Verde Pistacchio */
+            --gold: #c19b6c; /* Oro Classico */
+            --dark-green: #143d3d;
             --white: #ffffff;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--white);
+            background-color: var(--bg-pistachio);
+            color: var(--dark-green);
             font-family: 'Segoe UI', Roboto, sans-serif;
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Striscia Hadith Nawawi */
-        .hadith-marquee {
-            background: var(--crystal-green);
-            color: #000;
-            width: 100%;
-            padding: 10px 0;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 0 15px var(--crystal-green);
+        /* Sidebar (Menu tre strisce) */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            background: var(--dark-green); color: var(--white); z-index: 1000;
+            transition: 0.4s; padding: 30px 20px; box-sizing: border-box;
+            border-right: 4px solid var(--gold);
+        }
+        .sidebar.open { left: 0; }
+        .sidebar h2 { color: var(--gold); text-align: center; margin-bottom: 30px; }
+
+        .menu-item {
+            background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
+            color: var(--white); padding: 12px; border-radius: 10px;
+            margin-bottom: 15px; width: 100%; cursor: pointer; font-weight: bold;
         }
 
+        /* Top Bar */
         .top-bar {
-            width: 100%; padding: 15px 20px;
+            width: 100%; background: var(--dark-green); padding: 15px 20px;
             display: flex; justify-content: space-between; align-items: center;
-            box-sizing: border-box; border-bottom: 2px solid var(--crystal-green);
+            box-sizing: border-box; border-bottom: 3px solid var(--gold);
+            color: var(--white);
+        }
+        .menu-btn { font-size: 30px; color: var(--gold); cursor: pointer; }
+
+        /* Hadith Bar */
+        .hadith-marquee {
+            background: var(--gold); color: var(--dark-green);
+            width: 100%; padding: 8px 0; font-weight: bold; font-size: 14px;
         }
 
-        .date-container { text-align: center; margin: 15px 0; }
-        .it-date { font-size: 16px; font-weight: bold; color: var(--white); }
-        .ar-date { color: var(--crystal-green); font-size: 14px; }
-
-        /* Due Quadri: Countdown & Mushaf */
-        .grid-center {
-            display: flex; width: 92%; max-width: 450px; gap: 10px; margin-bottom: 20px;
-        }
-
-        .card-box {
-            flex: 1; background: var(--white); color: #000;
+        /* Cards Oro */
+        .grid-container { display: flex; width: 92%; max-width: 450px; gap: 10px; margin: 20px 0; }
+        .gold-card {
+            flex: 1; background: var(--white); border: 3px solid var(--gold);
             border-radius: 20px; padding: 15px; text-align: center;
-            border: 3px solid var(--crystal-green);
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
-            text-decoration: none; display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); text-decoration: none; color: var(--dark-green);
         }
+        .gold-card .val { font-size: 24px; font-weight: 900; color: var(--gold); }
 
-        .card-box h3 { margin: 0; font-size: 13px; color: #444; }
-        .card-box .time-val { font-size: 24px; font-weight: 900; margin: 5px 0; color: #000; }
-        .mushaf-title { font-size: 18px; font-weight: 900; }
-
-        /* Prayer List */
-        .prayer-list { width: 92%; max-width: 450px; padding-bottom: 40px; }
-        .prayer-row {
+        /* Prayer Rows */
+        .prayer-list { width: 92%; max-width: 450px; }
+        .row {
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.95); color: #000;
-            padding: 16px 20px; margin-bottom: 10px;
-            border-radius: 15px; border-right: 6px solid var(--crystal-green);
+            background: var(--white); padding: 15px 20px; margin-bottom: 10px;
+            border-radius: 15px; border: 2px solid var(--gold); color: var(--dark-green);
         }
-        .prayer-row.active {
-            background: var(--crystal-green);
-            transform: scale(1.03);
-            box-shadow: 0 0 10px var(--crystal-green);
-        }
-        .prayer-row b { font-size: 18px; }
-        .prayer-row span { font-size: 18px; font-weight: 900; }
+        .row.active { background: var(--dark-green); color: var(--gold); border-color: var(--white); }
 
-        .btn-action {
-            width: 92%; max-width: 450px; padding: 15px;
-            background: var(--crystal-green); border: none; border-radius: 12px;
-            font-weight: bold; cursor: pointer; margin-bottom: 15px;
-            box-shadow: 0 0 10px var(--crystal-green);
-        }
+        input[type="range"] { width: 100%; accent-color: var(--gold); }
     </style>
 </head>
 <body>
 
-    <div class="hadith-marquee">
-        <marquee scrollamount="5" direction="right">
-            1. إنما الأعمال بالنيات • 2. الدين النصيحة • 3. بني الإسلام على خمس • 4. من كان يؤمن بالله واليوم الآخر فليقل خيرا أو ليصمت • 5. لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • 6. اتق الله حيثما كنت • 7. البر حسن الخلق • 8. احفظ الله يحفظك
-        </marquee>
+    <audio id="adhan-player" src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
+
+    <div class="sidebar" id="sidebar">
+        <div style="font-size:30px; color:var(--gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
+        <h2>الإعدادات (Menu)</h2>
+        
+        <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات (Notifiche)</button>
+        
+        <label style="display:block; margin-bottom:5px;">🔊 حجم الصوت (Volume)</label>
+        <input type="range" min="0" max="1" step="0.1" onchange="setVolume(this.value)">
+
+        <label style="display:block; margin-top:20px; margin-bottom:5px;">🎧 اختر الأذان (Scegli Athan)</label>
+        <select class="menu-item" onchange="changeAthan(this.value)">
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">أذان مكة (Makkah)</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">أذان المدينة (Madinah)</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">أذان القدس (Al-Quds)</option>
+        </select>
+
+        <button class="menu-item" style="margin-top:20px; background:var(--gold); color:var(--dark-green)" onclick="testAthan()">▶️ تجربة الأذان (Test)</button>
     </div>
 
     <div class="top-bar">
-        <div style="font-size:25px; color:var(--crystal-green); cursor:pointer" onclick="location.reload()">☰</div>
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
         <div style="font-weight:bold;">Bastia Umbra</div>
         <img src="https://cdn-icons-png.flaticon.com/512/1162/1162383.png" width="35">
     </div>
 
-    <div class="date-container">
-        <div class="it-date" id="it-date">-- --- --</div>
-        <div class="ar-date" id="ar-date">-- --- --</div>
+    <div class="hadith-marquee">
+        <marquee scrollamount="5" direction="right">
+            عن عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات"
+        </marquee>
     </div>
 
-    <div class="grid-center">
-        <div class="card-box">
-            <h3 id="next-label">المقبلة</h3>
-            <div class="time-val" id="timer">00:00:00</div>
-            <div style="font-size:10px; opacity:0.6">المتبقي</div>
+    <div style="margin-top:15px; text-align:center;">
+        <div id="it-date" style="font-weight:bold; font-size:18px;"></div>
+        <div id="ar-date" style="color:var(--dark-green); font-weight:bold;"></div>
+    </div>
+
+    <div class="grid-container">
+        <div class="gold-card">
+            <h3 id="next-label" style="margin:0; font-size:14px;">...</h3>
+            <div class="val" id="timer">00:00:00</div>
         </div>
-        <a href="https://easyquran.com" target="_blank" class="card-box">
-            <div style="font-size:30px">📖</div>
-            <div class="mushaf-title">المصحف</div>
-            <div style="font-size:10px; opacity:0.6">المفسر</div>
+        <a href="https://easyquran.com" target="_blank" class="gold-card">
+            <div style="font-size:30px;">📖</div>
+            <div class="val" style="font-size:18px;">المصحف</div>
         </a>
     </div>
-
-    <button class="btn-action" onclick="enableNotifs()">🔔 تفعيل الإشعارات المكتوبة</button>
 
     <div class="prayer-list" id="list-container"></div>
 
     <script>
-        const prayerNames = {f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء"};
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
         
-        // Database completo Bastia Umbra Ramadan 2026
+        const audio = document.getElementById('adhan-player');
+        function setVolume(v) { audio.volume = v; }
+        function changeAthan(url) { audio.src = url; }
+        function testAthan() { audio.paused ? audio.play() : audio.pause(); }
+
+        const prayerNames = {f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء"};
         const ramadanData = {
             "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"},
             "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
             "28/2": {f:"05:30", dh:"12:23", a:"15:28", m:"17:59", i:"19:17"}
-            // Qui puoi continuare ad aggiungere i giorni...
         };
 
-        let lastNotified = "";
+        let lastP = "";
 
         function update() {
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
-            
-            // Gestione date per il countdown (se oggi è finito, guarda domani)
-            const tomorrow = new Date(now);
-            tomorrow.setDate(now.getDate() + 1);
-            const tomorrowKey = tomorrow.getDate() + "/" + (tomorrow.getMonth() + 1);
-
-            const todayTimes = ramadanData[dateKey] || ramadanData["25/2"];
-            const tomorrowTimes = ramadanData[tomorrowKey] || ramadanData["25/2"];
+            const today = ramadanData[dateKey] || ramadanData["25/2"];
 
             document.getElementById('it-date').innerText = now.toLocaleDateString('it-IT', {weekday:'long', day:'numeric', month:'long'});
             document.getElementById('ar-date').innerText = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {day:'numeric', month:'long', year:'numeric'}).format(now);
 
-            let html = "";
-            let foundNext = false;
+            let html = ""; let found = false;
             const currentHM = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
 
             for (let k in prayerNames) {
-                const [h, m] = todayTimes[k].split(":");
-                const pTime = new Date(); pTime.setHours(h, m, 0);
-                let diff = pTime - now;
+                const [h,m] = today[k].split(":");
+                const pT = new Date(); pT.setHours(h,m,0);
+                let diff = pT - now;
 
-                // Notifica testuale
-                if (todayTimes[k] === currentHM && lastNotified !== k) {
-                    sendNotification(prayerNames[k]);
-                    lastNotified = k;
+                if (today[k] === currentHM && lastP !== k) {
+                    audio.play();
+                    sendNotif(prayerNames[k]);
+                    lastP = k;
                 }
 
                 let active = "";
-                if (diff > 0 && !foundNext) {
-                    active = "active";
-                    foundNext = true;
+                if (diff > 0 && !found) {
+                    active = "active"; found = true;
                     document.getElementById('next-label').innerText = prayerNames[k];
-                    startTimer(diff);
+                    const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
+                    const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+                    const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
+                    document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
                 }
-                html += `<div class="prayer-row ${active}"><b>${prayerNames[k]}</b> <span>${todayTimes[k]}</span></div>`;
+                html += `<div class="row ${active}"><b>${prayerNames[k]}</b> <span>${today[k]}</span></div>`;
             }
-
-            // Se tutte le preghiere di oggi sono passate
-            if (!foundNext) {
-                const [h, m] = tomorrowTimes["f"].split(":");
-                const nextFajr = new Date();
-                nextFajr.setDate(nextFajr.getDate() + 1);
-                nextFajr.setHours(h, m, 0);
-                let diffToFajr = nextFajr - now;
-                
-                document.getElementById('next-label').innerText = "الفجر (غداً)";
-                startTimer(diffToFajr);
-            }
-
             document.getElementById('list-container').innerHTML = html;
         }
 
-        function startTimer(ms) {
-            const hh = Math.floor(ms/3600000).toString().padStart(2,"0");
-            const mm = Math.floor((ms%3600000)/60000).toString().padStart(2,"0");
-            const ss = Math.floor((ms%60000)/1000).toString().padStart(2,"0");
-            document.getElementById('timer').innerText = hh + ":" + mm + ":" + ss;
-        }
-
-        function sendNotification(name) {
+        function enableNotifs() { Notification.requestPermission().then(p => {if(p==='granted') alert("Ok!");}); }
+        function sendNotif(n) {
             if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification("حان وقت صلاة " + name, {
-                        body: "Azan Bastia Umbra: " + name,
-                        icon: "https://cdn-icons-png.flaticon.com/512/1162/1162383.png",
-                        vibrate: [200, 100, 200]
-                    });
+                navigator.serviceWorker.ready.then(r => {
+                    r.showNotification("صلاة " + n, { body: "Bastia Umbra: Azan " + n });
                 });
             }
         }
 
-        function enableNotifs() {
-            Notification.requestPermission().then(p => { if(p==='granted') alert("Notifiche attivate!"); });
-        }
-
-        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-        setInterval(update, 1000);
-        update();
+        setInterval(update, 1000); update();
     </script>
 </body>
 </html>
