@@ -51,7 +51,6 @@
             animation: text-glow 2.5s infinite ease-in-out;
         }
 
-        /* DASHBOARD AGGIORNATA CON LAYOUT A DUE COLONNE */
         .dashboard {
             width: 90%; max-width: 420px; background: white; border-radius: 20px;
             margin: -20px 0 10px 0; padding: 15px; 
@@ -59,13 +58,13 @@
             display: flex; align-items: center; justify-content: space-between;
         }
         
-        .timer-section { flex: 1; text-align: center; border-left: 1px solid #eee; }
+        .timer-section { flex: 1.2; text-align: center; border-left: 1px solid #eee; }
         .timer-main { font-size: 28px; font-weight: 900; color: var(--mp-dark-green); margin: 2px 0; }
         
         .date-section { flex: 1; text-align: center; padding-right: 10px; }
         .date-box { background: #f9f4e8; border-radius: 12px; padding: 8px; border: 1px dashed var(--mp-gold); }
-        .greg-date { font-size: 14px; font-weight: bold; color: #666; display: block; }
-        .hijri-date { font-size: 15px; font-weight: 900; color: var(--mp-dark-green); display: block; margin-top: 3px; }
+        .greg-date { font-size: 13px; font-weight: bold; color: #666; display: block; }
+        .hijri-date { font-size: 14px; font-weight: 900; color: var(--mp-dark-green); display: block; margin-top: 3px; line-height: 1.2; }
 
         .prayer-list { width: 92%; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-bottom: 5px; }
         .prayer-card {
@@ -150,7 +149,7 @@
         <div class="date-section">
             <div class="date-box">
                 <span class="greg-date" id="greg-date">--/--/----</span>
-                <span class="hijri-date" id="hijri-date">--- ------- ----</span>
+                <span class="hijri-date" id="hijri-date">...</span>
             </div>
         </div>
         <div class="timer-section">
@@ -215,13 +214,18 @@
         function update() {
             const now = new Date();
             
-            // AGGIORNAMENTO DATE
+            // AGGIORNAMENTO DATE (GREGORIANA E EGIRA COMPLETA)
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
             document.getElementById('greg-date').innerText = `${day}/${month}/${year}`;
             
-            const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', { day: 'numeric', month: 'long', year: 'numeric' });
+            // Data Egira: Giorno, Mese (Testo), Anno
+            const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', { 
+                day: 'numeric', 
+                month: 'long', 
+                year: 'numeric' 
+            });
             document.getElementById('hijri-date').innerText = hijriFormatter.format(now);
 
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
