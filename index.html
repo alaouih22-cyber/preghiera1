@@ -216,19 +216,22 @@
         function update() {
             const now = new Date();
             
-            // AGGIORNAMENTO AUTOMATICO DATE COME RICHIESTO
-            // 1. Data Gregoriana Completa
-            const gregOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            let gregStr = now.toLocaleDateString('ar-SA', gregOptions) + "م";
-            document.getElementById('greg-date-full').innerText = gregStr;
+            // 1. DATA ITALIANA (25/02/2026)
+            const d = String(now.getDate()).padStart(2, '0');
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const y = now.getFullYear();
+            document.getElementById('greg-date-full').innerText = `${d}/${m}/${y}`;
 
-            // 2. Data Egira Completa
+            // 2. DATA HIJRI (08 رمضان 1447)
             try {
-                const hijriOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                let hijriStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma-nu-latn', hijriOptions).format(now) + "هـ";
-                document.getElementById('hijri-date-full').innerText = hijriStr;
+                const hijriDateStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma-nu-latn', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                }).format(now);
+                document.getElementById('hijri-date-full').innerText = hijriDateStr;
             } catch(e) {
-                document.getElementById('hijri-date-full').innerText = "الأربعاء 08 رمضان 1447هـ";
+                document.getElementById('hijri-date-full').innerText = "08 رمضان 1447";
             }
 
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
@@ -239,8 +242,8 @@
 
             for (let k in prayerData) {
                 const pTime = today[k];
-                const [h, m] = pTime.split(":");
-                const pDate = new Date(); pDate.setHours(h, m, 0);
+                const [h, m_time] = pTime.split(":");
+                const pDate = new Date(); pDate.setHours(h, m_time, 0);
                 
                 let activeClass = ""; let iqamaLabel = "";
                 const diffMs = now - pDate;
@@ -285,10 +288,10 @@
 
             const diff = nextPrayerTime - now;
             const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-            const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+            const mm_timer = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
             const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
             
-            document.getElementById('timer-next').innerText = hh+":"+mm+":"+ss;
+            document.getElementById('timer-next').innerText = hh+":"+mm_timer+":"+ss;
             document.getElementById('next-prayer-label').innerText = "صلاة " + nextPrayerName;
             document.getElementById('list-container').innerHTML = html;
         }
