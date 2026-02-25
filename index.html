@@ -51,13 +51,21 @@
             animation: text-glow 2.5s infinite ease-in-out;
         }
 
+        /* DASHBOARD AGGIORNATA CON LAYOUT A DUE COLONNE */
         .dashboard {
-            width: 85%; max-width: 400px; background: white; border-radius: 20px;
-            margin: -20px 0 10px 0; padding: 15px; text-align: center;
+            width: 90%; max-width: 420px; background: white; border-radius: 20px;
+            margin: -20px 0 10px 0; padding: 15px; 
             border: 1px solid var(--mp-gold); box-shadow: 0 8px 20px rgba(0,0,0,0.1); z-index: 10;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .timer-main { font-size: 32px; font-weight: 900; color: var(--mp-dark-green); margin: 2px 0; }
-        .date-container { font-size: 13px; color: var(--mp-gold); font-weight: bold; margin-top: 5px; line-height: 1.4; }
+        
+        .timer-section { flex: 1; text-align: center; border-left: 1px solid #eee; }
+        .timer-main { font-size: 28px; font-weight: 900; color: var(--mp-dark-green); margin: 2px 0; }
+        
+        .date-section { flex: 1; text-align: center; padding-right: 10px; }
+        .date-box { background: #f9f4e8; border-radius: 12px; padding: 8px; border: 1px dashed var(--mp-gold); }
+        .greg-date { font-size: 14px; font-weight: bold; color: #666; display: block; }
+        .hijri-date { font-size: 15px; font-weight: 900; color: var(--mp-dark-green); display: block; margin-top: 3px; }
 
         .prayer-list { width: 92%; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-bottom: 5px; }
         .prayer-card {
@@ -119,16 +127,9 @@
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
-        
-        <svg class="fanous-svg" viewBox="0 0 512 512">
-            <path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/>
-        </svg>
-
+        <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
         <h1 class="ramadan-title">رمضان مبارك</h1>
-
-        <svg class="fanous-svg" viewBox="0 0 512 512">
-            <path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/>
-        </svg>
+        <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
     </div>
 
     <div class="sidebar" id="sidebar">
@@ -146,9 +147,16 @@
     </div>
 
     <div class="dashboard">
-        <div style="font-size: 13px; color: #666; font-weight: bold;" id="next-prayer-label">الصلاة القادمة</div>
-        <div class="timer-main" id="timer-next">00:00:00</div>
-        <div class="date-container" id="date-display"></div>
+        <div class="date-section">
+            <div class="date-box">
+                <span class="greg-date" id="greg-date">--/--/----</span>
+                <span class="hijri-date" id="hijri-date">--- ------- ----</span>
+            </div>
+        </div>
+        <div class="timer-section">
+            <div style="font-size: 11px; color: #666; font-weight: bold;" id="next-prayer-label">الصلاة القادمة</div>
+            <div class="timer-main" id="timer-next">00:00:00</div>
+        </div>
     </div>
 
     <div class="prayer-list" id="list-container"></div>
@@ -194,14 +202,6 @@
             }
         }
 
-        const hadiths = [
-            "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»",
-            "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»",
-            "«مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»"
-        ];
-        const hText = hadiths.join("  • ✨ •  ") + "  • ✨ •  ";
-        document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
-
         const prayerData = {
             f: { name: "الفجر", icon: "🌅" },
             dh: { name: "الظهر", icon: "☀️" },
@@ -215,27 +215,27 @@
         function update() {
             const now = new Date();
             
-            // Gestione Date (Gregoriana e Hijri)
-            const gDate = now.toLocaleDateString('ar-LY', { day: 'numeric', month: 'long', year: 'numeric' });
-            const hDate = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
-            document.getElementById('date-display').innerHTML = `<span>${gDate}</span><br><span>${hDate}</span>`;
+            // AGGIORNAMENTO DATE
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('greg-date').innerText = `${day}/${month}/${year}`;
+            
+            const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('hijri-date').innerText = hijriFormatter.format(now);
 
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const today = times[dateKey] || times["25/2"];
             const currentTimeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-            let html = ""; 
-            let nextPrayerTime = null;
-            let nextPrayerName = "";
+            let html = ""; let nextPrayerTime = null; let nextPrayerName = "";
 
             for (let k in prayerData) {
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 
-                let activeClass = "";
-                let iqamaLabel = "";
-
+                let activeClass = ""; let iqamaLabel = "";
                 const diffMs = now - pDate;
                 const diffMin = diffMs / 60000;
 
@@ -247,7 +247,6 @@
                     activeClass = "active";
                 }
 
-                // Logica Countdown Infinito (trova la prossima o la prima di domani)
                 if (pDate > now && !nextPrayerTime) {
                     nextPrayerTime = pDate;
                     nextPrayerName = prayerData[k].name;
@@ -269,7 +268,6 @@
                     </div>`;
             }
 
-            // Se non ci sono più preghiere oggi, punta al Fajr di domani
             if (!nextPrayerTime) {
                 const [fh, fm] = today['f'].split(":");
                 nextPrayerTime = new Date();
@@ -284,9 +282,13 @@
             const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
             
             document.getElementById('timer-next').innerText = hh+":"+mm+":"+ss;
-            document.getElementById('next-prayer-label').innerText = "موعد صلاة " + nextPrayerName;
+            document.getElementById('next-prayer-label').innerText = "صلاة " + nextPrayerName;
             document.getElementById('list-container').innerHTML = html;
         }
+
+        const hadiths = ["قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»", "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»", "«مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»"];
+        const hText = hadiths.join("  • ✨ •  ") + "  • ✨ •  ";
+        document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
 
         setInterval(update, 1000);
         update();
