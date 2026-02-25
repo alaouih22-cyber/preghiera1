@@ -75,7 +75,7 @@
         }
         .prayer-card.active { border-left: 6px solid var(--mp-gold); background: #f0fdf4; }
 
-        /* FOOTER HADITH SCORREVOLE - DA SINISTRA A DESTRA */
+        /* FOOTER HADITH SCORREVOLE - CORRETTO DA SINISTRA A DESTRA */
         .hadith-footer {
             position: fixed; bottom: 0; left: 0;
             background: var(--mp-dark-green);
@@ -87,15 +87,15 @@
 
         .hadith-scroll {
             display: inline-block;
-            /* Velocità aumentata (250s invece di 400s) */
-            animation: scroll-left-right 250s linear infinite;
+            /* Velocità impostata a 120s per uno scorrimento fluido ma veloce */
+            animation: scroll-ltr 120s linear infinite;
             font-weight: 600; font-size: 16px;
         }
 
-        @keyframes scroll-left-right {
-            /* Direzione Sinistra -> Destra */
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        @keyframes scroll-ltr {
+            /* Parte da sinistra (fuori schermo) e va a destra */
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
         }
 
         /* SIDEBAR */
@@ -157,7 +157,7 @@
 
         function initNotifications() {
             Notification.requestPermission().then(permission => {
-                if (permission === "granted") alert("Notifiche attivate per Bastia Umbra!");
+                if (permission === "granted") alert("Notifiche attivate!");
             });
         }
 
@@ -168,7 +168,8 @@
             "الحديث السابع: الدين النصيحة...", "الحديث الثامن: أمرت أن أقاتل الناس...",
             "الحديث التاسع: ما نهيتكم عنه فاجتنبوه...", "الحديث العاشر: إن الله طيب لا يقبل إلا طيبا..."
         ];
-        document.getElementById('hadith-list').innerHTML = hadiths.join(" ••• ");
+        // Raddoppio il contenuto per non avere spazi vuoti durante lo scorrimento
+        document.getElementById('hadith-list').innerHTML = hadiths.join(" ••• ") + " ••• " + hadiths.join(" ••• ");
 
         const prayerNames = { f: "الفجر", dh: "الظهر", a: "العصر", m: "المغرب", i: "العشاء" };
         const times = { "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
@@ -193,10 +194,7 @@
                     lastNotified = k;
                     document.getElementById('adhan-player').play();
                     if (Notification.permission === "granted") {
-                        new Notification("الله أكبر!", {
-                            body: "È l'ora della preghiera di " + prayerNames[k],
-                            icon: "https://cdn-icons-png.flaticon.com/512/2972/2972473.png"
-                        });
+                        new Notification("الله أكبر!", { body: "È l'ora di " + prayerNames[k] });
                     }
                 }
 
