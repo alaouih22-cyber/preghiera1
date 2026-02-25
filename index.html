@@ -3,92 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Muslim Pro - Bastia Umbra</title>
+    <title>Muslim Pro - Ramadan Special</title>
     <style>
         :root {
-            --mp-dark-green: #004F3F; 
-            --mp-light-green: #006B57;
-            --mp-gold: #C5A059; 
-            --mp-bg: #F6F7F9; 
+            --mp-dark-green: #003D31; 
+            --mp-light-green: #005A4A;
+            --mp-gold: #D4AF37; 
+            --mp-bg: #F0F2F5; 
             --white: #ffffff;
         }
 
         body {
             background-color: var(--mp-bg);
-            color: #333;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden;
-            min-height: 100vh;
+            color: #333; font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden; min-height: 100vh;
         }
 
-        /* HEADER PREMIUM */
+        /* HEADER ARTISTICO RAMADAN */
         .ramadan-header {
-            width: 100%;
-            background: var(--mp-dark-green);
-            background-image: linear-gradient(rgba(0, 79, 63, 0.85), rgba(0, 79, 63, 0.85)), 
+            width: 100%; background: var(--mp-dark-green);
+            background-image: linear-gradient(rgba(0, 61, 49, 0.9), rgba(0, 61, 49, 0.9)), 
                               url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            padding: 40px 0;
-            text-align: center;
-            border-bottom: 4px solid var(--mp-gold);
-            position: relative;
+            padding: 50px 0; text-align: center; border-bottom: 4px solid var(--mp-gold);
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .menu-icon {
-            position: absolute; left: 20px; top: 20px;
-            font-size: 30px; color: var(--mp-gold); cursor: pointer;
+        /* Lanterne Animate */
+        .fanoos {
+            position: absolute; top: 10px; font-size: 30px;
+            animation: swing 3s ease-in-out infinite; transform-origin: top center;
+        }
+        @keyframes swing {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
         }
 
         .ramadan-title {
-            color: var(--mp-gold); font-size: 42px; font-weight: 800; margin: 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            color: var(--mp-gold); font-size: 48px; font-weight: 900; margin: 0;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.5); font-family: 'Amiri', serif;
         }
 
-        /* DASHBOARD */
+        /* DASHBOARD SOSPESA */
         .dashboard {
-            width: 90%; max-width: 500px;
-            background: linear-gradient(135deg, var(--mp-dark-green) 0%, var(--mp-light-green) 100%);
-            border-radius: 24px; margin: -30px 0 20px 0; padding: 30px;
-            color: var(--white); text-align: center;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.25); z-index: 10;
+            width: 85%; max-width: 450px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px); border-radius: 30px;
+            margin: -40px 0 25px 0; padding: 25px;
+            text-align: center; z-index: 10;
+            border: 2px solid var(--mp-gold);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
         }
 
-        .stat-value { font-size: 34px; font-weight: 800; color: var(--mp-gold); }
+        .next-label { color: var(--mp-dark-green); font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .timer-main { font-size: 42px; font-weight: 900; color: var(--mp-dark-green); margin: 5px 0; }
 
-        /* LISTA PREGHIERE */
+        /* LISTA PREGHIERE - DESIGN BANNER */
         .prayer-list { width: 90%; max-width: 500px; margin-bottom: 120px; }
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 22px 25px; margin-bottom: 12px;
-            border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            font-weight: 700; transition: 0.3s;
+            background: var(--white); padding: 18px 25px; margin-bottom: 15px;
+            border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden; border: 1px solid transparent;
         }
-        .prayer-card.active { border: 2.5px solid var(--mp-gold); background: #fdfaf3; transform: scale(1.02); }
 
-        .prayer-info { display: flex; align-items: center; gap: 12px; }
-        .prayer-icon { font-size: 24px; }
+        .prayer-card.active {
+            background: linear-gradient(to right, #fff, #fff9e6);
+            border: 2px solid var(--mp-gold); transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+        }
 
-        .iqama-countdown {
-            color: #ff5252; font-size: 13px; background: #ffebee;
-            padding: 4px 10px; border-radius: 10px; font-family: monospace;
-            border: 1px solid #ffcdd2; white-space: nowrap;
+        .prayer-name-container { display: flex; align-items: center; gap: 15px; }
+        .prayer-icon { font-size: 26px; }
+        .prayer-text { display: flex; flex-direction: column; }
+        .p-name { font-size: 20px; font-weight: 800; color: var(--mp-dark-green); }
+        
+        /* Countdown Kama dentro il nome */
+        .kama-inner {
+            font-size: 12px; color: #e63946; font-weight: bold;
+            background: #ffe3e3; padding: 2px 8px; border-radius: 6px;
+            margin-top: 4px; display: none;
+        }
+        .active .kama-inner { display: inline-block; animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; }
         }
 
         /* FOOTER HADITH LTR */
         .hadith-footer {
-            position: fixed; bottom: 0; left: 0;
+            position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--mp-dark-green); color: var(--mp-gold);
-            width: 100%; padding: 18px 0; border-top: 3px solid var(--mp-gold);
+            padding: 20px 0; border-top: 4px solid var(--mp-gold);
             overflow: hidden; z-index: 1000; direction: ltr;
         }
-        .hadith-container { display: flex; width: fit-content; }
         .hadith-scroll {
-            display: inline-block; white-space: nowrap; padding-left: 50px;
-            font-weight: 600; font-size: 17px; animation: scroll-ltr 60s linear infinite;
+            display: inline-block; white-space: nowrap; padding-left: 100%;
+            font-weight: 600; font-size: 18px; animation: scroll-ltr 60s linear infinite;
         }
-
-        @keyframes scroll-ltr { 0% { transform: translateX(-100%); } 100% { transform: translateX(0%); } }
+        @keyframes scroll-ltr { 0% { transform: translateX(0); } 100% { transform: translateX(100%); } }
 
         /* SIDEBAR */
         .sidebar {
@@ -98,7 +112,7 @@
         }
         .sidebar.open { left: 0; }
         .menu-item {
-            background: rgba(255,255,255,0.08); border: 1px solid var(--mp-gold);
+            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--mp-gold);
             color: var(--white); padding: 15px; border-radius: 12px; margin-bottom: 20px;
             width: 100%; cursor: pointer; text-align: right; font-weight: bold;
         }
@@ -109,34 +123,34 @@
     <audio id="adhan-player"></audio>
 
     <div class="ramadan-header">
-        <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        <div class="fanoos" style="left: 30px;">🏮</div>
+        <div class="fanoos" style="right: 30px;">🏮</div>
+        <div class="menu-icon" onclick="toggleMenu()" style="position: absolute; left: 20px; top: 20px; color: var(--mp-gold); font-size: 30px; cursor: pointer;">☰</div>
         <h1 class="ramadan-title">رمضان كريم</h1>
-        <div style="color:white; opacity:0.8; font-weight:bold;">BASTIA UMBRA</div>
+        <div style="color:white; letter-spacing: 3px; font-weight: bold; font-size: 12px;">BASTIA UMBRA • 2026</div>
     </div>
 
     <div class="dashboard">
-        <div style="font-size:14px; opacity:0.8; margin-bottom:5px;">الصلاة القادمة</div>
-        <div class="stat-value" id="timer">00:00:00</div>
+        <div class="next-label">الصلاة القادمة</div>
+        <div class="timer-main" id="timer">00:00:00</div>
+        <div style="color: var(--mp-gold); font-size: 20px;">✨🌙✨</div>
     </div>
 
     <div class="prayer-list" id="list-container"></div>
 
     <div class="sidebar" id="sidebar">
         <div style="font-size:40px; color:var(--mp-gold); cursor:pointer;" onclick="toggleMenu()">&times;</div>
-        <h2 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold);">الإعدادات</h2>
-        <button class="menu-item" onclick="initNotifications()">🔔 تفعيل التنبيهات والأذان</button>
+        <h2 style="color:var(--mp-gold); margin-bottom: 30px;">الإعدادات Premium</h2>
+        <button class="menu-item" onclick="initNotifications()">🔔 Attiva Banner & Athan</button>
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
-            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah Al-Mukarramah</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">Marocco Premium</option>
         </select>
-        <button class="menu-item" onclick="testSound()">▶️ تجربة الصوت</button>
+        <button class="menu-item" onclick="testSound()">▶️ Test Athan</button>
     </div>
 
     <div class="hadith-footer">
-        <div class="hadith-container">
-            <div class="hadith-scroll" id="hadith-list1"></div>
-            <div class="hadith-scroll" id="hadith-list2"></div>
-        </div>
+        <div class="hadith-scroll" id="hadith-text"></div>
     </div>
 
     <script>
@@ -153,25 +167,22 @@
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
         function initNotifications() {
-            Notification.requestPermission().then(p => { if(p==="granted") alert("Sincronizzazione icone e banner completata!"); });
+            Notification.requestPermission().then(p => { if(p==="granted") alert("Sincronizzazione Ramadan Completa!"); });
         }
 
         const hadiths = [
             "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»",
             "«مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»",
-            "«خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ»"
+            "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»"
         ];
-        const content = hadiths.join("  •••  ") + "  •••  ";
-        document.getElementById('hadith-list1').innerText = content;
-        document.getElementById('hadith-list2').innerText = content;
+        document.getElementById('hadith-text').innerText = hadiths.join("  • ✨ •  ") + "  • ✨ •  ";
 
-        // PREGHIERE CON ICONE
         const prayerData = {
-            f: { name: "الفجر", icon: "🌅" }, // Alba
-            dh: { name: "الظهر", icon: "☀️" }, // Sole pieno
-            a: { name: "العصر", icon: "🌤️" },  // Sole calante
-            m: { name: "المغرب", icon: "🌇" }, // Tramonto
-            i: { name: "العشاء", icon: "🌙" }  // Notte
+            f: { name: "الفجر", icon: "🌅" },
+            dh: { name: "الظهر", icon: "☀️" },
+            a: { name: "العصر", icon: "🌤️" },
+            m: { name: "المغرب", icon: "🌇" },
+            i: { name: "العشاء", icon: "🌙" }
         };
 
         const times = { "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
@@ -195,14 +206,16 @@
                     lastNotified = k;
                     audio.play().catch(() => {});
                     if (Notification.permission === "granted") {
-                        new Notification("حان وقت الصلاة", { body: "صلاة " + prayerData[k].name, requireInteraction: true });
+                        new Notification("🌙 Ramadan Kareem", { 
+                            body: "È l'ora del " + prayerData[k].name + ". Iqama a breve!", 
+                            requireInteraction: true 
+                        });
                     }
                 }
 
                 let activeClass = "";
-                let kamaLabel = "";
+                let kamaContent = "";
 
-                // IQAMA LOGIC: Fajr = 20m, Altri = 10m
                 const diffMs = now - pDate;
                 const diffMin = diffMs / 60000;
                 const iqamaDuration = (k === 'f') ? 20 : 10;
@@ -211,7 +224,7 @@
                     const totalSecRem = (iqamaDuration * 60) - Math.floor(diffMs / 1000);
                     const remM = Math.floor(totalSecRem / 60);
                     const remS = (totalSecRem % 60).toString().padStart(2, '0');
-                    kamaLabel = `<span class="iqama-countdown">Iqama ${remM}:${remS}</span>`;
+                    kamaContent = `<span class="kama-inner">Iqama tra ${remM}:${remS}</span>`;
                 }
 
                 if (pDate > now && !foundNext) {
@@ -225,12 +238,14 @@
 
                 html += `
                     <div class="prayer-card ${activeClass}">
-                        <div class="prayer-info">
+                        <div class="prayer-name-container">
                             <span class="prayer-icon">${prayerData[k].icon}</span>
-                            ${kamaLabel}
-                            <span>${prayerData[k].name}</span>
+                            <div class="prayer-text">
+                                <span class="p-name">${prayerData[k].name}</span>
+                                ${kamaContent}
+                            </div>
                         </div>
-                        <span style="color:var(--mp-dark-green)">${pTime}</span>
+                        <span style="font-size: 22px; color: var(--mp-dark-green); font-weight: 900;">${pTime}</span>
                     </div>`;
             }
             document.getElementById('list-container').innerHTML = html;
