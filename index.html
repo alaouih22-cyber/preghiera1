@@ -33,52 +33,56 @@
         /* HEADER */
         .ramadan-header {
             width: 100%; background: var(--mp-dark-green);
-            padding: 12px 0; text-align: center; border-bottom: 2px solid var(--mp-gold);
+            padding: 10px 0; text-align: center; border-bottom: 2px solid var(--mp-gold);
             position: relative; flex-shrink: 0;
         }
-        .ramadan-title { color: var(--mp-gold); font-size: 22px; margin: 0; font-weight: 800; }
+        .ramadan-title { color: var(--mp-gold); font-size: 20px; margin: 0; font-weight: 800; }
 
         /* IMSAK BANNER */
         .imsak-banner {
             width: 100%; background: #d32f2f; color: white;
-            text-align: center; font-size: 13px; padding: 5px 0;
+            text-align: center; font-size: 12px; padding: 4px 0;
             display: none; font-weight: bold; flex-shrink: 0;
         }
 
-        /* BACHECA MOSCHEA */
+        /* BACHECA MOSCHEA (DASHBOARD MESSAGE) */
         .mosque-news {
             width: 92%; background: var(--mp-gold); color: var(--mp-dark-green);
-            margin: 8px 0; border-radius: 10px; padding: 10px;
-            font-size: 14px; text-align: center; font-weight: bold;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1); flex-shrink: 0;
+            margin: 6px 0; border-radius: 10px; padding: 8px 12px;
+            font-size: 13px; text-align: center; font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0;
         }
 
-        /* DASHBOARD */
+        /* DASHBOARD PROSSIMA PREGHIERA */
         .dashboard {
             width: 85%; max-width: 380px; background: var(--white); border-radius: 15px;
-            margin: 0 0 10px 0; padding: 12px; text-align: center;
+            margin: 0 0 8px 0; padding: 10px; text-align: center;
             border: 1px solid var(--mp-gold); box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex-shrink: 0;
         }
-        .timer-label { font-size: 11px; color: #666; font-weight: bold; }
-        .timer-main { font-size: 28px; font-weight: 900; color: var(--mp-dark-green); }
+        .timer-label { font-size: 10px; color: #666; font-weight: bold; }
+        .timer-main { font-size: 24px; font-weight: 900; color: var(--mp-dark-green); }
 
         /* LISTA PREGHIERE */
         .prayer-list { 
             width: 92%; flex-grow: 1; display: flex; flex-direction: column; 
-            gap: 6px; overflow-y: auto; padding-bottom: 15px;
+            gap: 5px; overflow-y: auto; padding-bottom: 5px;
         }
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 15px 20px;
-            border-radius: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex-shrink: 0;
+            background: var(--white); padding: 12px 18px;
+            border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); flex-shrink: 0;
         }
         .prayer-card.active { border: 2px solid var(--mp-gold); background: rgba(197, 160, 89, 0.1); }
-        
-        .p-info { display: flex; align-items: center; gap: 12px; }
-        .p-icon { font-size: 22px; }
-        .p-name { font-weight: 800; font-size: 18px; color: var(--mp-dark-green); }
-        .p-time { font-weight: 900; font-size: 20px; color: #333; }
-        body.night-mode .p-time { color: var(--mp-gold); }
+        .p-info { display: flex; align-items: center; gap: 10px; }
+        .p-icon { font-size: 20px; }
+        .p-name { font-weight: 800; font-size: 16px; color: var(--mp-dark-green); }
+        .p-time { font-weight: 900; font-size: 18px; }
+
+        /* STRISCIA HADITH (FOOTER) */
+        .hadith-footer { width: 100%; background: var(--mp-dark-green); padding: 8px 0; border-top: 2px solid var(--mp-gold); overflow: hidden; direction: ltr; flex-shrink: 0; }
+        .hadith-track { display: flex; width: max-content; animation: scroll-ltr 50s linear infinite; }
+        .hadith-text { color: var(--mp-gold); font-weight: 600; font-size: 13px; white-space: nowrap; padding-left: 100px; }
+        @keyframes scroll-ltr { from { transform: translateX(-50%); } to { transform: translateX(0%); } }
 
         /* SIDEBAR */
         .sidebar {
@@ -87,19 +91,19 @@
             padding: 20px 15px; box-sizing: border-box; color: white; overflow-y: auto;
         }
         .sidebar.open { left: 0; }
-        .menu-btn { position: absolute; left: 15px; top: 12px; color: var(--mp-gold); cursor: pointer; font-size: 26px; z-index: 5; }
-        .tool-box { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--mp-gold); }
-        .menu-item { background: var(--mp-gold); color: var(--mp-dark-green); border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        .nav-btn { display: block; text-align: center; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; margin-top: 8px; font-size: 13px; border: 1px solid white; color: white; }
+        .menu-btn { position: absolute; left: 15px; top: 10px; color: var(--mp-gold); cursor: pointer; font-size: 24px; z-index: 5; }
+        .tool-box { background: rgba(255,255,255,0.08); padding: 10px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--mp-gold); }
+        .menu-item { background: var(--mp-gold); color: var(--mp-dark-green); border: none; padding: 8px; border-radius: 6px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
+        .nav-btn { display: block; text-align: center; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: 6px; font-size: 13px; border: 1px solid white; color: white; }
         
         textarea#mosque-input {
-            width: 100%; border-radius: 5px; border: none; padding: 8px; margin-top: 5px; font-family: inherit; resize: none; font-size: 12px; box-sizing: border-box;
+            width: 100%; border-radius: 5px; border: none; padding: 6px; margin-top: 5px; font-family: inherit; resize: none; font-size: 12px; box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
-    <div id="imsak-alert" class="imsak-banner">🔔 إمساك: توقف عن الأكل الآن</div>
+    <div id="imsak-alert" class="imsak-banner">🔔 إمساك: توقف عن الأكل (باقي 10 دقائق للفجر)</div>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -114,19 +118,21 @@
         <div style="font-size:30px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         
         <div class="tool-box">
-            <h4 style="color:var(--mp-gold); margin:0;">📝 تحديث حالة المسجد</h4>
-            <textarea id="mosque-input" rows="2" placeholder="اكتب هنا..." oninput="updateMosqueMessage(this.value)"></textarea>
+            <h4 style="color:var(--mp-gold); margin:0; font-size:14px;">📝 تحديث حالة المسجد</h4>
+            <textarea id="mosque-input" rows="2" placeholder="اكتب الرسالة هنا..." oninput="updateMosqueMessage(this.value)"></textarea>
         </div>
 
         <div class="tool-box" style="text-align:center;">
-            <h4 style="color:var(--mp-gold); margin:0;">📿 المسبحة</h4>
+            <h4 style="color:var(--mp-gold); margin:0; font-size:14px;">📿 المسبحة</h4>
             <div id="tasbih-count" style="font-size:22px; font-weight:bold;">0</div>
             <button class="menu-item" onclick="countTasbih()">تسبيح</button>
         </div>
 
         <button class="menu-item" style="background:#222; color:white;" onclick="toggleNightMode()">🌙 وضع الليلة الهادئة</button>
         
-        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="nav-btn" style="background:var(--mp-gold); color:black; border:none;">📖 المصحف (ورش)</a>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 15px 0;">
+
+        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="nav-btn" style="background:var(--mp-gold); color:black; border:none;">📖 المصحف الكريم (ورش)</a>
         <a href="https://hisnmuslim.com/index.php?ar" target="_blank" class="nav-btn">🛡️ حصن المسلم</a>
     </div>
 
@@ -136,6 +142,10 @@
     </div>
 
     <div class="prayer-list" id="list-container"></div>
+
+    <div class="hadith-footer">
+        <div class="hadith-track" id="hadith-track"></div>
+    </div>
 
     <script>
         const prayerData = {
@@ -154,6 +164,10 @@
                 document.getElementById('mosque-input').value = savedMsg;
             }
             document.getElementById('tasbih-count').innerText = localStorage.getItem('tasbih') || 0;
+            
+            // Inizializza Hadith Track
+            const hText = "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»  • ✨ •  «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»  • ✨ •  «مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ» • ✨ • ";
+            document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
         };
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -174,6 +188,12 @@
             const now = new Date();
             const time = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
             
+            // Auto Night Mode dopo l'Iftar
+            if (time >= prayerData.m.time || time < prayerData.f.time) {
+                document.body.classList.add('night-mode');
+            }
+
+            // Banner Imsak
             document.getElementById('imsak-alert').style.display = (time >= imsakTime && time < prayerData.f.time) ? 'block' : 'none';
 
             let html = ""; let nextSet = false;
