@@ -181,7 +181,6 @@
         function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
-        // SISTEMA NOTIFICHE AGGIORNATO PER RISOLVERE IL PROBLEMA
         function initNotifications() { 
             if (!("Notification" in window)) {
                 alert("Browser non supportato");
@@ -190,7 +189,6 @@
             
             Notification.requestPermission().then(p => { 
                 if(p === "granted") {
-                    // Sblocco audio forzato
                     audio.play().then(() => {
                         audio.pause();
                         audio.currentTime = 0;
@@ -198,24 +196,22 @@
 
                     new Notification("Muslim Pro Bastia", {
                         body: "✅ Banner attivati con successo!",
-                        icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
-                        badge: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
+                        icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
                     });
-                } else {
-                    alert("Per favore, consenti le notifiche nelle impostazioni del browser.");
                 }
             }); 
         }
 
-        function sendBannerNotification(prayerName) {
+        // AGGIORNATO: ORA INCLUDE IL NOME DELLA PREGHIERA IN ARABO NEL BANNER
+        function sendBannerNotification(prayerNameAr) {
             if (Notification.permission === "granted") {
                 const options = {
-                    body: `È il momento di ${prayerName} a Bastia Umbra`,
+                    body: `حي على الصلاة - حان الآن موعد آذان ${prayerNameAr}`,
                     icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
                     vibrate: [200, 100, 200],
-                    requireInteraction: true // Mantiene il banner finché non lo chiudi
+                    requireInteraction: true
                 };
-                new Notification("Tempo di Preghiera", options);
+                new Notification(`وقت صلاة ${prayerNameAr}`, options);
             }
         }
 
@@ -278,6 +274,7 @@
                 if (currentTimeStr === pTime && lastNotified !== k) {
                     lastNotified = k; 
                     audio.play().catch(()=>{});
+                    // Passa il nome arabo direttamente
                     sendBannerNotification(prayerData[k].name);
                 }
 
