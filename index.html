@@ -214,13 +214,13 @@
         function update() {
             const now = new Date();
             
-            // AGGIORNAMENTO DATE (GREGORIANA E EGIRA COMPLETA)
+            // AGGIORNAMENTO DATE
             const day = String(now.getDate()).padStart(2, '0');
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
             document.getElementById('greg-date').innerText = `${day}/${month}/${year}`;
             
-            // Data Egira: Giorno, Mese (Testo), Anno
+            // SISTEMAZIONE DATA EGIRA: FORZATA SU CALENDARIO ISLAMICO PURO
             const hijriFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', { 
                 day: 'numeric', 
                 month: 'long', 
