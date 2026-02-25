@@ -57,49 +57,53 @@
             width: 90%; max-width: 500px;
             background: linear-gradient(135deg, var(--mp-dark-green) 0%, var(--mp-light-green) 100%);
             border-radius: 24px; margin: -30px 0 20px 0; padding: 30px;
-            color: var(--white); display: flex; justify-content: space-around;
+            color: var(--white); text-align: center;
             box-shadow: 0 12px 25px rgba(0,0,0,0.25);
             z-index: 10;
         }
 
         .stat-value { font-size: 34px; font-weight: 800; color: var(--mp-gold); }
 
-        /* LISTA PREGHIERE */
+        /* LISTA PREGHIERE CON IQAMA */
         .prayer-list { width: 90%; max-width: 500px; margin-bottom: 120px; }
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 22px 25px; margin-bottom: 12px;
+            background: var(--white); padding: 20px 22px; margin-bottom: 12px;
             border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             font-weight: 700;
         }
-        .prayer-card.active { border: 2px solid var(--mp-gold); background: #fdfaf3; }
+        .prayer-card.active { border: 2.5px solid var(--mp-gold); background: #fdfaf3; transform: scale(1.02); }
 
-        /* FOOTER HADITH - CORREZIONE DIREZIONE LTR */
+        .iqama-label {
+            font-size: 13px;
+            color: #ff5252;
+            background: #ffebee;
+            padding: 4px 8px;
+            border-radius: 8px;
+            margin-left: 10px;
+            display: none; /* Nascosto di default */
+        }
+        .prayer-card.active .iqama-label { display: inline-block; }
+
+        /* FOOTER HADITH LTR */
         .hadith-footer {
             position: fixed; bottom: 0; left: 0;
             background: var(--mp-dark-green);
             color: var(--mp-gold);
             width: 100%; padding: 18px 0;
             border-top: 3px solid var(--mp-gold);
-            overflow: hidden; 
-            z-index: 1000;
-            direction: ltr; /* Forza la direzione da sinistra a destra */
+            overflow: hidden; z-index: 1000;
+            direction: ltr;
         }
-
-        .hadith-container { 
-            display: flex; 
-            width: fit-content;
-        }
-
+        .hadith-container { display: flex; width: fit-content; }
         .hadith-scroll {
             display: inline-block;
             white-space: nowrap;
-            padding-left: 50px; /* Spazio tra i blocchi */
+            padding-left: 50px;
             font-weight: 600; font-size: 17px;
             animation: scroll-ltr 60s linear infinite;
         }
 
-        /* Animazione da Sinistra a Destra */
         @keyframes scroll-ltr {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(0%); }
@@ -130,10 +134,8 @@
     </div>
 
     <div class="dashboard">
-        <div class="stat-box">
-            <div style="font-size:12px; opacity:0.8;">الصلاة القادمة</div>
-            <div class="stat-value" id="timer">00:00:00</div>
-        </div>
+        <div style="font-size:14px; opacity:0.8; margin-bottom:5px;">الصلاة القادمة</div>
+        <div class="stat-value" id="timer">00:00:00</div>
     </div>
 
     <div class="prayer-list" id="list-container"></div>
@@ -170,13 +172,13 @@
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
         function initNotifications() {
-            Notification.requestPermission().then(p => { if(p==="granted") alert("Sincronizzazione completata!"); });
+            Notification.requestPermission().then(p => { if(p==="granted") alert("Banner e Athan Sincronizzati!"); });
         }
 
         const hadiths = [
             "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»",
-            "«بُنِيَ الإِسْلَامُ عَلَى خَمْسٍ»",
-            "«مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»"
+            "«مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»",
+            "«خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ»"
         ];
         const content = hadiths.join("  •••  ") + "  •••  ";
         document.getElementById('hadith-list1').innerText = content;
@@ -196,6 +198,10 @@
 
             for (let k in prayerNames) {
                 const pTime = today[k];
+                const [h, m] = pTime.split(":");
+                const pDate = new Date(); pDate.setHours(h, m, 0);
+                
+                // Banner e Athan
                 if (currentTimeStr === pTime && lastNotified !== k) {
                     lastNotified = k;
                     audio.play().catch(() => {});
@@ -204,21 +210,38 @@
                     }
                 }
 
-                let active = "";
-                const [h, m] = pTime.split(":");
-                const pDate = new Date(); pDate.setHours(h, m, 0);
+                let activeClass = "";
+                let iqamaText = "";
+
+                // Se la preghiera è passata da meno di 10 minuti, mostra Iqama countdown
+                const diffMin = (now - pDate) / 60000;
+                if (diffMin >= 0 && diffMin < 10) {
+                    const remainingIqama = 10 - Math.floor(diffMin);
+                    iqamaText = `<span class="iqama-label">Iqama in ${remainingIqama}:00</span>`;
+                }
+
                 if (pDate > now && !foundNext) {
-                    foundNext = true; active = "active";
+                    foundNext = true; 
+                    activeClass = "active";
                     const diff = pDate - now;
                     const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                     const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                     const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
                     document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
                 }
-                html += `<div class="prayer-card ${active}"><span>${prayerNames[k]}</span><span>${pTime}</span></div>`;
+
+                html += `
+                    <div class="prayer-card ${activeClass}">
+                        <span>${prayerNames[k]}</span>
+                        <div style="display:flex; align-items:center;">
+                            ${iqamaText}
+                            <span style="margin-right:15px; color:var(--mp-dark-green);">${pTime}</span>
+                        </div>
+                    </div>`;
             }
             document.getElementById('list-container').innerHTML = html;
         }
+
         setInterval(update, 1000);
         update();
     </script>
