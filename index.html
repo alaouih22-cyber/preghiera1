@@ -22,9 +22,9 @@
         }
 
         @keyframes swing {
-            0% { transform: rotate(6deg); }
-            50% { transform: rotate(-6deg); }
-            100% { transform: rotate(6deg); }
+            0% { transform: rotate(5deg); }
+            50% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
         }
 
         @keyframes text-glow {
@@ -32,27 +32,26 @@
             50% { text-shadow: 0 0 25px var(--mp-gold), 0 0 40px var(--mp-gold); }
         }
 
-        /* STRISCIA 1: HEADER PIÙ AMPIO */
+        /* STRISCIA 1: HEADER */
         .ramadan-header {
             width: 100%; background: var(--mp-dark-green);
-            padding: 35px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
+            padding: 30px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
             position: relative; display: flex; justify-content: center; align-items: center;
         }
 
-        /* FANOUSS EGIZIANI */
-        .fanous-img {
-            width: 50px; height: auto;
-            margin: 0 25px;
+        .fanous-container {
+            width: 45px; height: auto;
+            margin: 0 15px;
             animation: swing 3s infinite ease-in-out;
-            filter: drop-shadow(0 0 8px var(--mp-gold));
+            filter: drop-shadow(0 0 5px var(--mp-gold));
         }
 
         .ramadan-title { 
-            color: var(--mp-gold); font-size: 40px; margin: 0; font-weight: 900; 
+            color: var(--mp-gold); font-size: 36px; margin: 0; font-weight: 900; 
             animation: text-glow 2.5s infinite ease-in-out;
         }
 
-        /* STRISCIA 2: DASHBOARD LEGGERMENTE RIDOTTA */
+        /* STRISCIA 2: DASHBOARD */
         .dashboard {
             width: 80%; max-width: 400px; background: white; border-radius: 20px;
             margin: -20px 0 10px 0; padding: 12px; text-align: center;
@@ -60,11 +59,11 @@
         }
         .timer-main { font-size: 30px; font-weight: 900; color: var(--mp-dark-green); }
 
-        /* LISTA PREGHIERE - EQUILIBRATA */
-        .prayer-list { width: 92%; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-bottom: 5px; }
+        /* LISTA PREGHIERE */
+        .prayer-list { width: 92%; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 16px 22px; /* Ridotto leggermente per dare spazio */
+            background: var(--white); padding: 16px 22px;
             border-radius: 18px; box-shadow: 0 3px 8px rgba(0,0,0,0.06);
             transition: 0.3s;
         }
@@ -84,7 +83,7 @@
 
         @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-        /* STRISCIA 3: FOOTER HADITH */
+        /* STRISCIA 3: FOOTER */
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
@@ -109,7 +108,7 @@
         .nav-btn {
             display: block; text-align: center; padding: 15px;
             border-radius: 12px; text-decoration: none; font-weight: 800;
-            margin-top: 10px; border: 2px solid white; transition: 0.3s;
+            margin-top: 10px; border: 2px solid white;
         }
         .mushaf-btn { background: var(--mp-gold); color: var(--mp-dark-green) !important; }
         .hisn-btn { background: #ffffff; color: var(--mp-dark-green) !important; border: 2px solid var(--mp-gold); }
@@ -123,14 +122,14 @@
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
-        <img src="https://pngimg.com/uploads/ramadan/ramadan_PNG44.png" class="fanous-img" alt="Fanous">
+        <img src="https://www.freeiconspng.com/uploads/ramadan-lantern-png-8.png" class="fanous-container" alt="Fanous">
         <h1 class="ramadan-title">رمضان كريم</h1>
-        <img src="https://pngimg.com/uploads/ramadan/ramadan_PNG44.png" class="fanous-img" alt="Fanous">
+        <img src="https://www.freeiconspng.com/uploads/ramadan-lantern-png-8.png" class="fanous-container" alt="Fanous">
     </div>
 
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer; margin-bottom: 20px;" onclick="toggleMenu()">&times;</div>
-        <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:10px;">القائمة الرئيسية</h3>
+        <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:10px;">القائمة</h3>
         
         <button class="menu-item" onclick="initNotifications()">🔔 تفعيل التنبيهات</button>
         
@@ -146,7 +145,7 @@
             📖 المصحف الملون (ورش)
         </a>
 
-        <a href="https://hisnmuslim.com/hisn_muslim_pdf_ar.pdf" target="_blank" class="nav-btn hisn-btn">
+        <a href="https://islamhouse.com/ar/books/293/download/ar/1/file" target="_blank" class="nav-btn hisn-btn">
             🛡️ حصن المسلم (PDF)
         </a>
     </div>
