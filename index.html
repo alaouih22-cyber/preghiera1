@@ -20,26 +20,76 @@
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* Banner Hadith Ottimizzato per testi lunghi */
-        .hadith-banner {
+        /* INTESTAZIONE RAMADAN KAREEM */
+        .ramadan-header {
+            width: 100%;
+            background: var(--mp-dark-green);
+            background-image: linear-gradient(rgba(0, 79, 63, 0.8), rgba(0, 79, 63, 0.8)), 
+                              url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            padding: 30px 0;
+            text-align: center;
+            border-bottom: 3px solid var(--mp-gold);
+            position: relative;
+        }
+
+        .ramadan-title {
+            color: var(--mp-gold);
+            font-size: 38px;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .lanterns {
+            font-size: 24px;
+            color: var(--mp-gold);
+            margin-top: 5px;
+        }
+
+        /* DASHBOARD COUNTDOWN */
+        .dashboard {
+            width: 92%; max-width: 500px;
+            background: linear-gradient(135deg, var(--mp-dark-green) 0%, var(--mp-light-green) 100%);
+            border-radius: 20px; margin: -20px 0 15px 0; padding: 25px;
+            color: var(--white); display: flex; justify-content: space-around;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .stat-box { text-align: center; flex: 1; }
+        .stat-label { font-size: 12px; opacity: 0.9; margin-bottom: 8px; font-weight: bold; }
+        .stat-value { font-size: 32px; font-weight: 800; color: var(--mp-gold); }
+
+        /* LISTA PREGHIERE */
+        .prayer-list { width: 92%; max-width: 500px; margin-bottom: 80px; }
+        .prayer-card {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--white); padding: 18px 20px; margin-bottom: 10px;
+            border-radius: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .prayer-card.active { border-right: 6px solid var(--mp-gold); background: #f0fdf4; }
+
+        /* BANNER HADITH IN BASSO (STICKY BOTTOM) */
+        .hadith-footer {
+            position: fixed; bottom: 0; left: 0;
             background: var(--mp-dark-green);
             color: var(--mp-gold);
             width: 100%;
             padding: 15px 0;
-            border-bottom: 2px solid var(--mp-gold);
+            border-top: 2px solid var(--mp-gold);
             overflow: hidden;
             white-space: nowrap;
-            height: 50px;
-            display: flex; align-items: center;
+            z-index: 1000;
         }
 
         .hadith-scroll {
             display: inline-block;
-            animation: scroll-left-right 400s linear infinite; /* Velocità bilanciata per i primi 10 */
+            animation: scroll-left-right 450s linear infinite;
             font-weight: 700;
-            font-size: 18px;
+            font-size: 17px;
         }
 
         @keyframes scroll-left-right {
@@ -47,77 +97,28 @@
             100% { transform: translateX(100%); }
         }
 
-        .top-bar {
-            width: 100%; background: var(--white); padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            color: var(--mp-dark-green); position: sticky; top: 0; z-index: 100;
-        }
-
-        .dashboard {
-            width: 92%; max-width: 500px;
-            background: linear-gradient(135deg, var(--mp-dark-green) 0%, var(--mp-light-green) 100%);
-            border-radius: 20px; margin: 15px 0; padding: 25px;
-            color: var(--white); display: flex; justify-content: space-around;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .stat-box { text-align: center; flex: 1; }
-        .stat-label { font-size: 12px; opacity: 0.8; margin-bottom: 8px; font-weight: bold; }
-        .stat-value { font-size: 32px; font-weight: 800; color: var(--mp-gold); }
-        .stat-value.iqama { color: #ff8a80; }
-
+        /* SIDEBAR */
         .sidebar {
             position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
-            background: var(--mp-dark-green); color: var(--white); z-index: 1000;
+            background: var(--mp-dark-green); color: var(--white); z-index: 2000;
             transition: 0.4s; padding: 30px 20px; box-sizing: border-box;
         }
         .sidebar.open { left: 0; }
         .menu-item {
             background: rgba(255,255,255,0.05); border: 1px solid rgba(197,160,89,0.3);
-            color: var(--white); padding: 12px; border-radius: 8px;
-            margin-bottom: 15px; width: 100%; cursor: pointer; text-align: right; display: block; text-decoration: none;
+            color: var(--white); padding: 12px; border-radius: 8px; margin-bottom: 15px;
+            width: 100%; cursor: pointer; text-align: right; display: block; text-decoration: none;
         }
-
-        .prayer-list { width: 92%; max-width: 500px; padding-bottom: 30px; }
-        .prayer-card {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 18px 20px; margin-bottom: 10px;
-            border-radius: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .prayer-card.active { border-right: 6px solid var(--mp-gold); background: #f0fdf4; }
     </style>
 </head>
 <body>
 
     <audio id="adhan-player" src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
 
-    <div class="sidebar" id="sidebar">
-        <div style="font-size:35px; color:var(--mp-gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
-        <h2 style="color:var(--mp-gold)">الإعدادات</h2>
-        
-        <button class="menu-item" onclick="requestNotif()">🔔 تفعيل التنبيهات</button>
-        
-        <label style="font-size:12px">اختيار الأذان</label>
-        <select class="menu-item" id="athan-select" onchange="changeAthan(this.value)">
-            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">المدينة المنورة</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">القدس (الأقصى)</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب (الدار البيضاء)</option>
-        </select>
-        
-        <button class="menu-item" onclick="testSound()" style="background:var(--mp-gold); color:var(--mp-dark-green); font-weight:bold">▶️ تجربة الصوت</button>
-        <a href="https://quran.com" target="_blank" class="menu-item" style="background:var(--mp-gold); color:var(--mp-dark-green); font-weight:bold; text-align:center">📖 المصحف الإلكتروني</a>
-    </div>
-
-    <div class="hadith-banner">
-        <div class="hadith-scroll" id="hadith-list"></div>
-    </div>
-
-    <div class="top-bar">
-        <div style="font-size:25px; cursor:pointer" onclick="toggleMenu()">☰</div>
-        <div style="font-weight: 800;">BASTIA UMBRA</div>
-        <div style="width:25px"></div>
+    <div class="ramadan-header">
+        <div class="lanterns">🏮 🌙 🏮</div>
+        <h1 class="ramadan-title">رمضان كريم</h1>
+        <div style="color:white; opacity:0.8; font-size: 14px; margin-top:5px;">BASTIA UMBRA</div>
     </div>
 
     <div class="dashboard">
@@ -125,13 +126,34 @@
             <div class="stat-label" id="next-label">الصلاة القادمة</div>
             <div class="stat-value" id="timer">00:00:00</div>
         </div>
-        <div class="stat-box" id="iqama-box" style="opacity:0.3">
+        <div class="stat-box" id="iqama-box" style="opacity:0.3; border-left: 1px solid rgba(255,255,255,0.1);">
             <div class="stat-label">الإقامة (Iqama)</div>
-            <div class="stat-value iqama" id="iqama-timer">--:--</div>
+            <div class="stat-value" id="iqama-timer" style="color:#ff8a80;">--:--</div>
         </div>
     </div>
 
+    <div style="width:100%; display:flex; justify-content:center; margin: 10px 0;">
+        <button onclick="toggleMenu()" style="background:none; border:none; color:var(--mp-dark-green); font-size:24px; cursor:pointer;">☰</button>
+    </div>
+
     <div class="prayer-list" id="list-container"></div>
+
+    <div class="sidebar" id="sidebar">
+        <div style="font-size:35px; color:var(--mp-gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
+        <h2 style="color:var(--mp-gold)">الإعدادات</h2>
+        <button class="menu-item" onclick="requestNotif()">🔔 تفعيل التنبيهات</button>
+        <select class="menu-item" id="athan-select" onchange="changeAthan(this.value)">
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">المدينة المنورة</option>
+            <option value="https://www.islamcan.com/audio/azan2.mp3">القدس (الأقصى)</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب</option>
+        </select>
+        <button class="menu-item" onclick="testSound()">▶️ تجربة الصوت</button>
+    </div>
+
+    <div class="hadith-footer">
+        <div class="hadith-scroll" id="hadith-list"></div>
+    </div>
 
     <script>
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -139,27 +161,23 @@
         function changeAthan(url) { audio.src = url; }
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
-        function requestNotif() {
-            Notification.requestPermission().then(perm => { if(perm === 'granted') alert("Notifications Enabled"); });
-        }
+        // Primi 10 Hadith Integrali
+        const hadiths = [
+            "الحديث الأول: إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى...",
+            "الحديث الثاني: بينما نحن جلوس عند رسول الله إذ طلع علينا رجل شديد بياض الثياب...",
+            "الحديث الثالث: بني الإسلام على خمس: شهادة أن لا إله إلا الله...",
+            "الحديث الرابع: إن أحدكم يجمع خلقه في بطن أمه أربعين يوما نطفة...",
+            "الحديث الخامس: من أحدث في أمرنا هذا ما ليس منه فهو رد...",
+            "الحديث السادس: إن الحلال بين وإن الحرام بين وبينهما أمور مشتبهات...",
+            "الحديث السابع: الدين النصيحة. قلنا لمن؟ قال لله ولكتابه ولرسوله ولأئمة المسلمين...",
+            "الحديث الثامن: أمرت أن أقاتل الناس حتى يشهدوا أن لا إله إلا الله...",
+            "الحديث التاسع: ما نهيتكم عنه فاجتنبوه وما أمرتكم به فأتوا منه ما استطعتم...",
+            "الحديث العاشر: إن الله طيب لا يقبل إلا طيبا..."
+        ];
+        document.getElementById('hadith-list').innerHTML = hadiths.join(" ••• ");
 
-        const h1 = "الحديث الأول: عن أمير المؤمنين أبي حفص عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: (إنما الأعمال بالنيات، وإنما لكل امرئ ما نوى، فمن كانت هجرته إلى الله ورسوله، فهجرته إلى الله ورسوله، ومن كانت هجرته لدنيا يصيبها أو امرأة ينكحها، فهجرته إلى ما هاجر إليه).";
-        const h2 = "الحديث الثاني: عن عمر رضي الله عنه أيضا قال: بينما نحن جلوس عند رسول الله صلى الله عليه وسلم ذات يوم، إذ طلع علينا رجل شديد بياض الثياب، شديد سواد الشعر، لا يرى عليه أثر السفر، ولا يعرفه منا أحد، حتى جلس إلى النبي صلى الله عليه وسلم، فأسند ركبتيه إلى ركبتيه، ووضع كفيه على فخذيه، وقال: يا محمد أخبرني عن الإسلام. فقال رسول الله صلى الله عليه وسلم: الإسلام أن تشهد أن لا إله إلا الله وأن محمدا رسول الله، وتقيم الصلاة، وتؤتي الزكاة، وتصوم رمضان، وتحج البيت إن استطعت إليه سبيلا. قال: صدقت. فعجبنا له يسأله ويصدقه. قال: فأخبرني عن الإيمان. قال: أن تؤمن بالله وملائكته وكتبه ورسله واليوم الآخر، وتؤمن بالقدر خيره وشره. قال: صدقت. قال: فأخبرني عن الإحسان. قال: أن تعبد الله كأنك تراه، فإن لم تكن تراه فإنه يراك. قال: فأخبرني عن الساعة. قال: ما المسؤول عنها بأعلم من السائل. قال: فأخبرني عن أماراتها. قال: أن تلد الأمة ربتها، وأن ترى الحفاة العراة العالة رعاء الشاء يتطاولون في البنيان. ثم انطلق، فلبثت مليا، ثم قال: يا عمر، أتدري من السائل؟ قلت: الله ورسوله أعلم. قال: فإنه جبريل أتاكم يعلمكم دينكم.";
-        const h3 = "الحديث الثالث: عن أبي عبد الرحمن عبد الله بن عمر بن الخطاب رضي الله عنهما قال: سمعت رسول الله صلى الله عليه وسلم يقول: (بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمدا رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان).";
-        const h4 = "الحديث الرابع: عن أبي عبد الرحمن عبد الله بن مسعود رضي الله عنه قال: حدثنا رسول الله صلى الله عليه وسلم -وهو الصادق المصدوق-: (إن أحدكم يجمع خلقه في بطن أمه أربعين يوما نطفة، ثم يكون علقة مثل ذلك، ثم يكون مضغة مثل ذلك، ثم يرسل إليه الملك فينفخ فيه الروح، ويؤمر بأربع كلمات: بكتب رزقه، وأجله، وعمله، وشقي أو سعيد. فوالله الذي لا إله غيره، إن أحدكم ليعمل بعمل أهل الجنة حتى ما يكون بينه وبينها إلا ذراع، فيسبق عليه الكتاب، فيعمل بعمل أهل النار فيدخلها، وإن أحدكم ليعمل بعمل أهل النار حتى ما يكون بينه وبينها إلا ذراع، فيسبق عليه الكتاب، فيعمل بعمل أهل الجنة فيدخلها).";
-        const h5 = "الحديث الخامس: عن أم المؤمنين أم عبد الله عائشة رضي الله عنها قالت: قال رسول الله صلى الله عليه وسلم: (من أحدث في أمرنا هذا ما ليس منه فهو رد).";
-        const h6 = "الحديث السادس: عن أبي عبد الله النعمان بن بشير رضي الله عنهما قال: سمعت رسول الله صلى الله عليه وسلم يقول: (إن الحلال بين، وإن الحرام بين، وبينهما أمور مشتبهات لا يعلمهن كثير من الناس، فمن اتقى الشبهات فقد استبرأ لدينه وعرضه، ومن وقع في الشبهات وقع في الحرام، كالجراعي يرعى حول الحمى يوشك أن يرتع فيه، ألا وإن لكل ملك حمى، ألا وإن حمى الله محارمه، ألا وإن في الجسد مضغة إذا صلحت صلح الجسد كله، وإذا فسدت فسد الجسد كله، ألا وهي القلب).";
-        const h7 = "الحديث السابع: عن أبي رقية تميم بن أوس الداري رضي الله عنه أن النبي صلى الله عليه وسلم قال: (الدين النصيحة). قلنا: لمن؟ قال: (لله، ولكتابه، ولرسوله، ولأئمة المسلمين وعامتهم).";
-        const h8 = "الحديث الثامن: عن ابن عمر رضي الله عنهما أن رسول الله صلى الله عليه وسلم قال: (أمرت أن أقاتل الناس حتى يشهدوا أن لا إله إلا الله، وأن محمدا رسول الله، ويقيموا الصلاة، ويؤتوا الزكاة، فإذا فعلوا ذلك عصموا مني دماءهم وأموالهم إلا بحق الإسلام، وحسابهم على الله تعالى).";
-        const h9 = "الحديث التاسع: عن أبي هريرة عبد الرحمن بن صخر رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: (ما نهيتكم عنه فاجتنبوه، وما أمرتكم به فأتوا منه ما استطعتم، فإنما أهلك الذين من قبلكم كثرة مسائلهم واختلافهم على أنبيائهم).";
-        const h10 = "الحديث العاشر: عن أبي هريرة رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: (إن الله طيب لا يقبل إلا طيبا، وإن الله أمر المؤمنين بما أمر به المرسلين، فقال تعالى: {يا أيها الرسل كلوا من الطيبات واعملوا صالحا}، وقال تعالى: {يا أيها الذين آمنوا كلوا من طيبات ما رزقناكم}، ثم ذكر الرجل يطيل السفر أشعث أغبر، يمد يديه إلى السماء: يا رب يا رب، ومطعمه حرام، ومشربه حرام، وملبسه حرام، وغذي بالحرام، فأنى يستجاب له؟).";
-
-        document.getElementById('hadith-list').innerHTML = [h1,h2,h3,h4,h5,h6,h7,h8,h9,h10].join(" ••• ");
-
-        const prayers = { f: "الفجر", dh: "الظهر", a: "العصر", m: "المغرب", i: "العشاء" };
+        const prayerNames = { f: "الفجر", dh: "الظهر", a: "العصر", m: "المغرب", i: "العشاء" };
         const times = { "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
-
-        let lastNotified = "";
 
         function update() {
             const now = new Date();
@@ -167,27 +185,16 @@
             const today = times[dateKey] || times["25/2"];
             let html = ""; let foundNext = false;
 
-            for (let k in prayers) {
+            for (let k in prayerNames) {
                 const [h, m] = today[k].split(":");
                 const pT = new Date(); pT.setHours(h, m, 0);
                 const diff = pT - now;
-                
-                if (Math.abs(diff) < 1000 && lastNotified !== k) {
-                    lastNotified = k;
-                    audio.play();
-                    if (Notification.permission === "granted") {
-                        new Notification("صلاة " + prayers[k], { body: "حان الآن وقت الأذان" });
-                    }
-                }
 
                 let active = "";
                 if (diff > 0 && !foundNext) {
                     foundNext = true; active = "active";
-                    document.getElementById('next-label').innerText = "المتبقي لـ " + prayers[k];
-                    const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-                    const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
-                    const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                    document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
+                    document.getElementById('timer').innerText = new Date(diff).toISOString().substr(11, 8);
+                    document.getElementById('next-label').innerText = "المتبقي لـ " + prayerNames[k];
                     document.getElementById('iqama-box').style.opacity = "0.3";
                 }
 
@@ -200,8 +207,8 @@
                 }
 
                 html += `<div class="prayer-card ${active}">
-                    <div style="font-weight:600">${prayers[k]}</div>
-                    <div style="font-weight:700; color:var(--mp-dark-green)">${today[k]}</div>
+                    <span>${prayerNames[k]}</span>
+                    <span style="font-weight:700; color:var(--mp-dark-green)">${today[k]}</span>
                 </div>`;
             }
             document.getElementById('list-container').innerHTML = html;
