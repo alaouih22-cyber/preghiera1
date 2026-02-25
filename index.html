@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bastia Umbra - 40 Hadith & Mushaf</title>
+    <title>Bastia Umbra - 40 Hadith</title>
     <style>
         :root {
             --bg-pistachio: #93c572; 
@@ -21,13 +21,13 @@
             overflow-x: hidden;
         }
 
-        /* STRISCIA HADITH - SCORRIMENTO DA SINISTRA A DESTRA */
+        /* شريط الأحاديث - من اليسار إلى اليمين */
         .hadith-container {
             background: var(--dark-green);
             color: var(--gold);
             width: 100%;
-            padding: 15px 0;
-            border-bottom: 3px solid var(--gold);
+            padding: 18px 0;
+            border-bottom: 4px solid var(--gold);
             overflow: hidden;
             white-space: nowrap;
         }
@@ -35,13 +35,12 @@
         .hadith-scroll {
             display: inline-block;
             white-space: nowrap;
-            /* Animazione da sinistra a destra */
-            animation: scroll-left-to-right 400s linear infinite; 
+            animation: scroll-left-right 500s linear infinite; 
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
         }
 
-        @keyframes scroll-left-to-right {
+        @keyframes scroll-left-right {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
@@ -53,12 +52,13 @@
             color: var(--white);
         }
 
-        /* SIDEBAR */
+        /* القائمة الجانبية */
         .sidebar {
             position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
             background: var(--dark-green); color: var(--white); z-index: 1000;
             transition: 0.4s; padding: 30px 20px; box-sizing: border-box;
             border-right: 4px solid var(--gold);
+            overflow-y: auto;
         }
         .sidebar.open { left: 0; }
 
@@ -66,47 +66,33 @@
             background: rgba(255,255,255,0.1); border: 1px solid var(--gold);
             color: var(--white); padding: 12px; border-radius: 10px;
             margin-bottom: 15px; width: 100%; cursor: pointer; font-weight: bold;
+            text-align: center; text-decoration: none; display: block;
         }
 
-        /* COUNTDOWN CARDS */
-        .grid-container { display: flex; width: 92%; max-width: 450px; gap: 10px; margin: 15px 0; }
+        /* المصحف داخل الإعدادات */
+        .mushaf-btn {
+            background: var(--gold);
+            color: var(--dark-green) !important;
+            font-size: 18px;
+            margin-top: 20px;
+            border: 2px solid var(--white);
+        }
+
+        .grid-container { display: flex; width: 92%; max-width: 450px; gap: 10px; margin: 20px 0; }
         .gold-card {
             flex: 1; background: var(--white); border: 3px solid var(--gold);
-            border-radius: 15px; padding: 12px; text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border-radius: 20px; padding: 15px; text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .gold-card .val { font-size: 24px; font-weight: 900; color: var(--gold); }
+        .gold-card .val { font-size: 28px; font-weight: 900; color: var(--gold); }
 
-        /* MUSHAF BOX - GRANDE E EVIDENTE */
-        .mushaf-wide-box {
-            width: 92%; max-width: 450px;
-            background: var(--dark-green);
-            border-top: 4px solid var(--gold);
-            border-bottom: 4px solid var(--gold);
-            margin: 10px 0;
-            padding: 15px 0;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-        }
-        .mushaf-content {
-            border-top: 1px solid var(--gold);
-            border-bottom: 1px solid var(--gold);
-            padding: 10px 0;
-            display: flex; justify-content: center; align-items: center; gap: 20px;
-        }
-        .mushaf-text { color: var(--gold); font-size: 32px; font-weight: bold; }
-        .mushaf-icon { font-size: 40px; }
-
-        /* PRAYER LIST */
         .prayer-list { width: 92%; max-width: 450px; padding-bottom: 40px; }
         .row {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 16px 20px; margin-bottom: 8px;
-            border-radius: 12px; border: 2px solid var(--gold); font-weight: bold;
+            background: var(--white); padding: 18px 20px; margin-bottom: 10px;
+            border-radius: 15px; border: 2px solid var(--gold); font-weight: bold;
         }
-        .row.active { background: var(--dark-green); color: var(--white); border-width: 3px; }
+        .row.active { background: var(--dark-green); color: var(--white); }
         .row.active span { color: var(--gold); font-size: 26px; font-weight: 900; }
     </style>
 </head>
@@ -117,16 +103,26 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:30px; color:var(--gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
         <h2 style="color:var(--gold); text-align:center;">الإعدادات</h2>
+        
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
+        
         <label>🔊 حجم الصوت</label>
         <input type="range" min="0" max="1" step="0.1" value="0.5" style="width:100%" onchange="setVolume(this.value)">
+        
         <label style="margin-top:20px; display:block;">🎧 اختر الأذان</label>
         <select class="menu-item" onchange="changeAthan(this.value)">
             <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">أذان مكة</option>
             <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">أذان القدس</option>
             <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">أذان المغرب</option>
         </select>
-        <button class="menu-item" style="background:var(--gold); color:var(--dark-green)" onclick="testAthan()">▶️ تجربة الأذان</button>
+        
+        <button class="menu-item" onclick="testAthan()">▶️ تجربة الأذان</button>
+
+        <hr style="border-color: var(--gold); margin: 20px 0;">
+
+        <a href="https://quran.com" target="_blank" class="menu-item mushaf-btn">
+            📖 المصحف الإلكتروني
+        </a>
     </div>
 
     <div class="hadith-container">
@@ -142,22 +138,14 @@
 
     <div class="grid-container">
         <div class="gold-card">
-            <h3 id="next-label" style="margin:0; font-size:13px;">المتبقي لـ</h3>
+            <h3 id="next-label" style="margin:0; font-size:14px;">المتبقي لـ</h3>
             <div class="val" id="timer">00:00:00</div>
         </div>
         <div class="gold-card">
-            <h3 id="iqama-label" style="margin:0; font-size:13px; color:red;">الإقامة (Iqama)</h3>
+            <h3 id="iqama-label" style="margin:0; font-size:14px; color:red;">الإقامة (Iqama)</h3>
             <div class="val" id="iqama-timer" style="color:red;">--:--</div>
         </div>
     </div>
-
-    <a href="https://quran.com" target="_blank" class="mushaf-wide-box">
-        <div class="mushaf-content">
-            <span class="mushaf-icon">📖</span>
-            <span class="mushaf-text">المصحف الإلكتروني</span>
-            <span class="mushaf-icon">📖</span>
-        </div>
-    </a>
 
     <div class="prayer-list" id="list-container"></div>
 
@@ -168,19 +156,16 @@
         function changeAthan(url) { audio.src = url; }
         function testAthan() { audio.paused ? audio.play() : audio.pause(); }
 
-        const nawawiTexts = [
-            "الحديث الأول: عَنْ أَمِيرِ المُؤْمِنِينَ أَبِي حَفْصٍ عُمَرَ بْنِ الخَطَّابِ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللهِ ﷺ يَقُولُ: إنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى...",
-            "الحديث الثاني: عَنْ عُمَرَ رَضِيَ اللهُ عَنْهُ أَيْضاً قَالَ: بَيْنَمَا نَحْنُ جُلُوسٌ عِنْدَ رَسُولِ اللهِ ﷺ ذَاتَ يَوْمٍ، إِذْ طَلَعَ عَلَيْنَا رَجُلٌ شَدِيدُ بَيَاضِ الثِّيَابِ..."
-            // Aggiungi qui gli altri 38 in formato esteso
+        const nawawiFull = [
+            "الحديث الأول: عَنْ أَمِيرِ المُؤْمِنِينَ أَبِي حَفْصٍ عُمَرَ بْنِ الخَطَّابِ رَضِيَ اللهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللهِ ﷺ يَقُولُ: إنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلَى اللهِ وَرَسُولِهِ، فَهِجْرَتُهُ إِلَى اللهِ وَرَسُولِهِ، وَمَنْ كَانَتْ هِجْرَتُهُ لِدُنْيَا يُصِيبُهَا أَوْ امْرَأَةٍ يَنْكِحُهَا، فَهِجْرَتُهُ إِلَى مَا هَاجَرَ إِلَيْهِ. رواه البخاري ومسلم.",
+            "الحديث الثاني: عَنْ عُمَرَ رَضِيَ اللهُ عَنْهُ أَيْضاً قَالَ: بَيْنَمَا نَحْنُ جُلُوسٌ عِنْدَ رَسُولِ اللهِ ﷺ ذَاتَ يَوْمٍ، إِذْ طَلَعَ عَلَيْنَا رَجُلٌ شَدِيدُ بَيَاضِ الثِّيَابِ، شَدِيدُ سَوَادِ الشَّعَرِ، لَا يُرَى عَلَيْهِ أَثَرُ السَّفَرِ، وَلَا يَعْرِفُهُ مِنَّا أَحَدٌ، حَتَّى جَلَسَ إِلَى النَّبِيِّ ﷺ، فَأَسْنَدَ رُكْبَتَيْهِ إِلَى رُكْبَتَيْهِ، وَوَضَعَ كَفَّيْهِ عَلَى فَخِذَيْهِ، وَقَالَ: يَا مُحَمَّدُ أَخْبِرْنِي عَنِ الإِسْلَامِ..."
         ];
-        document.getElementById('hadith-list').innerHTML = nawawiTexts.join(" ••• ");
+        document.getElementById('hadith-list').innerHTML = nawawiFull.join(" ••• ");
 
         const prayerNames = {f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء"};
         const ramadanData = {
             "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"}
         };
-
-        let lastP = "";
 
         function update() {
             const now = new Date();
@@ -190,12 +175,8 @@
 
             for (let k in prayerNames) {
                 const [h,m] = today[k].split(":");
-                const pTime = new Date(); pTime.setHours(h,m,0);
-                const diff = pTime - now;
-
-                if (today[k] === (now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0')) && lastP !== k) {
-                    audio.play(); lastP = k;
-                }
+                const pT = new Date(); pT.setHours(h,m,0);
+                const diff = pT - now;
 
                 let active = "";
                 if (diff > 0 && !found) {
@@ -207,14 +188,11 @@
                     document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
                 }
 
-                // Iqama 20m Fajr, 10m altri
                 const iqamaLimit = (k === 'f') ? 20 : 10;
-                const iqamaDiff = now - pTime;
+                const iqamaDiff = now - pT;
                 if (iqamaDiff > 0 && iqamaDiff < iqamaLimit * 60000) {
                     const remIqama = (iqamaLimit * 60) - Math.floor(iqamaDiff/1000);
-                    const iM = Math.floor(remIqama/60);
-                    const iS = remIqama % 60;
-                    document.getElementById('iqama-timer').innerText = iM + ":" + iS.toString().padStart(2,"0");
+                    document.getElementById('iqama-timer').innerText = Math.floor(remIqama/60) + ":" + (remIqama%60).toString().padStart(2,"0");
                 }
 
                 html += `<div class="row ${active}"><b>${prayerNames[k]}</b> <span>${today[k]}</span></div>`;
@@ -222,8 +200,8 @@
             document.getElementById('list-container').innerHTML = html;
         }
 
-        setInterval(update, 1000); update();
-        function enableNotifs() { Notification.requestPermission(); }
+        setInterval(update, 1000);
+        update();
     </script>
 </body>
 </html>
