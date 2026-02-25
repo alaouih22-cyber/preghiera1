@@ -11,6 +11,7 @@
             --mp-gold: #C5A059; 
             --mp-bg: #F6F7F9; 
             --white: #ffffff;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         body {
@@ -23,22 +24,24 @@
             min-height: 100vh;
         }
 
-        /* HEADER RAMADAN CON MENU A SINISTRA */
+        /* HEADER PREMIUM RAMADAN KAREEM */
         .ramadan-header {
             width: 100%;
             background: var(--mp-dark-green);
-            padding: 30px 0;
+            background-image: linear-gradient(rgba(0, 79, 63, 0.85), rgba(0, 79, 63, 0.85)), 
+                              url('https://www.transparenttextures.com/patterns/islamic-art.png');
+            padding: 40px 0;
             text-align: center;
-            border-bottom: 3px solid var(--mp-gold);
+            border-bottom: 4px solid var(--mp-gold);
             position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .menu-icon {
             position: absolute;
             left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 28px;
+            top: 20px;
+            font-size: 30px;
             color: var(--mp-gold);
             cursor: pointer;
             z-index: 100;
@@ -46,130 +49,185 @@
 
         .ramadan-title {
             color: var(--mp-gold);
-            font-size: 35px;
+            font-size: 42px;
             font-weight: 800;
             margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
         }
 
-        /* DASHBOARD */
+        .city-tag {
+            color: var(--white);
+            opacity: 0.8;
+            font-size: 14px;
+            margin-top: 8px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        /* DASHBOARD MODERNA */
         .dashboard {
             width: 90%; max-width: 500px;
             background: linear-gradient(135deg, var(--mp-dark-green) 0%, var(--mp-light-green) 100%);
-            border-radius: 20px; margin: -25px 0 15px 0; padding: 25px;
-            color: var(--white); display: flex; justify-content: space-around;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            border-radius: 24px; 
+            margin: -30px 0 20px 0; 
+            padding: 30px;
+            color: var(--white); 
+            display: flex; 
+            justify-content: space-around;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.25);
             z-index: 10;
+            border: 1px solid rgba(197, 160, 89, 0.3);
         }
 
         .stat-box { text-align: center; flex: 1; }
-        .stat-label { font-size: 11px; opacity: 0.9; margin-bottom: 5px; }
-        .stat-value { font-size: 28px; font-weight: 800; color: var(--mp-gold); }
+        .stat-label { font-size: 12px; opacity: 0.8; margin-bottom: 8px; font-weight: bold; }
+        .stat-value { font-size: 34px; font-weight: 800; color: var(--mp-gold); text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
 
-        /* LISTA PREGHIERE */
-        .prayer-list { width: 90%; max-width: 500px; margin-bottom: 80px; }
+        /* LISTA PREGHIERE STILE MUSLIM PRO */
+        .prayer-list { width: 90%; max-width: 500px; margin-bottom: 120px; }
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 18px 20px; margin-bottom: 10px;
-            border-radius: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            font-weight: 600;
+            background: var(--white); 
+            padding: 22px 25px; 
+            margin-bottom: 12px;
+            border-radius: 18px; 
+            box-shadow: var(--shadow);
+            font-weight: 700;
+            transition: 0.3s;
+            border: 1px solid transparent;
         }
-        .prayer-card.active { border-left: 6px solid var(--mp-gold); background: #f0fdf4; }
+        .prayer-card.active { 
+            border: 1.5px solid var(--mp-gold); 
+            background: #fdfaf3;
+            transform: scale(1.02);
+        }
+        .p-name { color: #444; font-size: 18px; }
+        .p-time { color: var(--mp-dark-green); font-size: 20px; }
 
-        /* FOOTER HADITH SCORREVOLE - CORRETTO DA SINISTRA A DESTRA */
+        /* FOOTER HADITH SCORREVOLE LTR */
         .hadith-footer {
             position: fixed; bottom: 0; left: 0;
             background: var(--mp-dark-green);
             color: var(--mp-gold);
-            width: 100%; padding: 12px 0;
-            border-top: 2px solid var(--mp-gold);
-            overflow: hidden; white-space: nowrap; z-index: 1000;
+            width: 100%; padding: 18px 0;
+            border-top: 3px solid var(--mp-gold);
+            overflow: hidden; z-index: 1000;
         }
-
+        .hadith-container { display: flex; width: fit-content; }
         .hadith-scroll {
             display: inline-block;
-            /* Velocità impostata a 120s per uno scorrimento fluido ma veloce */
-            animation: scroll-ltr 120s linear infinite;
-            font-weight: 600; font-size: 16px;
+            white-space: nowrap;
+            padding-right: 60px;
+            font-weight: 600; font-size: 17px;
+            animation: scroll-ltr 70s linear infinite;
         }
 
         @keyframes scroll-ltr {
-            /* Parte da sinistra (fuori schermo) e va a destra */
-            from { transform: translateX(-100%); }
-            to { transform: translateX(100%); }
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
         }
 
-        /* SIDEBAR */
+        /* SIDEBAR SETTINGS */
         .sidebar {
-            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: var(--mp-dark-green); color: var(--white); z-index: 2000;
-            transition: 0.4s; padding: 30px 20px; box-sizing: border-box;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding: 40px 25px; box-sizing: border-box;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
         }
         .sidebar.open { left: 0; }
         .menu-item {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(197,160,89,0.3);
-            color: var(--white); padding: 12px; border-radius: 8px; margin-bottom: 15px;
-            width: 100%; cursor: pointer; text-align: right; display: block;
+            background: rgba(255,255,255,0.08); 
+            border: 1px solid var(--mp-gold);
+            color: var(--white); padding: 15px; border-radius: 12px; 
+            margin-bottom: 20px; width: 100%; cursor: pointer; 
+            text-align: right; display: block; font-size: 15px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <audio id="adhan-player" src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
+    <audio id="adhan-player"></audio>
 
     <div class="ramadan-header">
         <div class="menu-icon" onclick="toggleMenu()">☰</div>
+        <div style="font-size: 24px; margin-bottom: 5px;">🏮</div>
         <h1 class="ramadan-title">رمضان كريم</h1>
-        <div style="color:white; opacity:0.6; font-size: 12px;">BASTIA UMBRA</div>
+        <div class="city-tag">BASTIA UMBRA</div>
     </div>
 
     <div class="dashboard">
         <div class="stat-box">
-            <div class="stat-label">الصلاة القادمة (Prossima)</div>
+            <div class="stat-label">الصلاة القادمة</div>
             <div class="stat-value" id="timer">00:00:00</div>
         </div>
-        <div class="stat-box" id="iqama-box" style="opacity:0.3; border-right: 1px solid rgba(255,255,255,0.1);">
+        <div class="stat-box" style="border-right: 1px solid rgba(255,255,255,0.15);">
             <div class="stat-label">الإقامة (Iqama)</div>
-            <div class="stat-value" id="iqama-timer" style="color:#ff8a80;">--:--</div>
+            <div class="stat-value" id="iqama-timer" style="color:#ffccbc;">10:00</div>
         </div>
     </div>
 
     <div class="prayer-list" id="list-container"></div>
 
     <div class="sidebar" id="sidebar">
-        <div style="font-size:35px; color:var(--mp-gold); cursor:pointer" onclick="toggleMenu()">&times;</div>
-        <h2 style="color:var(--mp-gold)">الإعدادات</h2>
-        <button class="menu-item" onclick="initNotifications()">🔔 Attiva Notifiche</button>
-        <select class="menu-item" id="athan-select" onchange="document.getElementById('adhan-player').src=this.value">
-            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">Madina</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Al Quds</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">Marocco</option>
+        <div style="font-size:40px; color:var(--mp-gold); cursor:pointer; margin-bottom: 20px;" onclick="toggleMenu()">&times;</div>
+        <h2 style="color:var(--mp-gold); border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px;">الإعدادات</h2>
+        
+        <button class="menu-item" onclick="initNotifications()">🔔 تفعيل التنبيهات (Banner)</button>
+        
+        <label style="font-size: 12px; color: var(--mp-gold); margin-bottom: 8px; display: block;">صوت الأذان:</label>
+        <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">المدينة المنورة</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">القدس (الأقصى)</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب</option>
         </select>
-        <button class="menu-item" onclick="document.getElementById('adhan-player').play()">▶️ Test Athan</button>
+        
+        <button class="menu-item" onclick="testSound()">▶️ تجربة الأذان</button>
     </div>
 
     <div class="hadith-footer">
-        <div class="hadith-scroll" id="hadith-list"></div>
+        <div class="hadith-container">
+            <div class="hadith-scroll" id="hadith-list1"></div>
+            <div class="hadith-scroll" id="hadith-list2"></div>
+        </div>
     </div>
 
     <script>
+        const audio = document.getElementById('adhan-player');
+        const select = document.getElementById('athan-select');
+
+        // Memoria Locale
+        window.onload = () => {
+            const savedAthan = localStorage.getItem('userAthan');
+            if (savedAthan) {
+                audio.src = savedAthan;
+                select.value = savedAthan;
+            } else {
+                audio.src = select.value;
+            }
+        };
+
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+        function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
+        function testSound() { if (audio.paused) audio.play(); else audio.pause(); }
 
         function initNotifications() {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") alert("Notifiche attivate!");
+            Notification.requestPermission().then(p => {
+                if (p === "granted") alert("Banner e Athan attivati per sempre!");
             });
         }
 
         const hadiths = [
             "الحديث الأول: إنما الأعمال بالنيات...", "الحديث الثاني: بينما نحن جلوس عند رسول الله...",
             "الحديث الثالث: بني الإسلام على خمس...", "الحديث الرابع: إن أحدكم يجمع خلقه...",
-            "الحديث الخامس: من أحدث في أمرنا هذا...", "الحديث السادس: إن الحلال بين وإن الحرام بين...",
-            "الحديث السابع: الدين النصيحة...", "الحديث الثامن: أمرت أن أقاتل الناس...",
-            "الحديث التاسع: ما نهيتكم عنه فاجتنبوه...", "الحديث العاشر: إن الله طيب لا يقبل إلا طيبا..."
+            "الحديث الخامس: من أحدث في أمرنا هذا...", "الحديث السادس: إن الحلال بين وإن الحرام بين..."
         ];
-        // Raddoppio il contenuto per non avere spazi vuoti durante lo scorrimento
-        document.getElementById('hadith-list').innerHTML = hadiths.join(" ••• ") + " ••• " + hadiths.join(" ••• ");
+        const hContent = hadiths.join(" ••• ") + " ••• ";
+        document.getElementById('hadith-list1').innerHTML = hContent;
+        document.getElementById('hadith-list2').innerHTML = hContent;
 
         const prayerNames = { f: "الفجر", dh: "الظهر", a: "العصر", m: "المغرب", i: "العشاء" };
         const times = { "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
@@ -180,45 +238,41 @@
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const today = times[dateKey] || times["25/2"];
-            let html = ""; let foundNext = false;
-
             const currentTimeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
+            let html = ""; let foundNext = false;
+
             for (let k in prayerNames) {
-                const prayerTime = today[k];
-                const [h, m] = prayerTime.split(":");
+                const pTime = today[k];
+                const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 const diff = pDate - now;
 
-                if (currentTimeStr === prayerTime && lastNotified !== k) {
+                // LOGICA BANNER + ATHAN SIMULTANEO
+                if (currentTimeStr === pTime && lastNotified !== k) {
                     lastNotified = k;
-                    document.getElementById('adhan-player').play();
+                    audio.play().catch(() => {});
                     if (Notification.permission === "granted") {
-                        new Notification("الله أكبر!", { body: "È l'ora di " + prayerNames[k] });
+                        new Notification("الله أكبر", {
+                            body: "حان الآن وقت صلاة " + prayerNames[k],
+                            icon: "https://cdn-icons-png.flaticon.com/512/2972/2972473.png",
+                            requireInteraction: true
+                        });
                     }
                 }
 
-                let active = "";
+                let activeClass = "";
                 if (diff > 0 && !foundNext) {
-                    foundNext = true; active = "active";
+                    foundNext = true; activeClass = "active";
                     const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                     const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                     const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
                     document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
-                    document.getElementById('iqama-box').style.opacity = "0.3";
                 }
 
-                const iLimit = (k === 'f') ? 20 : 10;
-                const iDiff = now - pDate;
-                if (iDiff > 0 && iDiff < iLimit * 60000) {
-                    document.getElementById('iqama-box').style.opacity = "1";
-                    const rem = (iLimit * 60) - Math.floor(iDiff/1000);
-                    document.getElementById('iqama-timer').innerText = Math.floor(rem/60) + ":" + (rem%60).toString().padStart(2,"0");
-                }
-
-                html += `<div class="prayer-card ${active}">
-                    <span>${prayerNames[k]}</span>
-                    <span style="color:var(--mp-dark-green)">${prayerTime}</span>
+                html += `<div class="prayer-card ${activeClass}">
+                    <span class="p-name">${prayerNames[k]}</span>
+                    <span class="p-time">${pTime}</span>
                 </div>`;
             }
             document.getElementById('list-container').innerHTML = html;
