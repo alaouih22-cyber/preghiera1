@@ -52,11 +52,12 @@
         }
 
         .dashboard {
-            width: 80%; max-width: 400px; background: white; border-radius: 20px;
-            margin: -20px 0 10px 0; padding: 12px; text-align: center;
+            width: 85%; max-width: 400px; background: white; border-radius: 20px;
+            margin: -20px 0 10px 0; padding: 15px; text-align: center;
             border: 1px solid var(--mp-gold); box-shadow: 0 8px 20px rgba(0,0,0,0.1); z-index: 10;
         }
-        .timer-main { font-size: 30px; font-weight: 900; color: var(--mp-dark-green); }
+        .timer-main { font-size: 32px; font-weight: 900; color: var(--mp-dark-green); margin: 5px 0; }
+        .date-display { font-size: 14px; color: var(--mp-gold); font-weight: bold; margin-top: 5px; }
 
         .prayer-list { width: 92%; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-bottom: 5px; }
         .prayer-card {
@@ -133,29 +134,21 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer; margin-bottom: 20px;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:10px;">القائمة الرئيسية</h3>
-        
         <button class="menu-item" onclick="initNotifications()">🔔 تفعيل التنبيهات (Banner)</button>
-        
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
             <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
             <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب العربي</option>
             <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">المدينة المنورة</option>
         </select>
-        
         <button class="menu-item" onclick="testSound()">▶️ تجربة الأذان</button>
-
-        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="nav-btn mushaf-btn">
-            📖 المصحف الملون (ورش)
-        </a>
-
-        <a href="https://hisnmuslim.com/index.php?lang=ar" target="_blank" class="nav-btn hisn-btn">
-            🛡️ حصن المسلم (Web)
-        </a>
+        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="nav-btn mushaf-btn">📖 المصحف الملون (ورش)</a>
+        <a href="https://hisnmuslim.com/index.php?lang=ar" target="_blank" class="nav-btn hisn-btn">🛡️ حصن المسلم (Web)</a>
     </div>
 
     <div class="dashboard">
-        <div style="font-size: 13px; color: #666; font-weight: bold;">الصلاة القادمة</div>
+        <div style="font-size: 13px; color: #666; font-weight: bold;" id="next-prayer-label">الصلاة القادمة</div>
         <div class="timer-main" id="timer-next">00:00:00</div>
+        <div class="date-display" id="date-display"></div>
     </div>
 
     <div class="prayer-list" id="list-container"></div>
@@ -175,6 +168,7 @@
             } else {
                 audio.src = document.getElementById('athan-select').value;
             }
+            updateDates();
         };
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -182,37 +176,32 @@
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
         function initNotifications() { 
-            if (!("Notification" in window)) {
-                alert("Browser non supportato");
-                return;
-            }
-            
+            if (!("Notification" in window)) return;
             Notification.requestPermission().then(p => { 
                 if(p === "granted") {
-                    audio.play().then(() => {
-                        audio.pause();
-                        audio.currentTime = 0;
-                    }).catch(() => {});
-
-                    new Notification("Muslim Pro Bastia", {
-                        body: "✅ Banner attivati con successo!",
-                        icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
-                    });
+                    audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(() => {});
+                    new Notification("Muslim Pro Bastia", { body: "✅ Banner attivati!", icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png" });
                 }
             }); 
         }
 
-        // AGGIORNATO: ORA INCLUDE IL NOME DELLA PREGHIERA IN ARABO NEL BANNER
         function sendBannerNotification(prayerNameAr) {
             if (Notification.permission === "granted") {
-                const options = {
+                new Notification(`وقت صلاة ${prayerNameAr}`, {
                     body: `حي على الصلاة - حان الآن موعد آذان ${prayerNameAr}`,
                     icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
-                    vibrate: [200, 100, 200],
                     requireInteraction: true
-                };
-                new Notification(`وقت صلاة ${prayerNameAr}`, options);
+                });
             }
+        }
+
+        // Funzione per mostrare le date nel banner
+        function updateDates() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const gregDate = now.toLocaleDateString('ar-SA', options); // Data Cristiana in Arabo
+            const hijriDate = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', options).format(now);
+            document.getElementById('date-display').innerHTML = `${gregDate} <br> ${hijriDate}`;
         }
 
         const hadiths = [
@@ -240,7 +229,9 @@
             const today = times[dateKey] || times["25/2"];
             const currentTimeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-            let html = ""; let foundNext = false;
+            let html = ""; 
+            let nextPrayerTime = null;
+            let nextPrayerName = "";
 
             for (let k in prayerData) {
                 const pTime = today[k];
@@ -252,29 +243,24 @@
 
                 const diffMs = now - pDate;
                 const diffMin = diffMs / 60000;
-                const iqamaDuration = (k === 'f') ? 20 : 10;
 
-                if (diffMin >= 0 && diffMin < iqamaDuration) {
-                    const totalSecRem = (iqamaDuration * 60) - Math.floor(diffMs / 1000);
+                if (diffMin >= 0 && diffMin < (k === 'f' ? 20 : 10)) {
+                    const totalSecRem = ((k === 'f' ? 20 : 10) * 60) - Math.floor(diffMs / 1000);
                     const remM = Math.floor(totalSecRem / 60);
                     const remS = (totalSecRem % 60).toString().padStart(2, '0');
                     iqamaLabel = `<span class="iqama-tag">Iqama ${remM}:${remS}</span>`;
                     activeClass = "active";
                 }
 
-                if (pDate > now && !foundNext) {
-                    foundNext = true;
-                    const diff = pDate - now;
-                    const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-                    const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
-                    const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                    document.getElementById('timer-next').innerText = hh+":"+mm+":"+ss;
+                // Trova la prossima preghiera per il countdown (Sempre Attivo)
+                if (pDate > now && !nextPrayerTime) {
+                    nextPrayerTime = pDate;
+                    nextPrayerName = prayerData[k].name;
                 }
 
                 if (currentTimeStr === pTime && lastNotified !== k) {
                     lastNotified = k; 
                     audio.play().catch(()=>{});
-                    // Passa il nome arabo direttamente
                     sendBannerNotification(prayerData[k].name);
                 }
 
@@ -288,6 +274,23 @@
                         <span class="p-time">${pTime}</span>
                     </div>`;
             }
+
+            // Gestione countdown preghiera successiva (se finite quelle di oggi, punta alla prima di domani)
+            if (!nextPrayerTime) {
+                const firstPrayerTime = today['f'].split(":");
+                nextPrayerTime = new Date();
+                nextPrayerTime.setDate(now.getDate() + 1);
+                nextPrayerTime.setHours(firstPrayerTime[0], firstPrayerTime[1], 0);
+                nextPrayerName = prayerData['f'].name;
+            }
+
+            const diff = nextPrayerTime - now;
+            const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
+            const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+            const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
+            document.getElementById('timer-next').innerText = hh+":"+mm+":"+ss;
+            document.getElementById('next-prayer-label').innerText = "موعد صلاة " + nextPrayerName;
+
             document.getElementById('list-container').innerHTML = html;
         }
 
