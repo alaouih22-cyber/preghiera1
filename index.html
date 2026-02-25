@@ -10,6 +10,7 @@
             --mp-gold: #C5A059; 
             --mp-bg: #F6F7F9; 
             --white: #ffffff;
+            --glow-color: rgba(197, 160, 89, 0.5);
         }
 
         body {
@@ -20,68 +21,85 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* HEADER ELEGANTE */
+        /* EFFETTO ILLUMINAZIONE MOVIMENTO (GLOW) */
+        @keyframes glowing {
+            0% { box-shadow: 0 0 5px var(--glow-color); }
+            50% { box-shadow: 0 0 20px var(--glow-color); }
+            100% { box-shadow: 0 0 5px var(--glow-color); }
+        }
+
+        /* STRISCIA 1: HEADER CON LUCE DINAMICA */
         .ramadan-header {
             width: 100%; background: var(--mp-dark-green);
             background-image: linear-gradient(rgba(0, 79, 63, 0.9), rgba(0, 79, 63, 0.9)), 
                               url('https://www.transparenttextures.com/patterns/islamic-art.png');
-            padding: 30px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
-            position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            padding: 20px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
+            position: relative;
+            animation: glowing 3s infinite ease-in-out;
         }
-        .ramadan-title { color: var(--mp-gold); font-size: 36px; margin: 0; font-weight: 800; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
-        .city-tag { color: white; font-size: 12px; opacity: 0.8; letter-spacing: 2px; font-weight: bold; }
+        .ramadan-title { color: var(--mp-gold); font-size: 30px; margin: 0; font-weight: 800; }
 
-        /* DASHBOARD */
+        /* STRISCIA 2: DASHBOARD (COUNTDOWN PREGHIERA) */
         .dashboard {
             width: 85%; max-width: 450px; background: white; border-radius: 20px;
-            margin: -20px 0 15px 0; padding: 15px; text-align: center;
+            margin: -15px 0 15px 0; padding: 15px; text-align: center;
             border: 1px solid var(--mp-gold); box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             z-index: 10;
         }
         .timer-main { font-size: 32px; font-weight: 900; color: var(--mp-dark-green); }
 
-        /* LISTA PREGHIERE */
-        .prayer-list { width: 90%; max-width: 500px; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; }
+        /* LISTA PREGHIERE CON CARD ILLUMINATE */
+        .prayer-list { width: 90%; max-width: 500px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 15px 20px;
+            background: var(--white); padding: 12px 18px;
             border-radius: 15px; box-shadow: 0 3px 6px rgba(0,0,0,0.05);
             transition: 0.3s;
         }
-        .prayer-card.active { border: 2px solid var(--mp-gold); background: #fdfaf3; transform: scale(1.02); }
-
-        .p-name { font-size: 19px; font-weight: 700; color: var(--mp-dark-green); }
-        .p-time { font-size: 22px; font-weight: 800; color: var(--mp-dark-green); }
-
-        .kama-inner {
-            font-size: 12px; color: #d32f2f; background: #ffebee;
-            padding: 2px 8px; border-radius: 6px; display: inline-block; 
-            margin-top: 5px; font-weight: bold; border: 1px solid #ffcdd2;
+        .prayer-card.active { 
+            border: 2.3px solid var(--mp-gold); 
+            background: #fdfaf3; 
+            transform: scale(1.01);
+            animation: glowing 2s infinite ease-in-out; /* Luce che si muove sulla card attiva */
         }
 
-        /* FOOTER HADITH SCORREVOLE LTR */
+        /* IQAMA TAG INTEGRATO */
+        .iqama-tag {
+            font-size: 11px; color: white; background: #d32f2f;
+            padding: 2px 8px; border-radius: 6px; 
+            margin-left: 10px; font-weight: bold;
+            display: inline-block; animation: flash 1s infinite;
+        }
+
+        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+        /* STRISCIA 3: FOOTER (HADITH) */
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
-            padding: 15px 0; border-top: 3px solid var(--mp-gold);
-            overflow: hidden; position: relative;
+            padding: 12px 0; border-top: 3px solid var(--mp-gold);
+            overflow: hidden; direction: ltr !important;
         }
+        .hadith-track { display: flex; width: max-content; animation: scroll-ltr 60s linear infinite; }
+        .hadith-text { color: var(--mp-gold); font-weight: 600; font-size: 15px; white-space: nowrap; padding-left: 60px; }
+        
+        @keyframes scroll-ltr { from { transform: translateX(-50%); } to { transform: translateX(0%); } }
 
-        .hadith-wrapper {
-            display: flex; direction: ltr; width: max-content;
-            animation: scroll-ltr 50s linear infinite;
+        /* SIDEBAR & MUSHAF */
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            background: var(--mp-dark-green); z-index: 1000; transition: 0.4s;
+            padding: 40px 20px; box-sizing: border-box; color: white;
         }
-
-        .hadith-item {
-            color: var(--mp-gold); font-weight: 600; font-size: 16px;
-            white-space: nowrap; padding-right: 150px;
+        .sidebar.open { left: 0; }
+        .mushaf-btn {
+            background: var(--mp-gold); color: var(--mp-dark-green) !important;
+            display: block; text-align: center; padding: 15px;
+            border-radius: 10px; text-decoration: none; font-weight: 800;
+            margin-top: 20px; border: 2px solid white;
+            box-shadow: 0 0 15px var(--glow-color);
         }
-
-        @keyframes scroll-ltr {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0%); }
-        }
-
-        .menu-btn { position: absolute; left: 20px; top: 20px; color: var(--mp-gold); cursor: pointer; font-size: 25px; }
+        
+        .menu-btn { position: absolute; left: 20px; top: 20px; color: var(--mp-gold); cursor: pointer; font-size: 24px; }
     </style>
 </head>
 <body>
@@ -89,43 +107,42 @@
     <audio id="adhan-player"></audio>
 
     <div class="ramadan-header">
-        <div class="menu-btn" onclick="initNotifications()">🔔</div>
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
         <h1 class="ramadan-title">رمضان كريم</h1>
-        <div class="city-tag">BASTIA UMBRA</div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div style="font-size:30px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
+        <h3>القائمة</h3>
+        <a href="https://easyquran.com/en/mushaf-warsh/" target="_blank" class="mushaf-btn">
+            📖 المصحف الملون (ورش)
+        </a>
     </div>
 
     <div class="dashboard">
-        <div style="font-size: 13px; color: #666; font-weight: bold; margin-bottom: 5px;">الصلاة القادمة</div>
-        <div class="timer-main" id="timer">00:00:00</div>
+        <div style="font-size: 12px; color: #666;">الصلاة القادمة</div>
+        <div class="timer-main" id="timer-next">00:00:00</div>
     </div>
 
     <div class="prayer-list" id="list-container"></div>
 
     <div class="hadith-footer">
-        <div class="hadith-wrapper" id="hadith-content"></div>
+        <div class="hadith-track" id="hadith-track"></div>
     </div>
 
     <script>
         const audio = document.getElementById('adhan-player');
-        // Imposta l'Athan predefinito
         audio.src = "https://www.islamcan.com/audio/adhan/azan1.mp3";
 
-        function initNotifications() {
-            Notification.requestPermission().then(p => { 
-                if(p==="granted") alert("Banner e Athan Attivati!"); 
-            });
-        }
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
         const hadiths = [
             "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»",
             "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»",
-            "«خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ»",
             "«مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»"
         ];
-        
         const hText = hadiths.join("  • ✨ •  ") + "  • ✨ •  ";
-        document.getElementById('hadith-content').innerHTML = 
-            `<div class="hadith-item">${hText}</div><div class="hadith-item">${hText}</div>`;
+        document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
 
         const prayerData = {
             f: { name: "الفجر", icon: "🌅" },
@@ -151,47 +168,42 @@
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 
-                // Athan & Banner
-                if (currentTimeStr === pTime && lastNotified !== k) {
-                    lastNotified = k;
-                    audio.play().catch(() => {});
-                    if (Notification.permission === "granted") {
-                        new Notification("Ora della Preghiera", { body: "È l'ora di " + prayerData[k].name, icon: "https://cdn-icons-png.flaticon.com/512/2972/2972473.png" });
-                    }
-                }
-
                 let activeClass = "";
-                let kamaContent = "";
+                let iqamaLabel = "";
+
                 const diffMs = now - pDate;
                 const diffMin = diffMs / 60000;
                 const iqamaDuration = (k === 'f') ? 20 : 10;
-                
+
                 if (diffMin >= 0 && diffMin < iqamaDuration) {
                     const totalSecRem = (iqamaDuration * 60) - Math.floor(diffMs / 1000);
                     const remM = Math.floor(totalSecRem / 60);
                     const remS = (totalSecRem % 60).toString().padStart(2, '0');
-                    kamaContent = `<br><span class="kama-inner">Iqama tra ${remM}:${remS}</span>`;
+                    iqamaLabel = `<span class="iqama-tag">Iqama ${remM}:${remS}</span>`;
+                    activeClass = "active";
                 }
 
                 if (pDate > now && !foundNext) {
-                    foundNext = true; activeClass = "active";
+                    foundNext = true;
                     const diff = pDate - now;
                     const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                     const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                     const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                    document.getElementById('timer').innerText = hh+":"+mm+":"+ss;
+                    document.getElementById('timer-next').innerText = hh+":"+mm+":"+ss;
+                }
+
+                if (currentTimeStr === pTime && lastNotified !== k) {
+                    lastNotified = k; audio.play().catch(()=>{});
                 }
 
                 html += `
                     <div class="prayer-card ${activeClass}">
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <span style="font-size:26px;">${prayerData[k].icon}</span>
-                            <div>
-                                <span class="p-name">${prayerData[k].name}</span>
-                                ${kamaContent}
-                            </div>
+                        <div style="display:flex; align-items:center;">
+                            <span style="font-size:22px; margin-left:12px;">${prayerData[k].icon}</span>
+                            <span class="p-name">${prayerData[k].name}</span>
+                            ${iqamaLabel}
                         </div>
-                        <span class="p-time">${pTime}</span>
+                        <span style="font-weight:800; color:var(--mp-dark-green); font-size:20px;">${pTime}</span>
                     </div>`;
             }
             document.getElementById('list-container').innerHTML = html;
