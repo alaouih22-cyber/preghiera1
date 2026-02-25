@@ -61,11 +61,10 @@
         .timer-section { flex: 1.2; text-align: center; border-left: 1px solid #eee; }
         .timer-main { font-size: 28px; font-weight: 900; color: var(--mp-dark-green); margin: 2px 0; }
         
-        .date-section { flex: 1; text-align: center; padding-right: 10px; }
+        .date-section { flex: 1.3; text-align: center; padding-right: 5px; }
         .date-box { background: #f9f4e8; border-radius: 12px; padding: 6px; border: 1px dashed var(--mp-gold); }
-        .date-label { font-size: 10px; color: var(--mp-gold); font-weight: bold; display: block; margin-bottom: 2px; }
-        .greg-date { font-size: 12px; font-weight: bold; color: #666; display: block; border-bottom: 1px solid #eee; padding-bottom: 2px; margin-bottom: 2px; }
-        .hijri-date { font-size: 13px; font-weight: 900; color: var(--mp-dark-green); display: block; line-height: 1.2; }
+        .date-label { font-size: 10px; color: #666; font-weight: bold; display: block; margin-top: 2px; }
+        .date-value { font-size: 12px; font-weight: 900; color: var(--mp-dark-green); display: block; line-height: 1.3; }
 
         .prayer-list { width: 92%; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-bottom: 5px; }
         .prayer-card {
@@ -149,9 +148,10 @@
     <div class="dashboard">
         <div class="date-section">
             <div class="date-box">
-                <span class="greg-date" id="greg-date">--/--/----</span>
-                <span class="date-label">التاريخ الهجري</span>
-                <span class="hijri-date" id="hijri-date">...</span>
+                <span class="date-label">التاريخ الهجري اليوم</span>
+                <span class="date-value" id="hijri-date-full">...</span>
+                <span class="date-label">التاريخ الميلادي اليوم</span>
+                <span class="date-value" id="greg-date-full">...</span>
             </div>
         </div>
         <div class="timer-section">
@@ -216,22 +216,19 @@
         function update() {
             const now = new Date();
             
-            // AGGIORNAMENTO DATE
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            document.getElementById('greg-date').innerText = `${day}/${month}/${year}`;
-            
-            // FORZATURA CALENDARIO ISLAMICO (RAMADAN 1447)
+            // AGGIORNAMENTO AUTOMATICO DATE COME RICHIESTO
+            // 1. Data Gregoriana Completa
+            const gregOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            let gregStr = now.toLocaleDateString('ar-SA', gregOptions) + "م";
+            document.getElementById('greg-date-full').innerText = gregStr;
+
+            // 2. Data Egira Completa
             try {
-                const hijriDateStr = now.toLocaleDateString('ar-SA-u-ca-islamic-uma-nu-latn', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                });
-                document.getElementById('hijri-date').innerText = hijriDateStr;
+                const hijriOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                let hijriStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma-nu-latn', hijriOptions).format(now) + "هـ";
+                document.getElementById('hijri-date-full').innerText = hijriStr;
             } catch(e) {
-                document.getElementById('hijri-date').innerText = "رمضان ١٤٤٧";
+                document.getElementById('hijri-date-full').innerText = "الأربعاء 08 رمضان 1447هـ";
             }
 
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
