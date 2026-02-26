@@ -107,8 +107,8 @@
 </head>
 <body>
 
-    <audio id="adhan-player"></audio>
-    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3"></audio>
+    <audio id="adhan-player" preload="auto"></audio>
+    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto"></audio>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -165,9 +165,24 @@
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
         
+        // REGISTRAZIONE SERVICE WORKER AUTOMATICA (Necessaria per la tendina notifiche)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {
+                // Se non hai il file sw.js, creiamo un worker "al volo" per i test
+                const blob = new Blob(["self.addEventListener('push', function(e){});"], {type: 'application/javascript'});
+                navigator.serviceWorker.register(URL.createObjectURL(blob));
+            });
+        }
+
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
         function saveAthan(url) { audioAdhan.src = url; localStorage.setItem('userAthan', url); }
-        function enableNotifs() { Notification.requestPermission(); }
+        
+        function enableNotifs() { 
+            Notification.requestPermission().then(permission => {
+                if(permission === "granted") alert("🔔 الإشعارات مفعلة بنجاح");
+            }); 
+            toggleMenu();
+        }
 
         function adminAccess() {
             const pin = prompt("PIN Admin:");
@@ -183,15 +198,31 @@
             } else { alert("PIN Errato!"); }
         }
 
-        function testNotif() {
-            const style = localStorage.getItem('notifStyle') || 'adhan';
-            alert("Avvio test notifica in modalità: " + style);
-            if (style === 'adhan') audioAdhan.play().catch(e => alert("Errore Audio: " + e));
-            else audioBip.play().catch(e => alert("Errore Audio: " + e));
-            
+        function sendPush(title, body) {
             if (Notification.permission === "granted") {
-                new Notification("اختبار الإشعارات", { body: "هذا إشعار تجريبي بنجاح" });
+                // Suona
+                const style = localStorage.getItem('notifStyle') || 'adhan';
+                if (style === 'adhan') audioAdhan.play().catch(()=>{});
+                else audioBip.play().catch(()=>{});
+
+                // Mostra notifica nella tendina usando il Service Worker
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.showNotification(title, {
+                        body: body,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                        vibrate: [200, 100, 200],
+                        badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png'
+                    });
+                });
             }
+        }
+
+        function testNotif() {
+            if (Notification.permission !== "granted") {
+                alert("Abilita prima le notifiche dal menu!");
+                return;
+            }
+            sendPush("اختبار الإشعارات", "هذا إشعار تجريبي يعمل في خلفية الهاتف");
         }
 
         function showBanner() {
@@ -215,6 +246,17 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
+            // NOTIFICHE FISSE
+            if (timeNow === "05:20" && window.lastE !== "imsak") {
+                window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor");
+            }
+            if (timeNow === "17:45" && window.lastE !== "iftar") {
+                window.lastE = "iftar"; sendPush("Iftar", "Ramadan Mubarak!");
+            }
+            if (timeNow === "20:30" && window.lastE !== "night") {
+                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Modalità Notte Serena attiva");
+            }
+
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
 
@@ -228,8 +270,7 @@
                 
                 if (timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; 
-                    const style = localStorage.getItem('notifStyle') || 'adhan';
-                    (style === 'adhan') ? audioAdhan.play() : audioBip.play();
+                    sendPush("صلاة " + prayerData[k].n, "حان الآن موعد الآذان");
                 }
                 html += `<div class="prayer-card ${active}">
                             <div style="display:flex; align-items:center;">
