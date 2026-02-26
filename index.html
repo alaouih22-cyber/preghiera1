@@ -106,7 +106,9 @@
 </head>
 <body onclick="unlockAudio()">
 
-    <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline><source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3"></audio>
+    <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline>
+        <source src="https://archive.org/download/Adhan_201704/Adhan%20Makkah.mp3">
+    </audio>
     <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous" playsinline></audio>
 
     <div class="ramadan-header">
@@ -132,9 +134,9 @@
 
         <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">اختر صوت الآذان:</div>
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
-            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3">مكة المكرمة</option>
-            <option value="https://ia801908.us.archive.org/24/items/azan_202102/azan.mp3">المغرب</option>
-            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Madina.mp3">المدينة المنورة</option>
+            <option value="https://archive.org/download/Adhan_201704/Adhan%20Makkah.mp3">مكة المكرمة</option>
+            <option value="https://archive.org/download/azan_202102/azan.mp3">المغرب</option>
+            <option value="https://archive.org/download/Adhan_201704/Adhan%20Madina.mp3">المدينة المنورة</option>
         </select>
 
         <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
@@ -168,16 +170,14 @@
         let audioUnlocked = false;
 
         function forceUnlockAndTest() {
-            // Vibrazione per feedback immediato
             if (navigator.vibrate) navigator.vibrate(100);
-            
             audioAdhan.muted = false;
             audioAdhan.load(); 
             audioAdhan.play().then(() => {
                 audioUnlocked = true;
                 console.log("Audio Sbloccato");
             }).catch(e => {
-                alert("Errore Android: " + e.message + ". Assicurati di avere internet attivo.");
+                alert("Errore Android: " + e.message);
             });
             toggleMenu();
         }
@@ -193,8 +193,12 @@
             document.getElementById('athan-select').value = localStorage.getItem('userAthan');
         }
 
+        // REGISTRAZIONE SERVICE WORKER
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(reg => console.log("SW Pronto")).catch(err => console.log("Errore SW", err));
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log("SW Pronto");
+                reg.update(); // Forza aggiornamento per intercettare fetch audio
+            }).catch(err => console.log("Errore SW", err));
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -206,16 +210,12 @@
         }
 
         function sendPush(title, body, type) {
-            // Azione professionale per APK
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-
             const style = localStorage.getItem('notifStyle') || 'adhan';
             let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
             
             player.currentTime = 0;
-            player.play().catch(e => {
-                console.log("Audio bloccato dal sistema");
-            });
+            player.play().catch(e => console.log("Blocco audio"));
 
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
