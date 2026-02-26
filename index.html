@@ -107,7 +107,7 @@
 <body onclick="unlockAudio()">
 
     <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline>
-        <source src="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_makkah.mp3">
+        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">
     </audio>
     <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous" playsinline></audio>
 
@@ -122,23 +122,9 @@
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات</h3>
         
-        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الآذان</button>
-        
+        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الصوت</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
         
-        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">نغمة التنبيه:</div>
-        <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
-            <option value="adhan">آذان كامل</option>
-            <option value="bip">رنة + إشعار</option>
-        </select>
-
-        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">اختر صوت الآذان:</div>
-        <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
-            <option value="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_makkah.mp3">مكة المكرمة</option>
-            <option value="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_maroc.mp3">المغرب</option>
-            <option value="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_madina.mp3">المدينة المنورة</option>
-        </select>
-
         <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
         <hr style="border-color: var(--mp-gold);">
         <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
@@ -172,12 +158,10 @@
         function forceUnlockAndTest() {
             if (navigator.vibrate) navigator.vibrate(100);
             audioAdhan.muted = false;
-            audioAdhan.load(); 
             audioAdhan.play().then(() => {
                 audioUnlocked = true;
-                console.log("Audio Sbloccato");
             }).catch(e => {
-                alert("Errore Android: " + e.message);
+                alert("Tocca lo schermo e riprova!");
             });
             toggleMenu();
         }
@@ -188,20 +172,7 @@
             audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
         }
 
-        if (localStorage.getItem('userAthan')) {
-            audioAdhan.src = localStorage.getItem('userAthan');
-            document.getElementById('athan-select').value = localStorage.getItem('userAthan');
-        }
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                console.log("SW Pronto");
-                reg.update();
-            }).catch(err => console.log("Errore SW", err));
-        }
-
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-        function saveAthan(url) { audioAdhan.src = url; audioAdhan.load(); localStorage.setItem('userAthan', url); }
 
         function enableNotifs() { 
             Notification.requestPermission().then(p => { if(p === "granted") alert("🔔 الإشعارات تعمل بنجاح!"); });
@@ -210,42 +181,20 @@
 
         function sendPush(title, body, type) {
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-            const style = localStorage.getItem('notifStyle') || 'adhan';
-            let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
-            
-            player.currentTime = 0;
-            player.play().catch(e => console.log("Blocco audio"));
+            audioAdhan.currentTime = 0;
+            audioAdhan.play().catch(e => console.log("Audio in attesa"));
 
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, {
-                        body: body,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        vibrate: [300, 100, 300]
-                    });
+                    reg.showNotification(title, { body: body, icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png' });
                 });
             }
         }
 
-        async function checkGlobalNews() {
-            try {
-                const response = await fetch('./news.json?v=' + Date.now());
-                const data = await response.json();
-                const lastId = localStorage.getItem('last_news_id');
-                if (data.id && data.id !== lastId) {
-                    sendPush(data.title, data.body, 'bip');
-                    localStorage.setItem('last_news_id', data.id);
-                }
-            } catch (e) {}
-        }
-        setInterval(checkGlobalNews, 30000); 
-
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                const opt = prompt("1: تجربة الآذان\n2: تجربة نغمة");
-                if (opt === "1") sendPush("تجربة الآذان", "اختبار الصوت", 'adhan');
-                if (opt === "2") sendPush("تنبيه", "اختبار النغمة", 'bip');
+                sendPush("تجربة", "اختبار الصوت", 'adhan');
             }
         }
 
@@ -293,7 +242,7 @@
 
             if (nextP) {
                 const diff = nextP - now;
-                const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
+                const hh = Math.floor(diff/3600000).padStart(2,"0");
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                 const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
                 document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
