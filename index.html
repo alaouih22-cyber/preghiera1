@@ -11,7 +11,6 @@
             --mp-gold: #C5A059; 
             --mp-bg: #F6F7F9; 
             --white: #ffffff;
-            --glow-color: rgba(197, 160, 89, 0.6);
         }
 
         body {
@@ -20,34 +19,45 @@
             display: flex; flex-direction: column; align-items: center;
             height: 100vh; width: 100vw; overflow: hidden;
             font-family: 'Segoe UI', Roboto, sans-serif;
-            transition: background 0.5s ease;
         }
 
-        body.night-mode { background-color: #001a14; color: white; }
-        body.night-mode .dashboard, body.night-mode .prayer-card { background: #002e25; color: white; border-color: var(--mp-gold); }
+        /* FIX: Z-INDEX E VISIBILITÀ MENU */
+        .menu-btn { 
+            position: absolute; left: 15px; top: 15px; 
+            color: var(--mp-gold); cursor: pointer; 
+            font-size: 32px; z-index: 9999; /* Sempre in primo piano */
+            padding: 5px;
+        }
 
         .ramadan-header {
             width: 100%; background: var(--mp-dark-green);
-            padding: 15px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
-            position: relative; display: flex; justify-content: center; align-items: center;
-            flex-shrink: 0;
+            padding: 10px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
+            display: flex; justify-content: center; align-items: center; flex-shrink: 0;
         }
 
-        .fanous-svg { width: 35px; height: auto; margin: 0 15px; fill: var(--mp-gold); filter: drop-shadow(0 0 5px var(--mp-gold)); }
-        .ramadan-title { color: var(--mp-gold); font-size: 28px; margin: 0; font-weight: 900; }
+        .ramadan-title { color: var(--mp-gold); font-size: 24px; margin: 0; font-weight: 900; }
+
+        .sidebar {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            background: var(--mp-dark-green); z-index: 10000; transition: 0.3s;
+            padding: 20px; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        }
+        .sidebar.open { left: 0; }
+        
+        .menu-item {
+            background: rgba(255,255,255,0.1); border: 1px solid var(--mp-gold);
+            color: white; padding: 12px; border-radius: 10px; width: 100%;
+            margin-bottom: 10px; cursor: pointer; text-align: right; font-weight: bold;
+        }
 
         .dashboard {
-            width: 92%; max-width: 400px; background: white; border-radius: 15px;
-            margin: 10px 0; padding: 10px; 
-            border: 1px solid var(--mp-gold); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 92%; background: white; border-radius: 15px;
+            margin: 8px 0; padding: 10px; border: 1px solid var(--mp-gold);
             display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
         
-        .timer-section { flex: 1; text-align: center; border-left: 1px solid #eee; }
         .timer-main { font-size: 22px; font-weight: 900; color: var(--mp-dark-green); }
-        
-        .date-section { flex: 1; text-align: center; }
-        .date-value { font-size: 13px; font-weight: 900; color: var(--mp-dark-green); display: block; }
+        .date-value { font-size: 13px; font-weight: 800; color: var(--mp-dark-green); }
 
         #news-banner {
             width: 92%; background: #fff3cd; color: #856404;
@@ -58,73 +68,63 @@
 
         .prayer-list { 
             width: 94%; flex-grow: 1; display: flex; flex-direction: column; 
-            gap: 5px; overflow-y: auto; padding-bottom: 10px;
+            gap: 5px; overflow-y: auto; padding-bottom: 5px;
         }
         
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 12px 20px; 
-            border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            flex-shrink: 0;
+            background: var(--white); padding: 10px 15px; 
+            border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         .prayer-card.active { border: 2px solid var(--mp-gold); background: #fdfaf3; }
-        .p-name { font-size: 18px; font-weight: 800; color: var(--mp-dark-green); }
-        .p-time { font-size: 18px; font-weight: 900; }
 
+        /* FIX: ANIMAZIONE HADITH */
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
             padding: 8px 0; border-top: 2px solid var(--mp-gold);
-            overflow: hidden; flex-shrink: 0;
+            overflow: hidden; flex-shrink: 0; position: relative;
         }
-        .hadith-track { display: flex; width: max-content; animation: scroll-hadith 25s linear infinite; }
-        .hadith-text { color: var(--mp-gold); font-weight: 600; font-size: 14px; white-space: nowrap; padding-left: 100vw; }
-        @keyframes scroll-hadith { from { transform: translateX(0); } to { transform: translateX(100%); } }
-
-        .sidebar {
-            position: fixed; top: 0; left: -320px; width: 280px; height: 100%;
-            background: var(--mp-dark-green); z-index: 1000; transition: 0.3s;
-            padding: 20px; color: white;
+        .hadith-track {
+            display: inline-block;
+            white-space: nowrap;
+            will-change: transform;
+            animation: scroll-hadith 20s linear infinite;
         }
-        .sidebar.open { left: 0; }
-        .menu-item {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--mp-gold);
-            color: white; padding: 12px; border-radius: 10px; width: 100%;
-            margin-bottom: 10px; cursor: pointer; text-align: right; font-weight: bold;
+        .hadith-text {
+            display: inline-block;
+            color: var(--mp-gold); font-weight: 600; font-size: 14px;
+            padding-right: 50px;
         }
-        
-        .menu-btn { position: absolute; left: 15px; top: 15px; color: var(--mp-gold); cursor: pointer; font-size: 28px; z-index: 100; }
+        @keyframes scroll-hadith {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
     </style>
 </head>
-<body>
+<body class="night-mode-off">
 
     <audio id="adhan-player"></audio>
 
     <div class="menu-btn" onclick="toggleMenu()">☰</div>
 
-    <div class="ramadan-header">
-        <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
-        <h1 class="ramadan-title">Bastia Umbra</h1>
-        <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
-    </div>
-
     <div class="sidebar" id="sidebar">
         <div style="font-size:30px; cursor:pointer; text-align:left;" onclick="toggleMenu()">&times;</div>
-        <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:5px;">Amministrazione</h3>
-        <button class="menu-item" onclick="writeNotice()">📝 Gestisci Avvisi (Admin)</button>
+        <h3 style="color:var(--mp-gold);">Amministrazione</h3>
+        <button class="menu-item" onclick="writeNotice()">📝 Gestisci Avvisi (PIN 2026)</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 Attiva Notifiche</button>
-        <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
-            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">Maghreb</option>
-        </select>
+    </div>
+
+    <div class="ramadan-header">
+        <h1 class="ramadan-title">Bastia Umbra</h1>
     </div>
 
     <div class="dashboard">
         <div class="date-section">
             <span class="date-value" id="hijri-date-full">...</span>
-            <span class="date-value" id="greg-date-full" style="opacity:0.7; font-size:11px;">...</span>
+            <span class="date-value" id="greg-date-full" style="font-size:11px; opacity:0.8;">...</span>
         </div>
-        <div class="timer-section">
-            <div id="next-prayer-label" style="font-size:10px; font-weight:bold;">Prossima Preghiera</div>
+        <div class="timer-section" style="text-align:center;">
+            <div id="next-label" style="font-size:10px; font-weight:bold;">Prossima</div>
             <div class="timer-main" id="timer-next">00:00:00</div>
         </div>
     </div>
@@ -134,86 +134,86 @@
     <div class="prayer-list" id="list-container"></div>
 
     <div class="hadith-footer">
-        <div class="hadith-track" id="hadith-track">
-            <div class="hadith-text">قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»</div>
-            <div class="hadith-text">قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»</div>
+        <div class="hadith-track">
+            <span class="hadith-text">قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»</span>
+            <span class="hadith-text">قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»</span>
         </div>
     </div>
 
     <script>
         const audio = document.getElementById('adhan-player');
         
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
+        function toggleMenu() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('open');
+        }
 
         function writeNotice() {
             const pin = prompt("Inserisci PIN Amministratore:");
             if (pin === "2026") {
-                const action = confirm("OK per SCRIVERE un nuovo avviso, ANNULLA per CANCELLARE l'attuale.");
+                const action = confirm("Vuoi inserire un nuovo avviso? (Premi ANNULLA per cancellare l'avviso attuale)");
                 if (action) {
-                    const msg = prompt("Scrivi il nuovo avviso:");
-                    if (msg) { localStorage.setItem('masjid_notice', msg); showBanner(); sendPush("Avviso Moschea", msg); }
+                    const msg = prompt("Scrivi il messaggio:");
+                    if (msg) {
+                        localStorage.setItem('masjid_notice', msg);
+                        alert("Avviso aggiornato!");
+                    }
                 } else {
-                    localStorage.removeItem('masjid_notice'); showBanner();
+                    localStorage.removeItem('masjid_notice');
+                    alert("Avviso rimosso.");
                 }
-            } else { alert("PIN Errato!"); }
+                showBanner();
+            } else {
+                alert("PIN Errato!");
+            }
             toggleMenu();
         }
 
         function showBanner() {
             const notice = localStorage.getItem('masjid_notice');
             const banner = document.getElementById('news-banner');
-            if (notice) { banner.innerText = "📢 " + notice; banner.style.display = "block"; } 
-            else { banner.style.display = "none"; }
-        }
-
-        function sendPush(title, body) {
-            if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png" });
-                });
+            if (notice) {
+                banner.innerText = "📢 " + notice;
+                banner.style.display = "block";
+            } else {
+                banner.style.display = "none";
             }
         }
-
-        const prayerData = {
-            f: { name: "Fajr", icon: "🌅" }, sh: { name: "Shuruk", icon: "☀️" },
-            dh: { name: "Dhuhr", icon: "☀️" }, a: { name: "Asr", icon: "🌤️" }, 
-            m: { name: "Maghrib", icon: "🌇" }, i: { name: "Isha", icon: "🌙" }
-        };
 
         const times = { 
             "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
             "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
         };
 
-        const hijriMapping = { "26/2": "09 Ramadan 1447", "27/2": "10 Ramadan 1447" };
-
         function update() {
             const now = new Date();
-            const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
-            const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-
-            document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
-            document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "Ramadan 1447";
-
-            // Notifiche Fisse
-            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor"); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; audio.play().catch(()=>{}); sendPush("Iftar", "Mubarak!"); }
-            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Modo Notte!"); }
+            const d = now.getDate();
+            const m = now.getMonth() + 1;
+            const dateKey = d + "/" + m;
+            
+            document.getElementById('greg-date-full').innerText = d + "/" + m + "/" + now.getFullYear();
+            document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 Ramadan 1447" : "10 Ramadan 1447";
 
             const today = times[dateKey] || times["26/2"];
-            let html = ""; let nextP = null; let nextN = "";
+            let html = "";
+            let nextP = null;
+            let nextN = "";
 
-            for (let k in prayerData) {
-                const pTime = today[k];
-                const [h, m] = pTime.split(":");
-                const pDate = new Date(); pDate.setHours(h, m, 0);
-                let active = (now - pDate >= 0 && now - pDate < 600000) ? "active" : "";
-                if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].name; }
-                if (k !== 'sh' && timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; audio.play().catch(()=>{});
-                    sendPush("Ora di " + prayerData[k].name, "Adhan in corso...");
-                }
-                html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:24px; margin-left:10px;">${prayerData[k].icon}</span><span class="p-name">${prayerData[k].name}</span></div><span class="p-time">${pTime}</span></div>`;
+            const prayers = { Fajr:"f", Shuruk:"sh", Dhuhr:"dh", Asr:"a", Maghrib:"m", Isha:"i" };
+
+            for (let name in prayers) {
+                const key = prayers[name];
+                const pTime = today[key];
+                const [h, min] = pTime.split(":");
+                const pDate = new Date(); pDate.setHours(h, min, 0);
+
+                let active = (now >= pDate && (now - pDate < 600000)) ? "active" : "";
+                if (pDate > now && !nextP) { nextP = pDate; nextN = name; }
+
+                html += `<div class="prayer-card ${active}">
+                            <span style="font-weight:800; color:var(--mp-dark-green);">${name}</span>
+                            <span style="font-weight:900;">${pTime}</span>
+                         </div>`;
             }
 
             if (nextP) {
@@ -221,14 +221,12 @@
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                 const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
-                document.getElementById('next-prayer-label').innerText = nextN;
+                document.getElementById('timer-next').innerText = hh + ":" + mm + ":" + ss;
+                document.getElementById('next-label').innerText = nextN;
             }
+
             document.getElementById('list-container').innerHTML = html;
         }
-
-        function enableNotifs() { Notification.requestPermission(); toggleMenu(); }
-        function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
 
         setInterval(update, 1000);
         showBanner();
