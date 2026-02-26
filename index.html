@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
-    <title>Muslim Pro - Bastia Umbra</title>
+    <title>Prayer Time - Bastia Umbra</title>
     <style>
         :root {
             --mp-dark-green: #004F3F; 
@@ -60,14 +60,11 @@
         .date-value { font-size: 14px; font-weight: 900; color: var(--mp-dark-green); display: block; line-height: 1.2; }
         .label-small { font-size: 10px; color: #666; font-weight: bold; margin-bottom: 4px; }
 
-        /* BANNER AVVISI ADMIN */
         #news-banner { 
-            width: 90%; background: #fff3cd; color: #856404; 
-            padding: 12px; margin: 5px 0; border-radius: 12px; 
-            display: none; text-align: center; font-weight: bold; 
-            border: 2px solid var(--mp-gold); animation: pulse 2s infinite;
+            width: 90%; background: #fff3cd; padding: 12px; margin-bottom: 10px; 
+            border-radius: 12px; display: none; text-align: center; font-weight: bold; 
+            border: 2px solid var(--mp-gold); color: #856404;
         }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
         .prayer-list { width: 94%; flex-grow: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-bottom: 15px; }
         
@@ -115,9 +112,7 @@
 </head>
 <body onclick="unlockAudio()">
 
-    <audio id="adhan-player" preload="auto">
-        <source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="adhan-player" preload="auto"><source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3"></audio>
     <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto"></audio>
 
     <div class="ramadan-header">
@@ -130,7 +125,7 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات</h3>
-        <button class="menu-item" onclick="adminDashboard()">⚙️ لوحة الإدارة (Admin)</button>
+        <button class="menu-item" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
         <div style="margin: 5px 0; font-size: 12px;">تنبيه الصلاة:</div>
         <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
@@ -143,7 +138,7 @@
             <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Madina.mp3">المدينة المنورة</option>
         </select>
         <hr style="border-color: var(--mp-gold);">
-        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%c3%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
+        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
     </div>
 
     <div class="dashboard">
@@ -171,24 +166,17 @@
     <script>
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
-        
+
         function unlockAudio() {
             audioAdhan.play().then(() => audioAdhan.pause()).catch(e => {});
             audioBip.play().then(() => audioBip.pause()).catch(e => {});
         }
 
-        // REGISTRAZIONE SERVICE WORKER (OBBLIGATORIO PER LA TENDINA)
+        // REGISTRAZIONE SERVICE WORKER
         if ('serviceWorker' in navigator) {
-            const swCode = `
-                self.addEventListener('install', e => self.skipWaiting());
-                self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-                self.addEventListener('push', e => {
-                    const d = e.data.json();
-                    self.registration.showNotification(d.title, { body: d.body, icon: 'icon.png' });
-                });
-            `;
-            const blob = new Blob([swCode], {type: 'application/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
+            navigator.serviceWorker.register('sw.js').then(() => {
+                console.log("Service Worker Attivo");
+            }).catch(err => console.log("Errore SW:", err));
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -201,8 +189,7 @@
             toggleMenu();
         }
 
-        // DASHBOARD ADMIN: TEST + BANNER
-        function adminDashboard() {
+        function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
                 const opt = prompt("1: Scrivi Avviso Banner\n2: Prova Notifica Tendina\n3: Cancella Avviso");
@@ -210,7 +197,7 @@
                     const m = prompt("Testo per il banner:");
                     if (m) { localStorage.setItem('masjid_notice', m); showBanner(); }
                 } else if (opt === "2") {
-                    sendPush("تجربة الإشعار", "هذا الإشcar يظهر في الستارة بنجاح!");
+                    sendPush("تجربة الإشعار", "هذا الإشعار يظهر في الستارة بنجاح!");
                 } else if (opt === "3") {
                     localStorage.removeItem('masjid_notice'); showBanner();
                 }
@@ -219,19 +206,16 @@
 
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
-                // Suono
                 const style = localStorage.getItem('notifStyle') || 'adhan';
-                if (style === 'adhan') audioAdhan.play().catch(e => console.log(e));
-                else audioBip.play().catch(e => console.log(e));
+                (style === 'adhan') ? audioAdhan.play().catch(e => {}) : audioBip.play().catch(e => {});
 
-                // Tendina Professionale
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
                         vibrate: [300, 100, 300],
                         badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        requireInteraction: true // Mantiene la notifica finché non viene chiusa
+                        requireInteraction: true
                     });
                 });
             }
@@ -258,9 +242,9 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // NOTIFICHE FISSE DA PROGRAMMA
+            // AVVISI FISSI AUTOMATICI [cite: 2026-02-25]
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor"); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "Ramadan Mubarak!"); }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "Notifica Iftar"); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Modalità Notte Serena attiva"); }
 
             const today = times[dateKey] || times["26/2"];
