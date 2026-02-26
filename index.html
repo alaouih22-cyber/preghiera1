@@ -27,7 +27,7 @@
 
         .ramadan-header {
             width: 100%; background: var(--mp-dark-green);
-            padding: 35px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
+            padding: 35px( 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
             position: relative; display: flex; justify-content: center; align-items: center;
             flex-shrink: 0;
         }
@@ -106,8 +106,12 @@
 </head>
 <body onclick="unlockAudio()">
 
-    <audio id="adhan-player" preload="auto"><source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3"></audio>
-    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto"></audio>
+    <audio id="adhan-player" preload="auto">
+        <source src="https://www.islamcan.com/audio/adhan/azan1.mp3">
+    </audio>
+    <audio id="bip-player" preload="auto">
+        <source src="https://www.soundjay.com/buttons/beep-07a.mp3">
+    </audio>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -129,14 +133,14 @@
 
         <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">اختر صوت الآذان:</div>
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
-            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3">مكة المكرمة</option>
-            <option value="https://ia801908.us.archive.org/24/items/azan_202102/azan.mp3">المغرب</option>
-            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Madina.mp3">المدينة المنورة</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">المدينة المنورة</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب</option>
         </select>
 
         <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
         <hr style="border-color: var(--mp-gold);">
-        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
+        <a href="https://easyquran.com/ar/" target="_blank" class="menu-item">📖 مصحف التجويد</a>
     </div>
 
     <div class="dashboard">
@@ -155,7 +159,7 @@
 
     <div class="hadith-footer">
         <div class="hadith-track">
-            <div class="hadith-text">قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً» • رمضان مبارك • اللهم بلغنا ليلة القدر</div>
+            <div class="hadith-text">رمضان مبارك في باستيا أومبريا • تقبل الله منا ومنكم صالح الأعمال</div>
         </div>
     </div>
 
@@ -163,15 +167,15 @@
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
 
-        // Carica l'athan preferito se salvato
         if(localStorage.getItem('userAthan')) {
             audioAdhan.src = localStorage.getItem('userAthan');
             document.getElementById('athan-select').value = localStorage.getItem('userAthan');
         }
 
+        // IMPORTANTE: Sblocca l'audio al primo tocco
         function unlockAudio() {
-            audioAdhan.play().then(() => audioAdhan.pause()).catch(e => {});
-            audioBip.play().then(() => audioBip.pause()).catch(e => {});
+            audioAdhan.play().then(() => { audioAdhan.pause(); audioAdhan.currentTime = 0; });
+            audioBip.play().then(() => { audioBip.pause(); audioBip.currentTime = 0; });
         }
 
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
@@ -180,50 +184,53 @@
         function saveAthan(url) { audioAdhan.src = url; audioAdhan.load(); localStorage.setItem('userAthan', url); }
 
         function enableNotifs() { 
-            Notification.requestPermission().then(p => { if(p === "granted") alert("🔔 الإشعارات تعمل بنجاح!"); });
+            Notification.requestPermission().then(p => { if(p === "granted") alert("🔔 الإشعارات تعمل!"); });
             toggleMenu();
         }
 
+        // FUNZIONE NOTIFICA CON SCRITTA E AUDIO
         function sendPush(title, body, type) {
             if (Notification.permission === "granted") {
                 const style = localStorage.getItem('notifStyle') || 'adhan';
+                
+                // Audio
                 if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
-                    audioAdhan.currentTime = 0; audioAdhan.play(); 
+                    audioAdhan.currentTime = 0;
+                    audioAdhan.play().catch(e => console.log("Errore audio")); 
                 } else { 
-                    audioBip.currentTime = 0; audioBip.play(); 
+                    audioBip.currentTime = 0;
+                    audioBip.play().catch(e => {}); 
                 }
 
+                // Banner Notifica
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        vibrate: [300, 100, 300],
-                        requireInteraction: true
+                        vibrate: [500, 200, 500],
+                        requireInteraction: true,
+                        dir: 'rtl'
                     });
                 });
             }
         }
 
-        // --- SISTEMA GLOBALE NEWS ---
         async function checkGlobalNews() {
             try {
                 const response = await fetch('news.json?v=' + Date.now());
                 const data = await response.json();
-                const lastId = localStorage.getItem('last_news_id');
-                if (data.id !== lastId) {
+                if (data.id !== localStorage.getItem('last_news_id')) {
                     sendPush(data.title, data.body, 'bip');
                     localStorage.setItem('last_news_id', data.id);
                 }
             } catch (e) {}
         }
-        setInterval(checkGlobalNews, 30000); 
+        setInterval(checkGlobalNews, 30000);
 
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                const opt = prompt("1: تجربة الآذان (Local Athan)\n2: تجربة نغمة (Local Bip)");
-                if (opt === "1") sendPush("تجربة الآذان", "اختبار الصوت الكامل", 'adhan');
-                if (opt === "2") sendPush("تنبيه", "اختبار النغمة القصيرة", 'bip');
+                sendPush("اختبار محلي", "تنبيه من إدارة المسجد", 'adhan');
             }
         }
 
@@ -232,7 +239,6 @@
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
         };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
-        const prayerIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
 
         function update() {
             const now = new Date();
@@ -242,6 +248,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
+            // NOTIFICHE AUTOMATICHE FISSE
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
@@ -256,15 +263,15 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
+                
+                // QUANDO SCATTA L'ORA: SUONA E MOSTRA SCRITTA
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
+                    window.lastN = k; 
+                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
-                            <div style="display:flex; align-items:center;">
-                                <span style="font-size:30px; margin-left:15px;">${prayerIcons[k]}</span>
-                                <span class="p-name">${prayerNames[k]}</span>
-                            </div>
+                            <span class="p-name">${prayerNames[k]}</span>
                             <span class="p-time">${pTime}</span>
                         </div>`;
             }
