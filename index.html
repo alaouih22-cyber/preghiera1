@@ -104,10 +104,10 @@
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
     </style>
 </head>
-<body onclick="unlockAudio()">
+<body onclick="sbloccaAudioMobile()">
 
-    <audio id="adhan-player" preload="auto" crossorigin="anonymous"><source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3"></audio>
-    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous"></audio>
+    <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline><source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3"></audio>
+    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous" playsinline></audio>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -167,7 +167,13 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
-        // FUNZIONE CORRETTA: Deve essere chiamata da un click utente
+        // AGGIUNTO: Sblocca audio su mobile al primo tocco
+        function sbloccaAudioMobile() {
+            if (audioUnlocked) return;
+            audioAdhan.play().then(() => { audioAdhan.pause(); audioUnlocked = true; }).catch(e => {});
+            audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
+        }
+
         function forceUnlockAndTest() {
             audioAdhan.muted = false;
             audioAdhan.play().then(() => {
@@ -204,11 +210,16 @@
         function sendPush(title, body, type) {
             if (Notification.permission === "granted") {
                 const style = localStorage.getItem('notifStyle') || 'adhan';
-                if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
-                    audioAdhan.currentTime = 0; audioAdhan.play().catch(e => console.log("Lock")); 
-                } else { 
-                    audioBip.currentTime = 0; audioBip.play().catch(e => {}); 
-                }
+                
+                // MODIFICATO: Forza il play con catch per i sistemi restrittivi
+                const playSound = () => {
+                    if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
+                        audioAdhan.currentTime = 0; audioAdhan.play().catch(e => console.log("Blocco Play")); 
+                    } else { 
+                        audioBip.currentTime = 0; audioBip.play().catch(e => {}); 
+                    }
+                };
+                playSound();
 
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
