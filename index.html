@@ -167,22 +167,25 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
-        // SISTEMA PROFESSIONALE: Sblocca l'audio su Android/WebView con un tocco
-        function unlockAudio() {
-            if (audioUnlocked) return;
-            audioAdhan.play().then(() => { audioAdhan.pause(); audioUnlocked = true; }).catch(e => {});
-            audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
-        }
-
         function forceUnlockAndTest() {
+            // Vibrazione per feedback immediato
+            if (navigator.vibrate) navigator.vibrate(100);
+            
             audioAdhan.muted = false;
+            audioAdhan.load(); 
             audioAdhan.play().then(() => {
                 audioUnlocked = true;
                 console.log("Audio Sbloccato");
             }).catch(e => {
-                alert("Per favore, clicca di nuovo il tasto");
+                alert("Errore Android: " + e.message + ". Assicurati di avere internet attivo.");
             });
             toggleMenu();
+        }
+
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            audioAdhan.play().then(() => { audioAdhan.pause(); audioUnlocked = true; }).catch(e => {});
+            audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
         }
 
         if (localStorage.getItem('userAthan')) {
@@ -203,13 +206,16 @@
         }
 
         function sendPush(title, body, type) {
-            // SISTEMA PROFESSIONALE: Forza il caricamento prima del play
+            // Azione professionale per APK
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
             const style = localStorage.getItem('notifStyle') || 'adhan';
             let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
             
             player.currentTime = 0;
-            player.load(); // Forza il refresh del file audio
-            player.play().catch(e => console.log("Audio dormiente, serve interazione"));
+            player.play().catch(e => {
+                console.log("Audio bloccato dal sistema");
+            });
 
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
