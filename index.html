@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Muslim Pro">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png">
     <link rel="manifest" href="manifest.json">
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
@@ -21,6 +25,7 @@
             height: 100vh; overflow: hidden;
             font-family: 'Segoe UI', Roboto, sans-serif;
             transition: background 0.5s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body.night-mode { background-color: #001a14; color: white; }
@@ -180,7 +185,9 @@
         }
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(reg => console.log("SW Pronto")).catch(err => console.log("Errore SW", err));
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => console.log("SW Pronto")).catch(err => console.log("Errore SW", err));
+            });
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -197,17 +204,15 @@
         function sendPush(title, body, type) {
             const style = localStorage.getItem('notifStyle') || 'adhan';
             
-            // Gestione Audio
             if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
                 audioAdhan.currentTime = 0;
                 let playPromise = audioAdhan.play();
-                if (playPromise !== undefined) playPromise.catch(e => console.log("Interazione richiesta per audio"));
+                if (playPromise !== undefined) playPromise.catch(e => console.log("Audio Play Error"));
             } else { 
                 audioBip.currentTime = 0;
                 audioBip.play().catch(e => {}); 
             }
 
-            // Gestione Notifica Visiva
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
@@ -261,7 +266,6 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // Eventi configurati
             if (timeNow === "05:20" && window.lastE !== "imsak" + timeNow) { window.lastE = "imsak" + timeNow; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar" + timeNow) { window.lastE = "iftar" + timeNow; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night" + timeNow) { window.lastE = "night" + timeNow; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
@@ -277,7 +281,6 @@
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 
-                // Trigger Adhan Preghiera
                 if (timeNow === pTime && window.lastN !== k + timeNow) {
                     window.lastN = k + timeNow; 
                     sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
@@ -308,4 +311,3 @@
     </script>
 </body>
 </html>
-
