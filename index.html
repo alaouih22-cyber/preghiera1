@@ -162,13 +162,16 @@
     <script>
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
+        const APP_ICON = 'https://cdn-icons-png.flaticon.com/512/2798/2798007.png';
 
-        // Sblocco audio ottimizzato
         let audioUnlocked = false;
+        window.lastN = "";
+        window.lastE = "";
+
         function unlockAudio() {
             if (audioUnlocked) return;
-            audioAdhan.play().then(() => { audioAdhan.pause(); audioUnlocked = true; }).catch(e => console.log("Audio non ancora sbloccato"));
-            audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
+            audioAdhan.play().then(() => { audioAdhan.pause(); audioAdhan.currentTime = 0; audioUnlocked = true; }).catch(e => console.log("Audio Lock"));
+            audioBip.play().then(() => { audioBip.pause(); audioBip.currentTime = 0; }).catch(e => {});
         }
 
         if (localStorage.getItem('userAthan')) {
@@ -176,7 +179,6 @@
             document.getElementById('athan-select').value = localStorage.getItem('userAthan');
         }
 
-        // Registrazione SW con percorso corretto
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(reg => console.log("SW Pronto")).catch(err => console.log("Errore SW", err));
         }
@@ -185,25 +187,37 @@
         function saveAthan(url) { audioAdhan.src = url; audioAdhan.load(); localStorage.setItem('userAthan', url); }
 
         function enableNotifs() { 
-            Notification.requestPermission().then(p => { if(p === "granted") alert("🔔 الإشعارات تعمل بنجاح!"); });
+            Notification.requestPermission().then(p => { 
+                if(p === "granted") alert("🔔 الإشعارات تعمل بنجاح!"); 
+                else alert("يرجى تفعيل الإشعارات من إعدادات المتصفح");
+            });
             toggleMenu();
         }
 
         function sendPush(title, body, type) {
-            if (Notification.permission === "granted") {
-                const style = localStorage.getItem('notifStyle') || 'adhan';
-                if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
-                    audioAdhan.currentTime = 0; audioAdhan.play().catch(e => console.log("Attesa interazione")); 
-                } else { 
-                    audioBip.currentTime = 0; audioBip.play().catch(e => {}); 
-                }
+            const style = localStorage.getItem('notifStyle') || 'adhan';
+            
+            // Gestione Audio
+            if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
+                audioAdhan.currentTime = 0;
+                let playPromise = audioAdhan.play();
+                if (playPromise !== undefined) playPromise.catch(e => console.log("Interazione richiesta per audio"));
+            } else { 
+                audioBip.currentTime = 0;
+                audioBip.play().catch(e => {}); 
+            }
 
+            // Gestione Notifica Visiva
+            if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        vibrate: [300, 100, 300],
-                        data: { url: window.location.href }
+                        icon: APP_ICON,
+                        badge: APP_ICON,
+                        vibrate: [300, 100, 300, 100, 300],
+                        data: { url: window.location.href },
+                        tag: 'prayer-notification',
+                        renotify: true
                     });
                 });
             }
@@ -232,7 +246,6 @@
             }
         }
 
-        // Orari per Bastia Umbra (Febbraio 2026)
         const times = { 
             "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
@@ -249,9 +262,9 @@
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
             // Eventi configurati
-            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
-            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
+            if (timeNow === "05:20" && window.lastE !== "imsak" + timeNow) { window.lastE = "imsak" + timeNow; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
+            if (timeNow === "17:45" && window.lastE !== "iftar" + timeNow) { window.lastE = "iftar" + timeNow; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
+            if (timeNow === "20:30" && window.lastE !== "night" + timeNow) { window.lastE = "night" + timeNow; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
 
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
@@ -263,8 +276,11 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
-                if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
+                
+                // Trigger Adhan Preghiera
+                if (timeNow === pTime && window.lastN !== k + timeNow) {
+                    window.lastN = k + timeNow; 
+                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
@@ -292,4 +308,3 @@
     </script>
 </body>
 </html>
-
