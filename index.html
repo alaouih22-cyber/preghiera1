@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
         :root {
@@ -131,10 +132,8 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer; margin-bottom: 20px;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:10px;">القائمة الرئيسية</h3>
-        
         <button class="menu-item" onclick="enableSystemNotifications()">🔔 تفعيل تنبيهات الهاتف</button>
         <button class="menu-item" onclick="testSystemNotif()">🚀 تجربة التنبيه (Prova)</button>
-        
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
             <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
             <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب العربي</option>
@@ -169,55 +168,38 @@
     <script>
         const audio = document.getElementById('adhan-player');
         
-        // --- LOGICA NOTIFICHE SAMSUNG (SYSTEM TRAY) ---
-        
-        // Registrazione del "motore" delle notifiche per Android
+        // --- LOGICA PWA ---
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi.dhZGRFdmVudExpc3RlbmVyKCduc2hvd05vdGlmaWNhdGlvbicsIGZ1bmN0aW9uKGV2ZW50KSB7fSk7').catch(err => console.log("SW non necessario localmente"));
+            navigator.serviceWorker.register('sw.js').then(() => console.log("Web App Pronta"));
         }
 
         function enableSystemNotifications() {
-            if (!("Notification" in window)) {
-                alert("Browser non supportato");
-                return;
-            }
             Notification.requestPermission().then(p => {
-                if(p === "granted") {
-                    showRealNotif("Muslim Pro", "تم تفعيل التنبيهات بنجاح!");
-                }
+                if(p === "granted") showRealNotif("Muslim Pro", "تم تفعيل التنبيهات!");
             });
         }
 
         function testSystemNotif() {
-            showRealNotif("تجربة التنبيه", "هذه رسالة تظهر في الأعلى!");
+            showRealNotif("تجربة التنبيه", "هذا التنبيه يظهر في القائمة العلوية!");
         }
 
-        // Funzione universale per forzare la comparsa nella tendina
         function showRealNotif(title, msg) {
-            const options = {
-                body: msg,
-                icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
-                badge: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
-                vibrate: [200, 100, 200],
-                tag: 'prayer-notif', // Evita notifiche doppie
-                renotify: true
-            };
-
-            // Se abbiamo il Service Worker (più potente per Android)
-            if (navigator.serviceWorker.controller) {
+            if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, options);
+                    reg.showNotification(title, {
+                        body: msg,
+                        icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
+                        vibrate: [200, 100, 200],
+                        badge: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
+                    });
                 });
-            } else {
-                // Fallback classico
-                new Notification(title, options);
             }
         }
 
-        // --- RESTO DEL CODICE ORIGINALE ---
+        // --- RESTO DEL CODICE ---
         window.onload = () => {
             const saved = localStorage.getItem('userAthan');
-            if (saved) { audio.src = saved; document.getElementById('athan-select').value = saved; } 
+            if (saved) { audio.src = saved; document.getElementById('athan-select').value = saved; }
             else { audio.src = document.getElementById('athan-select').value; }
         };
 
@@ -240,12 +222,11 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "09 رمضان 1447";
 
-            // Allarmi automatici nella tendina
             if (timeNow === "05:20" && window.lastE !== "imsak") {
-                window.lastE = "imsak"; showRealNotif("Imsak", "Fine Suhoor. Mancano pochi minuti.");
+                window.lastE = "imsak"; showRealNotif("Imsak", "Fine Suhoor.");
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") {
-                window.lastE = "iftar"; audio.play().catch(()=>{}); showRealNotif("Iftar Mubarak", "Ora di rompere il digiuno!");
+                window.lastE = "iftar"; audio.play().catch(()=>{}); showRealNotif("Iftar", "Mubarak!");
             }
             if (timeNow === "20:30" && window.lastE !== "night") {
                 window.lastE = "night"; document.body.classList.add('night-mode'); showRealNotif("Tarawih", "Inizio preghiera.");
@@ -278,7 +259,7 @@
             document.getElementById('list-container').innerHTML = html;
         }
 
-        const hText = "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»  • ✨ •  «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً» ";
+        const hText = "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ» ";
         document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
 
         setInterval(update, 1000);
