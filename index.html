@@ -105,9 +105,11 @@
         #news-banner { width: 90%; background: #fff3cd; padding: 12px; margin-bottom: 10px; border-radius: 12px; display: none; text-align: center; font-weight: bold; border: 2px solid var(--mp-gold); }
     </style>
 </head>
-<body>
+<body onclick="unlockAudio()">
 
-    <audio id="adhan-player" preload="auto"></audio>
+    <audio id="adhan-player" preload="auto">
+        <source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3" type="audio/mpeg">
+    </audio>
     <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto"></audio>
 
     <div class="ramadan-header">
@@ -128,11 +130,11 @@
             <option value="bip">رنة + إشعار</option>
         </select>
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
-            <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan16.mp3">المدينة المنورة</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">القدس</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">مصر</option>
+            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3">مكة المكرمة</option>
+            <option value="https://ia801908.us.archive.org/24/items/azan_202102/azan.mp3">المغرب (Marocco)</option>
+            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Madina.mp3">المدينة المنورة</option>
+            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Jerusalem.mp3">القدس</option>
+            <option value="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Egypt.mp3">مصر</option>
         </select>
         <hr style="border-color: var(--mp-gold);">
         <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
@@ -165,21 +167,28 @@
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
         
-        // REGISTRAZIONE SERVICE WORKER AUTOMATICA (Necessaria per la tendina notifiche)
+        // Sblocca audio per i browser mobile
+        function unlockAudio() {
+            audioAdhan.play().then(() => { audioAdhan.pause(); }).catch(e => {});
+            audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
+        }
+
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {
-                // Se non hai il file sw.js, creiamo un worker "al volo" per i test
-                const blob = new Blob(["self.addEventListener('push', function(e){});"], {type: 'application/javascript'});
-                navigator.serviceWorker.register(URL.createObjectURL(blob));
-            });
+            const blob = new Blob(["self.addEventListener('push', function(e){});"], {type: 'application/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-        function saveAthan(url) { audioAdhan.src = url; localStorage.setItem('userAthan', url); }
+        
+        function saveAthan(url) { 
+            audioAdhan.src = url; 
+            audioAdhan.load(); 
+            localStorage.setItem('userAthan', url); 
+        }
         
         function enableNotifs() { 
             Notification.requestPermission().then(permission => {
-                if(permission === "granted") alert("🔔 الإشعارات مفعلة بنجاح");
+                if(permission === "granted") alert("🔔 الإشعارات مفعلة!");
             }); 
             toggleMenu();
         }
@@ -189,40 +198,27 @@
             if (pin === "2026") {
                 const action = confirm("⚙️ لوحة التحكم:\n\n- OK per SCRIVERE l'avviso.\n- ANNULLA per TESTARE le notifiche.");
                 if (action) {
-                    const msg = prompt("Scrivi il messaggio per il banner:");
+                    const msg = prompt("Messaggio:");
                     if (msg) { localStorage.setItem('masjid_notice', msg); showBanner(); }
-                    else { localStorage.removeItem('masjid_notice'); showBanner(); }
-                } else {
-                    testNotif();
-                }
-            } else { alert("PIN Errato!"); }
+                } else { testNotif(); }
+            }
         }
 
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
-                // Suona
                 const style = localStorage.getItem('notifStyle') || 'adhan';
-                if (style === 'adhan') audioAdhan.play().catch(()=>{});
-                else audioBip.play().catch(()=>{});
+                if (style === 'adhan') audioAdhan.play().catch(e => console.log(e));
+                else audioBip.play().catch(e => console.log(e));
 
-                // Mostra notifica nella tendina usando il Service Worker
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.showNotification(title, {
-                        body: body,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        vibrate: [200, 100, 200],
-                        badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png'
-                    });
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, { body: body, icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png' });
                 });
             }
         }
 
         function testNotif() {
-            if (Notification.permission !== "granted") {
-                alert("Abilita prima le notifiche dal menu!");
-                return;
-            }
-            sendPush("اختبار الإشعارات", "هذا إشعار تجريبي يعمل في خلفية الهاتف");
+            alert("Test in corso...");
+            sendPush("اختبار", "Notifica di prova funzionante!");
         }
 
         function showBanner() {
@@ -232,11 +228,12 @@
             else { banner.style.display = "none"; }
         }
 
-        const prayerData = { f: {n:"الفجر", i:"🌅"}, dh: {n:"الظهر", i:"☀️"}, a: {n:"العصر", i:"🌤️"}, m: {n:"المغرب", i:"🌇"}, i: {n:"العشاء", i:"🌙"} };
+        // Orari presi esattamente dalla tua tabella
         const times = { 
             "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
         };
+        const prayerData = { f: {n:"الفجر", i:"🌅"}, dh: {n:"الظهر", i:"☀️"}, a: {n:"العصر", i:"🌤️"}, m: {n:"المغرب", i:"🌇"}, i: {n:"العشاء", i:"🌙"} };
 
         function update() {
             const now = new Date();
@@ -245,17 +242,6 @@
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
-
-            // NOTIFICHE FISSE
-            if (timeNow === "05:20" && window.lastE !== "imsak") {
-                window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor");
-            }
-            if (timeNow === "17:45" && window.lastE !== "iftar") {
-                window.lastE = "iftar"; sendPush("Iftar", "Ramadan Mubarak!");
-            }
-            if (timeNow === "20:30" && window.lastE !== "night") {
-                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Modalità Notte Serena attiva");
-            }
 
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
@@ -269,16 +255,9 @@
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].n; }
                 
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; 
-                    sendPush("صلاة " + prayerData[k].n, "حان الآن موعد الآذان");
+                    window.lastN = k; sendPush("صلاة " + prayerData[k].n, "موعد الآذان");
                 }
-                html += `<div class="prayer-card ${active}">
-                            <div style="display:flex; align-items:center;">
-                                <span style="font-size:35px; margin-left:15px;">${prayerData[k].i}</span>
-                                <span class="p-name">${prayerData[k].n}</span>
-                            </div>
-                            <span class="p-time">${pTime}</span>
-                        </div>`;
+                html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:35px; margin-left:15px;">${prayerData[k].i}</span><span class="p-name">${prayerData[k].n}</span></div><span class="p-time">${pTime}</span></div>`;
             }
 
             if (nextP) {
