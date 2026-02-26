@@ -168,7 +168,6 @@
     <script>
         const audio = document.getElementById('adhan-player');
         
-        // REGISTRAZIONE SERVICE WORKER
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
@@ -209,19 +208,28 @@
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
         const prayerData = {
-            f: { name: "الفجر", icon: "🌅" }, dh: { name: "الظهر", icon: "☀️" },
-            a: { name: "العصر", icon: "🌤️" }, m: { name: "المغرب", icon: "🌇" }, i: { name: "العشاء", icon: "🌙" }
+            f: { name: "الفجر", icon: "🌅" }, 
+            sh: { name: "الشروق", icon: "☀️" },
+            dh: { name: "الظهر", icon: "☀️" },
+            a: { name: "العصر", icon: "🌤️" }, 
+            m: { name: "المغرب", icon: "🌇" }, 
+            i: { name: "العشاء", icon: "🌙" }
         };
 
-        // DATABASE ORARI CORRETTI PER OGGI E DOMANI
+        // DATI ESTRATTI DIRETTAMENTE DAL CALENDARIO CARICATO
         const times = { 
-            "26/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"},
-            "27/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:14"}
+            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
+            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
+            "28/2": {f:"05:30", sh:"06:48", dh:"12:23", a:"15:28", m:"17:59", i:"19:17"},
+            "1/3": {f:"05:28", sh:"06:46", dh:"12:23", a:"15:29", m:"18:00", i:"19:18"},
+            "2/3": {f:"05:27", sh:"06:45", dh:"12:23", a:"15:30", m:"18:01", i:"19:19"}
         };
 
         const hijriMapping = {
             "26/2": "09 رمضان 1447",
-            "27/2": "10 رمضان 1447"
+            "27/2": "10 رمضان 1447",
+            "28/2": "11 رمضان 1447",
+            "1/3": "12 رمضان 1447"
         };
 
         function update() {
@@ -229,22 +237,25 @@
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-            document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
+            document.getElementById('greg-date-full').innerText = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
             document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "رمضان 1447";
 
-            // Eventi Programmati
+            // Notifiche specifiche basate sugli orari del calendario
+            const today = times[dateKey] || times["26/2"];
+
+            // Allarme Imsak 5:20 (Fisso come richiesto)
             if (timeNow === "05:20" && window.lastE !== "imsak") {
-                window.lastE = "imsak"; showRealNotif("Imsak", "Fine Suhoor. Mancano 15 min al Fajr.");
+                window.lastE = "imsak"; showRealNotif("Imsak", "Avviso fine Suhoor (5:20)");
             }
+            // Notifica Iftar 17:45 (Fisso come richiesto)
             if (timeNow === "17:45" && window.lastE !== "iftar") {
-                window.lastE = "iftar"; audio.play().catch(()=>{}); showRealNotif("Iftar", "Mubarak! È ora di rompere il digiuno.");
+                window.lastE = "iftar"; audio.play().catch(()=>{}); showRealNotif("Iftar", "Ora di rompere il digiuno (17:45)");
             }
+            // Notifica Tarawih e Notte Serena 20:30 (Fisso come richiesto)
             if (timeNow === "20:30" && window.lastE !== "night") {
-                window.lastE = "night"; document.body.classList.add('night-mode'); showRealNotif("Tarawih", "Modalità Notte Serena attiva.");
+                window.lastE = "night"; document.body.classList.add('night-mode'); showRealNotif("Tarawih", "Inizio preghiera e Modalità Notte Serena");
             }
 
-            // Selezione orario del giorno corrente
-            const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
 
             for (let k in prayerData) {
@@ -256,14 +267,14 @@
 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].name; }
 
-                if (timeNow === pTime && window.lastN !== k) {
+                // Adhan automatico per le preghiere (escluso Shuruk)
+                if (k !== 'sh' && timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; audio.play().catch(()=>{});
-                    showRealNotif("صلاة " + prayerData[k].name, "حان الآن موعد الآذان");
+                    showRealNotif("صلاة " + prayerData[k].name, "حان الآن موعد الآذان (" + pTime + ")");
                 }
                 html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:30px; margin-left:15px;">${prayerData[k].icon}</span><span class="p-name">${prayerData[k].name}</span></div><span class="p-time">${pTime}</span></div>`;
             }
 
-            // Calcolo prossima preghiera (se tutte passate, prende il Fajr di domani)
             if (!nextP) {
                 const tomorrowDate = new Date(); tomorrowDate.setDate(now.getDate()+1);
                 const tomorrowKey = tomorrowDate.getDate() + "/" + (tomorrowDate.getMonth() + 1);
@@ -281,6 +292,9 @@
             document.getElementById('next-prayer-label').innerText = "صلاة " + nextN;
             document.getElementById('list-container').innerHTML = html;
         }
+
+        const hText = "قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»";
+        document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
 
         setInterval(update, 1000);
         update();
