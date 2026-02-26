@@ -3,201 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2798/2798007.png">
     <title>Muslim Pro - Bastia Umbra</title>
-    
     <style>
-        :root { --green: #004F3F; --gold: #C5A059; --bg: #F6F7F9; --white: #ffffff; }
-        body { background-color: var(--bg); margin: 0; padding: 0; font-family: sans-serif; transition: 0.5s; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
-        
-        /* Modalità Notte Serena (Attiva dalle 20:30) */
+        :root { --green: #004F3F; --gold: #C5A059; --bg: #F6F7F9; }
+        body { background-color: var(--bg); margin: 0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; height: 100vh; transition: 0.5s; }
         body.night-mode { background-color: #00120f; color: white; }
-        body.night-mode .prayer-card { background: #00261f; color: white; border: 1px solid var(--gold); }
-        body.night-mode .dash-card { background: #00261f; color: white; }
-
-        .header { width: 100%; background: var(--green); padding: 30px 0; text-align: center; border-bottom: 4px solid var(--gold); position: relative; }
-        .header h1 { color: var(--gold); margin: 0; font-size: 30px; }
         
-        .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--gold); font-size: 30px; cursor: pointer; }
+        .header { width: 100%; background: var(--green); padding: 20px 0; text-align: center; border-bottom: 4px solid var(--gold); }
+        .header h1 { color: var(--gold); margin: 0; }
 
-        .dashboard { width: 90%; display: flex; gap: 10px; margin: -20px 0 15px 0; z-index: 10; }
-        .dash-card { flex: 1; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--gold); }
-        .timer { font-size: 24px; font-weight: bold; color: var(--green); }
+        /* IL TASTO MAGICO PER L'AUDIO */
+        #audio-unlocker {
+            width: 90%; margin: 10px 0; padding: 15px;
+            background: #ff4444; color: white; border: none;
+            border-radius: 10px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        #audio-unlocker.ready { background: #2ecc71; }
 
-        .prayer-list { width: 95%; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 20px; }
-        .prayer-card { background: white; padding: 18px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .prayer-card.active { border: 2px solid var(--gold); background: #fffcf5; transform: scale(1.02); }
+        .dashboard { width: 90%; display: flex; gap: 10px; margin-top: 10px; }
+        .dash-card { flex: 1; background: white; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--gold); color: #333; }
+        
+        .prayer-list { width: 90%; margin-top: 20px; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; }
+        .prayer-card { background: white; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; border: 1px solid #ddd; color: #333; }
+        .prayer-card.active { border: 2px solid var(--gold); background: #fffcf5; font-weight: bold; }
 
-        .sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100%; background: var(--green); transition: 0.4s; z-index: 100; padding: 20px; color: white; }
-        .sidebar.open { left: 0; }
-        .nav-link { display: block; padding: 15px; border: 1px solid var(--gold); border-radius: 10px; margin-bottom: 10px; color: white; text-decoration: none; text-align: center; font-weight: bold; }
-
-        .footer-news { width: 100%; background: var(--green); padding: 10px 0; border-top: 2px solid var(--gold); overflow: hidden; }
-        .news-track { display: flex; animation: scroll 20s linear infinite; white-space: nowrap; }
-        @keyframes scroll { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+        .footer-news { width: 100%; background: var(--green); color: var(--gold); padding: 10px; text-align: center; font-size: 14px; position: fixed; bottom: 0; }
     </style>
 </head>
-<body onclick="startAudioEngine()">
+<body>
 
-    <audio id="adhan-audio" preload="auto" crossorigin="anonymous">
-        <source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3" type="audio/mpeg">
+    <audio id="sound-adhan" preload="auto" crossorigin="anonymous">
+        <source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3">
     </audio>
-    <audio id="bip-audio" preload="auto" crossorigin="anonymous">
-        <source src="https://www.soundjay.com/buttons/beep-07a.mp3" type="audio/mpeg">
+    <audio id="sound-bip" preload="auto" crossorigin="anonymous">
+        <source src="https://www.soundjay.com/buttons/beep-07a.mp3">
     </audio>
-
-    <div class="sidebar" id="sidebar">
-        <div style="font-size:30px; cursor:pointer;" onclick="toggleMenu()">×</div>
-        <h2 style="color:var(--gold)">Menu</h2>
-        <a href="#" class="nav-link" onclick="requestPermission()">🔔 Attiva Notifiche</a>
-        <a href="#" class="nav-link" onclick="testAudio()">🔊 Test Audio Athan</a>
-        <div style="margin-top: 50px; font-size: 12px; opacity: 0.6;">Admin PIN: 2026</div>
-    </div>
 
     <div class="header">
-        <div class="menu-btn" onclick="toggleMenu()">☰</div>
-        <h1>رمضان مبارك</h1>
+        <h1>Bastia Umbra - Ramadan</h1>
     </div>
+
+    <button id="audio-unlocker" onclick="enableAudio()">⚠️ CLICCA QUI PER ATTIVARE AUDIO</button>
 
     <div class="dashboard">
-        <div class="dash-card">
-            <div style="font-size:12px">التاريخ</div>
-            <div id="date-hijri" style="font-weight:bold">-- -- ----</div>
-        </div>
-        <div class="dash-card">
-            <div id="next-prayer-name" style="font-size:12px">الصلاة القادمة</div>
-            <div id="main-timer" class="timer">00:00:00</div>
-        </div>
+        <div class="dash-card"><b>Data:</b> <div id="d-hijri">--</div></div>
+        <div class="dash-card"><b>Prossima:</b> <div id="d-timer">--:--</div></div>
     </div>
 
-    <div class="prayer-list" id="prayer-container">
-        </div>
+    <div class="prayer-list" id="p-container"></div>
 
-    <div class="footer-news">
-        <div class="news-track" id="news-text">
-            جاري تحميل أخبار المسجد... (Stato della Moschea in caricamento...)
-        </div>
-    </div>
+    <div class="footer-news" id="news-bar">Stato Moschea: In attesa...</div>
 
     <script>
-        const adhan = document.getElementById('adhan-audio');
-        const bip = document.getElementById('bip-audio');
-        let audioUnlocked = false;
+        const audioAdhan = document.getElementById('sound-adhan');
+        const audioBip = document.getElementById('sound-bip');
+        let audioReady = false;
 
-        // --- SISTEMA AUDIO (SBLOCCO) ---
-        function startAudioEngine() {
-            if (audioUnlocked) return;
-            // Esegue un micro-secondo di silenzio per "convincere" il browser
-            adhan.play().then(() => { adhan.pause(); adhan.currentTime = 0; audioUnlocked = true; console.log("Audio Engine Ready"); });
-            bip.play().then(() => { bip.pause(); bip.currentTime = 0; });
+        // Funzione per sbloccare l'audio (Gesture Utente)
+        function enableAudio() {
+            audioAdhan.play().then(() => {
+                audioAdhan.pause();
+                audioAdhan.currentTime = 0;
+                audioReady = true;
+                const btn = document.getElementById('audio-unlocker');
+                btn.innerText = "✅ AUDIO ATTIVATO";
+                btn.className = "ready";
+                setTimeout(() => btn.style.display = 'none', 2000); // Scompare dopo 2 secondi
+            }).catch(e => alert("Errore: Clicca di nuovo!"));
         }
 
-        function testAudio() {
-            if(!audioUnlocked) alert("Tocca prima lo schermo per attivare l'audio!");
-            adhan.currentTime = 0;
-            adhan.play();
-            toggleMenu();
-        }
-
-        // --- NOTIFICHE ---
-        function requestPermission() {
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") alert("Notifiche attivate correttamente!");
-            });
-            toggleMenu();
-        }
-
-        function sendNotification(title, msg, isAdhan) {
-            if (isAdhan) { adhan.currentTime = 0; adhan.play().catch(e => console.log("Audio bloccato")); }
-            else { bip.currentTime = 0; bip.play().catch(e => console.log("Bip bloccato")); }
-
-            if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: msg, icon: 'https://cdn-icons-png.flaticon.com/512/2798/2798007.png', badge: 'https://cdn-icons-png.flaticon.com/512/2798/2798007.png' });
-                });
+        // Funzione universale per suonare
+        function triggerSound(isAdhan) {
+            if (!audioReady) {
+                console.log("Audio non sbloccato!");
+                return;
             }
+            const sound = isAdhan ? audioAdhan : audioBip;
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log("Bloccato dal sistema"));
         }
 
-        // --- DATI E LOGICA ---
-        const prayerData = {
-            "26/2": { fajr: "05:33", dhuhr: "12:24", asr: "15:26", maghrib: "17:56", isha: "19:15" },
-            "27/2": { fajr: "05:31", dhuhr: "12:24", asr: "15:27", maghrib: "17:57", isha: "19:16" }
+        // --- DATI ---
+        const times = { 
+            "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
+            "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
         };
-        const names = { fajr: "الفجر", dhuhr: "الظهر", asr: "العصر", maghrib: "المغرب", isha: "العشاء" };
+        const pNames = { f:"Fajr", dh:"Dhuhr", a:"Asr", m:"Maghrib", i:"Isha" };
 
-        function updateApp() {
+        function mainLoop() {
             const now = new Date();
             const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
-            const today = prayerData[dateKey] || prayerData["26/2"];
+            const today = times[dateKey] || times["26/2"];
 
-            // 1. Allarme Imsak (05:20)
-            if (timeStr === "05:20" && window.lastAlert !== "imsak") {
-                window.lastAlert = "imsak";
-                sendNotification("Imsak", "Fine Suhoor (Avviso 05:20)", false);
+            // 1. IMSAK 05:20
+            if (timeStr === "05:20" && window.lA !== "imsak") {
+                window.lA = "imsak";
+                triggerSound(false);
+                alert("Imsak: Fine Suhoor!");
             }
 
-            // 2. Notifica Iftar (17:45)
-            if (timeStr === "17:45" && window.lastAlert !== "iftar") {
-                window.lastAlert = "iftar";
-                sendNotification("Iftar", "Manca poco all'Iftar!", true);
+            // 2. IFTAR 17:45
+            if (timeStr === "17:45" && window.lA !== "iftar") {
+                window.lA = "iftar";
+                triggerSound(true);
             }
 
-            // 3. Notifica Tarawih + Notte Serena (20:30)
-            if (timeStr === "20:30" && window.lastAlert !== "night") {
-                window.lastAlert = "night";
+            // 3. TARAWIH 20:30
+            if (timeStr === "20:30" && window.lA !== "tarawih") {
+                window.lA = "tarawih";
                 document.body.classList.add('night-mode');
-                sendNotification("Tarawih", "Inizio Tarawih e Modalità Notte Serena attiva", false);
+                triggerSound(false);
             }
 
-            // Gestione Orari Preghiera e Adhan
+            // Orari Preghiera (Adhan)
             let html = "";
-            for (let key in names) {
-                const pTime = today[key];
-                const isActive = (timeStr === pTime);
-                
-                if (isActive && window.lastAdhan !== key + timeStr) {
-                    window.lastAdhan = key + timeStr;
-                    sendNotification("Adhan " + names[key], "È ora della preghiera", true);
+            for (let k in pNames) {
+                if (timeStr === today[k] && window.lP !== k) {
+                    window.lP = k;
+                    triggerSound(true);
                 }
-
-                html += `<div class="prayer-card ${isActive ? 'active' : ''}">
-                            <span>${names[key]}</span>
-                            <span style="font-weight:bold">${pTime}</span>
+                html += `<div class="prayer-card ${timeStr === today[k] ? 'active' : ''}">
+                            <span>${pNames[k]}</span> <span>${today[k]}</span>
                          </div>`;
             }
-            document.getElementById('prayer-container').innerHTML = html;
-            document.getElementById('date-hijri').innerText = (dateKey === "26/2") ? "09 Ramadan" : "10 Ramadan";
+            document.getElementById('p-container').innerHTML = html;
+            document.getElementById('d-hijri').innerText = (dateKey === "26/2") ? "09 Ramadan" : "10 Ramadan";
         }
 
-        // --- STATO DELLA MOSCHEA (LIVE NEWS) ---
-        async function fetchMosqueNews() {
+        // News Moschea
+        async function getNews() {
             try {
-                const res = await fetch('news.json?v=' + Date.now());
-                const data = await res.json();
-                document.getElementById('news-text').innerText = data.text;
-                if (data.id !== localStorage.getItem('last_news_id')) {
-                    sendNotification("News Moschea", data.text, false);
-                    localStorage.setItem('last_news_id', data.id);
-                }
-            } catch (e) { console.log("News non trovate"); }
+                const r = await fetch('news.json?v=' + Date.now());
+                const d = await r.json();
+                document.getElementById('news-bar').innerText = "Moschea: " + d.text;
+            } catch(e) {}
         }
 
-        // Timer
-        setInterval(updateApp, 1000);
-        setInterval(fetchMosqueNews, 30000); // Controlla news ogni 30 sec
-        updateApp();
-        fetchMosqueNews();
-
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-        
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        setInterval(mainLoop, 1000);
+        setInterval(getNews, 30000);
+        mainLoop();
+        getNews();
     </script>
 </body>
 </html>
