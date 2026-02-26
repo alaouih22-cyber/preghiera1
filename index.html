@@ -19,7 +19,12 @@
             display: flex; flex-direction: column; align-items: center;
             height: 100vh; overflow: hidden;
             font-family: 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.5s ease;
         }
+
+        body.night-mode { background-color: #001a14; color: white; }
+        body.night-mode .dashboard, body.night-mode .prayer-card { background: #002e25; color: white; border-color: var(--mp-gold); }
+        body.night-mode .p-name, body.night-mode .timer-main { color: var(--mp-gold); }
 
         @keyframes swing {
             0% { transform: rotate(6deg); }
@@ -134,7 +139,10 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer; margin-bottom: 20px;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:10px;">القائمة الرئيسية</h3>
-        <button class="menu-item" onclick="initNotifications()">🔔 تفعيل التنبيهات (Banner)</button>
+        
+        <button class="menu-item" onclick="enableSystemNotifications()">🔔 تفعيل تنبيهات الهاتف</button>
+        <button class="menu-item" onclick="testSystemNotif()">🚀 تجربة التنبيه (Prova)</button>
+        
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
             <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
             <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب العربي</option>
@@ -183,23 +191,32 @@
         function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
-        function initNotifications() { 
+        // Funzione per chiedere il permesso
+        function enableSystemNotifications() {
             if (!("Notification" in window)) return;
-            Notification.requestPermission().then(p => { 
+            Notification.requestPermission().then(p => {
                 if(p === "granted") {
-                    audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(() => {});
-                    new Notification("Muslim Pro", { body: "✅ التنبيهات نشطة" });
+                    sendSystemNotif("Muslim Pro", "تم تفعيل التنبيهات بنجاح!");
                 }
-            }); 
+            });
         }
 
-        function sendBannerNotification(prayerNameAr) {
-            if (Notification.permission === "granted") {
-                new Notification(`وقت صلاة ${prayerNameAr}`, {
-                    body: `حي على الصلاة - حان الآن موعد آذان ${prayerNameAr}`,
-                    icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
-                    requireInteraction: true
+        // Funzione per inviare la notifica alla tendina
+        function sendSystemNotif(title, text) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification(title, {
+                    body: text,
+                    icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
                 });
+            }
+        }
+
+        // FUNZIONE PROVA NOTIFICA
+        function testSystemNotif() {
+            if (Notification.permission === "granted") {
+                sendSystemNotif("تجربة التنبيه", "هذه رسالة تجريبية من التطبيق!");
+            } else {
+                alert("Per favore, clicca prima su 'Attiva Notifiche' (Pulsante sopra)");
             }
         }
 
@@ -211,29 +228,40 @@
             i: { name: "العشاء", icon: "🌙" }
         };
 
-        // Associazione manuale date per garantire che il Ramadan appaia correttamente
         const hijriMapping = {
-            "25/2": "08 رمضان 1447",
             "26/2": "09 رمضان 1447",
             "27/2": "10 رمضان 1447"
         };
 
-        const times = { "25/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
+        const times = { "26/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
 
         function update() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
             const m = String(now.getMonth() + 1).padStart(2, '0');
-            const y = now.getFullYear();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
+            const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-            // Scrittura diretta delle date richiesta dall'utente
-            document.getElementById('greg-date-full').innerText = `${d}/${m}/${y}`;
-            document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "08 رمضان 1447";
+            document.getElementById('greg-date-full').innerText = `${d}/${m}/${now.getFullYear()}`;
+            document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "رمضان 1447";
 
-            const today = times[dateKey] || times["25/2"];
-            const currentTimeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            // Eventi Orari (Imsak 05:20, Iftar 17:45, Night 20:30)
+            if (timeNow === "05:20" && window.lastE !== "imsak") {
+                window.lastE = "imsak";
+                sendSystemNotif("Imsak", "Fine Suhoor. Mancano pochi minuti al Fajr.");
+            }
+            if (timeNow === "17:45" && window.lastE !== "iftar") {
+                window.lastE = "iftar";
+                audio.play().catch(()=>{});
+                sendSystemNotif("Iftar Mubarak", "È ora di rompere il digiuno!");
+            }
+            if (timeNow === "20:30" && window.lastE !== "night") {
+                window.lastE = "night";
+                document.body.classList.add('night-mode');
+                sendSystemNotif("Tarawih", "Inizio preghiera e Modalità Notte Serena attiva.");
+            }
 
+            const today = times[dateKey] || times["26/2"];
             let html = ""; let nextPrayerTime = null; let nextPrayerName = "";
 
             for (let k in prayerData) {
@@ -241,26 +269,20 @@
                 const [h, m_time] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m_time, 0);
                 
-                let activeClass = ""; let iqamaLabel = "";
+                let activeClass = "";
                 const diffMs = now - pDate;
                 const diffMin = diffMs / 60000;
 
-                if (diffMin >= 0 && diffMin < (k === 'f' ? 20 : 10)) {
-                    const totalSecRem = ((k === 'f' ? 20 : 10) * 60) - Math.floor(diffMs / 1000);
-                    const remM = Math.floor(totalSecRem / 60);
-                    const remS = (totalSecRem % 60).toString().padStart(2, '0');
-                    iqamaLabel = `<span class="iqama-tag">Iqama ${remM}:${remS}</span>`;
-                    activeClass = "active";
-                }
-
+                if (diffMin >= 0 && diffMin < 10) { activeClass = "active"; }
                 if (pDate > now && !nextPrayerTime) {
                     nextPrayerTime = pDate;
                     nextPrayerName = prayerData[k].name;
                 }
 
-                if (currentTimeStr === pTime && window.lastNotified !== k) {
-                    window.lastNotified = k; audio.play().catch(()=>{});
-                    sendBannerNotification(prayerData[k].name);
+                if (timeNow === pTime && window.lastNotified !== k) {
+                    window.lastNotified = k;
+                    audio.play().catch(()=>{});
+                    sendSystemNotif("صلاة " + prayerData[k].name, "حان الآن موعد الآذان");
                 }
 
                 html += `
@@ -268,7 +290,6 @@
                         <div style="display:flex; align-items:center;">
                             <span style="font-size:30px; margin-left:15px;">${prayerData[k].icon}</span>
                             <span class="p-name">${prayerData[k].name}</span>
-                            ${iqamaLabel}
                         </div>
                         <span class="p-time">${pTime}</span>
                     </div>`;
@@ -276,8 +297,7 @@
 
             if (!nextPrayerTime) {
                 const [fh, fm] = today['f'].split(":");
-                nextPrayerTime = new Date();
-                nextPrayerTime.setDate(now.getDate() + 1);
+                nextPrayerTime = new Date(); nextPrayerTime.setDate(now.getDate() + 1);
                 nextPrayerTime.setHours(fh, fm, 0);
                 nextPrayerName = prayerData['f'].name;
             }
@@ -292,7 +312,7 @@
             document.getElementById('list-container').innerHTML = html;
         }
 
-        const hadiths = ["قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»", "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»", "«مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»"];
+        const hadiths = ["قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»", "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»"];
         const hText = hadiths.join("  • ✨ •  ") + "  • ✨ •  ";
         document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
 
