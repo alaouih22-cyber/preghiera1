@@ -60,12 +60,6 @@
         .date-value { font-size: 14px; font-weight: 900; color: var(--mp-dark-green); display: block; line-height: 1.2; }
         .label-small { font-size: 10px; color: #666; font-weight: bold; margin-bottom: 4px; }
 
-        #news-banner { 
-            width: 90%; background: #fff3cd; padding: 12px; margin-bottom: 10px; 
-            border-radius: 12px; display: none; text-align: center; font-weight: bold; 
-            border: 2px solid var(--mp-gold); color: #856404;
-        }
-
         .prayer-list { width: 94%; flex-grow: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-bottom: 15px; }
         
         .prayer-card {
@@ -153,8 +147,6 @@
         </div>
     </div>
 
-    <div id="news-banner"></div>
-
     <div class="prayer-list" id="list-container"></div>
 
     <div class="hadith-footer">
@@ -172,60 +164,51 @@
             audioBip.play().then(() => audioBip.pause()).catch(e => {});
         }
 
-        // REGISTRAZIONE SERVICE WORKER
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(() => {
-                console.log("Service Worker Attivo");
-            }).catch(err => console.log("Errore SW:", err));
+            navigator.serviceWorker.register('sw.js');
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
         function saveAthan(url) { audioAdhan.src = url; audioAdhan.load(); localStorage.setItem('userAthan', url); }
 
         function enableNotifs() { 
-            Notification.requestPermission().then(p => {
-                if(p === "granted") alert("🔔 تم تفعيل الإشعارات بنجاح");
-            });
+            Notification.requestPermission().then(p => { if(p === "granted") alert("🔔 تم التفعيل!"); });
             toggleMenu();
         }
 
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                const opt = prompt("1: Scrivi Avviso Banner\n2: Prova Notifica Tendina\n3: Cancella Avviso");
+                const opt = prompt("1: إرسال إشعار (Pop-up)\n2: تجربة الآذان (Test Athan)");
                 if (opt === "1") {
-                    const m = prompt("Testo per il banner:");
-                    if (m) { localStorage.setItem('masjid_notice', m); showBanner(); }
+                    const m = prompt("نص الإشعار:");
+                    if (m) sendPush("تنبيه من المسجد 📢", m, false);
                 } else if (opt === "2") {
-                    sendPush("تجربة الإشعار", "هذا الإشعار يظهر في الستارة بنجاح!");
-                } else if (opt === "3") {
-                    localStorage.removeItem('masjid_notice'); showBanner();
+                    sendPush("تجربة الآذان", "اختبار صوت الآذان والإشعارات", true);
                 }
             }
         }
 
-        function sendPush(title, body) {
+        function sendPush(title, body, forceAthan = false) {
             if (Notification.permission === "granted") {
                 const style = localStorage.getItem('notifStyle') || 'adhan';
-                (style === 'adhan') ? audioAdhan.play().catch(e => {}) : audioBip.play().catch(e => {});
+                
+                if (forceAthan || style === 'adhan') {
+                    audioAdhan.currentTime = 0;
+                    audioAdhan.play().catch(e => console.log("Audio block:", e));
+                } else {
+                    audioBip.play().catch(e => {});
+                }
 
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
                         vibrate: [300, 100, 300],
-                        badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
                         requireInteraction: true
                     });
                 });
             }
-        }
-
-        function showBanner() {
-            const n = localStorage.getItem('masjid_notice');
-            const b = document.getElementById('news-banner');
-            if (n) { b.innerText = "📢 " + n; b.style.display = "block"; }
-            else { b.style.display = "none"; }
         }
 
         const times = { 
@@ -242,10 +225,10 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // AVVISI FISSI AUTOMATICI [cite: 2026-02-25]
-            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor"); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "Notifica Iftar"); }
-            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Modalità Notte Serena attiva"); }
+            // AVVISI AUTOMATICI
+            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", false); }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم", true); }
+            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", false); }
 
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
@@ -256,9 +239,13 @@
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 let active = (now - pDate >= 0 && now - pDate < 600000) ? "active" : "";
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].n; }
+                
+                // NOTIFICA AUTOMATICA ARRIVO PREGHIERA
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerData[k].n, "حان الآن موعد الآذان");
+                    window.lastN = k; 
+                    sendPush("صلاة " + prayerData[k].n, "حان الآن موعد الآذان", true);
                 }
+
                 html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:35px; margin-left:15px;">${prayerData[k].i}</span><span class="p-name">${prayerData[k].n}</span></div><span class="p-time">${pTime}</span></div>`;
             }
 
@@ -274,7 +261,6 @@
         }
 
         setInterval(update, 1000);
-        showBanner();
         update();
     </script>
 </body>
