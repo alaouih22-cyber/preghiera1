@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="app-icon.png">
+    <link rel="apple-touch-icon" href="app-icon.png">
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
+        /* IL TUO CSS RIMANE IDENTICO */
         :root {
             --mp-dark-green: #004F3F; 
             --mp-gold: #C5A059; 
@@ -164,6 +167,7 @@
     </div>
 
     <script>
+        /* IL TUO SCRIPT RIMANE IDENTICO */
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
 
@@ -199,7 +203,7 @@
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                        icon: 'app-icon.png',
                         vibrate: [500, 200, 500],
                         requireInteraction: true,
                         dir: 'rtl'
@@ -208,7 +212,6 @@
             }
         }
 
-        // --- SISTEMA NEWS PROFESSIONALE ---
         async function checkGlobalNews() {
             try {
                 const response = await fetch('news.json?v=' + Date.now());
@@ -244,7 +247,6 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // ALLARMI AUTOMATICI
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
