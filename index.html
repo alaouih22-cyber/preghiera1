@@ -191,9 +191,29 @@
         function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
-        // Funzione per chiedere il permesso
+        // Funzione per chiedere il permesso e inviare la notifica
+        function sendSystemNotif(title, text) {
+            if (!("Notification" in window)) {
+                alert("Il tuo browser non supporta le notifiche.");
+                return;
+            }
+
+            if (Notification.permission === "granted") {
+                new Notification(title, {
+                    body: text,
+                    icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
+                });
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        sendSystemNotif(title, text);
+                    }
+                });
+            }
+        }
+
+        // Attiva i permessi manualmente
         function enableSystemNotifications() {
-            if (!("Notification" in window)) return;
             Notification.requestPermission().then(p => {
                 if(p === "granted") {
                     sendSystemNotif("Muslim Pro", "تم تفعيل التنبيهات بنجاح!");
@@ -201,23 +221,9 @@
             });
         }
 
-        // Funzione per inviare la notifica alla tendina
-        function sendSystemNotif(title, text) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                new Notification(title, {
-                    body: text,
-                    icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
-                });
-            }
-        }
-
-        // FUNZIONE PROVA NOTIFICA
+        // FUNZIONE PROVA NOTIFICA CORRETTA
         function testSystemNotif() {
-            if (Notification.permission === "granted") {
-                sendSystemNotif("تجربة التنبيه", "هذه رسالة تجريبية من التطبيق!");
-            } else {
-                alert("Per favore, clicca prima su 'Attiva Notifiche' (Pulsante sopra)");
-            }
+            sendSystemNotif("تجربة التنبيه", "هذه رسالة تجريبية من التطبيق sulla tua tendina!");
         }
 
         const prayerData = {
@@ -245,7 +251,7 @@
             document.getElementById('greg-date-full').innerText = `${d}/${m}/${now.getFullYear()}`;
             document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "رمضان 1447";
 
-            // Eventi Orari (Imsak 05:20, Iftar 17:45, Night 20:30)
+            // Allarmi 05:20, 17:45, 20:30
             if (timeNow === "05:20" && window.lastE !== "imsak") {
                 window.lastE = "imsak";
                 sendSystemNotif("Imsak", "Fine Suhoor. Mancano pochi minuti al Fajr.");
