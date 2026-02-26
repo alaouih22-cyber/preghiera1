@@ -25,7 +25,6 @@
 
         body.night-mode { background-color: #001a14; color: white; }
 
-        /* HEADER ORIGINALE CON FANOUS */
         .ramadan-header {
             width: 100%; background: var(--mp-dark-green);
             padding: 35px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
@@ -45,7 +44,6 @@
             text-shadow: 0 0 10px var(--mp-gold);
         }
 
-        /* DUE QUADRI SEPARATI PER DATA E TIMER */
         .dashboard {
             width: 92%; max-width: 450px; 
             margin: -25px 0 10px 0; 
@@ -62,12 +60,11 @@
         .date-value { font-size: 14px; font-weight: 900; color: var(--mp-dark-green); display: block; line-height: 1.2; }
         .label-small { font-size: 10px; color: #666; font-weight: bold; margin-bottom: 4px; }
 
-        /* PREGHIERE INGRANDITE */
-        .prayer-list { width: 94%; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-bottom: 15px; }
+        .prayer-list { width: 94%; flex-grow: 1; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-bottom: 15px; }
         
         .prayer-card {
             display: flex; justify-content: space-between; align-items: center;
-            background: var(--white); padding: 18px 25px; 
+            background: var(--white); padding: 20px 25px; 
             border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.06);
             transition: 0.3s;
         }
@@ -77,10 +74,9 @@
             transform: scale(1.02); box-shadow: 0 0 15px var(--glow-color);
         }
 
-        .p-name { font-size: 23px; font-weight: 800; color: var(--mp-dark-green); }
-        .p-time { font-size: 24px; font-weight: 900; }
+        .p-name { font-size: 24px; font-weight: 800; color: var(--mp-dark-green); }
+        .p-time { font-size: 25px; font-weight: 900; }
 
-        /* STRISCIA HADITH */
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
@@ -92,7 +88,6 @@
         @keyframes scroll-hadith { from { transform: translateX(0); } to { transform: translateX(100%); } }
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
-        /* MENU LATERALE */
         .sidebar {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: var(--mp-dark-green); z-index: 1000; transition: 0.4s;
@@ -125,7 +120,7 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات</h3>
-        <button class="menu-item" onclick="writeNotice()">📝 إدارة الإعلانات (Admin)</button>
+        <button class="menu-item" onclick="adminAccess()">⚙️ لوحة الإدارة (Admin)</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
         <div style="margin: 5px 0; font-size: 12px;">تنبيه الصلاة:</div>
         <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
@@ -174,12 +169,28 @@
         function saveAthan(url) { audioAdhan.src = url; localStorage.setItem('userAthan', url); }
         function enableNotifs() { Notification.requestPermission(); }
 
-        function writeNotice() {
+        function adminAccess() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                const msg = prompt("Messaggio:");
-                if (msg) { localStorage.setItem('masjid_notice', msg); showBanner(); }
-                else { localStorage.removeItem('masjid_notice'); showBanner(); }
+                const action = confirm("⚙️ لوحة التحكم:\n\n- OK per SCRIVERE l'avviso.\n- ANNULLA per TESTARE le notifiche.");
+                if (action) {
+                    const msg = prompt("Scrivi il messaggio per il banner:");
+                    if (msg) { localStorage.setItem('masjid_notice', msg); showBanner(); }
+                    else { localStorage.removeItem('masjid_notice'); showBanner(); }
+                } else {
+                    testNotif();
+                }
+            } else { alert("PIN Errato!"); }
+        }
+
+        function testNotif() {
+            const style = localStorage.getItem('notifStyle') || 'adhan';
+            alert("Avvio test notifica in modalità: " + style);
+            if (style === 'adhan') audioAdhan.play().catch(e => alert("Errore Audio: " + e));
+            else audioBip.play().catch(e => alert("Errore Audio: " + e));
+            
+            if (Notification.permission === "granted") {
+                new Notification("اختبار الإشعارات", { body: "هذا إشعار تجريبي بنجاح" });
             }
         }
 
@@ -190,10 +201,10 @@
             else { banner.style.display = "none"; }
         }
 
-        const prayerData = { f: {n:"الفجر", i:"🌅"}, sh: {n:"الشروق", i:"☀️"}, dh: {n:"الظهر", i:"☀️"}, a: {n:"العصر", i:"🌤️"}, m: {n:"المغرب", i:"🌇"}, i: {n:"العشاء", i:"🌙"} };
+        const prayerData = { f: {n:"الفجر", i:"🌅"}, dh: {n:"الظهر", i:"☀️"}, a: {n:"العصر", i:"🌤️"}, m: {n:"المغرب", i:"🌇"}, i: {n:"العشاء", i:"🌙"} };
         const times = { 
-            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
-            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
+            "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
+            "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
         };
 
         function update() {
@@ -215,7 +226,7 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000) ? "active" : "";
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].n; }
                 
-                if (k !== 'sh' && timeNow === pTime && window.lastN !== k) {
+                if (timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; 
                     const style = localStorage.getItem('notifStyle') || 'adhan';
                     (style === 'adhan') ? audioAdhan.play() : audioBip.play();
