@@ -86,14 +86,6 @@
         .p-name { font-size: 21px; font-weight: 800; color: var(--mp-dark-green); }
         .p-time { font-size: 22px; font-weight: 900; }
 
-        .iqama-tag {
-            font-size: 12px; color: white; background: #d32f2f;
-            padding: 4px 10px; border-radius: 6px; margin-right: 12px; font-weight: bold;
-            display: inline-block; animation: flash 1s infinite;
-        }
-
-        @keyframes flash { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
@@ -177,6 +169,7 @@
     <script>
         const audio = document.getElementById('adhan-player');
         
+        // Caricamento preferenze
         window.onload = () => {
             const saved = localStorage.getItem('userAthan');
             if (saved) { 
@@ -191,40 +184,54 @@
         function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
         function testSound() { audio.paused ? audio.play() : audio.pause(); }
 
-        // Funzione per chiedere il permesso e inviare la notifica
-        function sendSystemNotif(title, text) {
+        // --- SISTEMA NOTIFICHE PROFESSIONALE ---
+
+        function enableSystemNotifications() {
             if (!("Notification" in window)) {
                 alert("Il tuo browser non supporta le notifiche.");
                 return;
             }
-
-            if (Notification.permission === "granted") {
-                new Notification(title, {
-                    body: text,
-                    icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
-                });
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        sendSystemNotif(title, text);
-                    }
-                });
-            }
-        }
-
-        // Attiva i permessi manualmente
-        function enableSystemNotifications() {
-            Notification.requestPermission().then(p => {
-                if(p === "granted") {
-                    sendSystemNotif("Muslim Pro", "تم تفعيل التنبيهات بنجاح!");
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    // Feedback immediato per conferma
+                    new Notification("Muslim Pro", { body: "التنبيهات مفعلة بنجاح!", icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png" });
+                } else {
+                    alert("Devi autorizzare le notifiche nelle impostazioni del browser.");
                 }
             });
         }
 
-        // FUNZIONE PROVA NOTIFICA CORRETTA
         function testSystemNotif() {
-            sendSystemNotif("تجربة التنبيه", "هذه رسالة تجريبية من التطبيق sulla tua tendina!");
+            if (!("Notification" in window)) return;
+
+            if (Notification.permission === "granted") {
+                // Invio diretto
+                try {
+                    const n = new Notification("تجربة التنبيه", {
+                        body: "هذا تنبيه تجريبي من تطبيقك!",
+                        icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
+                        badge: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
+                    });
+                } catch (e) {
+                    // Fallback per alcuni browser mobile
+                    alert("Notifica inviata, controlla la tendina!");
+                }
+            } else {
+                // Se non ha i permessi, li chiede ora
+                Notification.requestPermission().then(p => {
+                    if (p === "granted") testSystemNotif();
+                    else alert("Permesso negato. Controlla le impostazioni del telefono.");
+                });
+            }
         }
+
+        function sendAutoNotif(title, text) {
+            if (Notification.permission === "granted") {
+                new Notification(title, { body: text, icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png" });
+            }
+        }
+
+        // --- DATI E LOGICA ORARI ---
 
         const prayerData = {
             f: { name: "الفجر", icon: "🌅" },
@@ -234,92 +241,59 @@
             i: { name: "العشاء", icon: "🌙" }
         };
 
-        const hijriMapping = {
-            "26/2": "09 رمضان 1447",
-            "27/2": "10 رمضان 1447"
-        };
-
         const times = { "26/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
 
         function update() {
             const now = new Date();
-            const d = String(now.getDate()).padStart(2, '0');
-            const m = String(now.getMonth() + 1).padStart(2, '0');
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
-            document.getElementById('greg-date-full').innerText = `${d}/${m}/${now.getFullYear()}`;
-            document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "رمضان 1447";
+            document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
+            document.getElementById('hijri-date-full').innerText = "09 رمضان 1447";
 
-            // Allarmi 05:20, 17:45, 20:30
-            if (timeNow === "05:20" && window.lastE !== "imsak") {
-                window.lastE = "imsak";
-                sendSystemNotif("Imsak", "Fine Suhoor. Mancano pochi minuti al Fajr.");
+            // Gestione Allarmi Automatici
+            if (timeNow === "05:20" && window.lE !== "imsak") {
+                window.lE = "imsak"; sendAutoNotif("Imsak", "Fine Suhoor. Mancano pochi minuti al Fajr.");
             }
-            if (timeNow === "17:45" && window.lastE !== "iftar") {
-                window.lastE = "iftar";
-                audio.play().catch(()=>{});
-                sendSystemNotif("Iftar Mubarak", "È ora di rompere il digiuno!");
+            if (timeNow === "17:45" && window.lE !== "iftar") {
+                window.lE = "iftar"; audio.play().catch(()=>{}); sendAutoNotif("Iftar Mubarak", "È ora di rompere il digiuno!");
             }
-            if (timeNow === "20:30" && window.lastE !== "night") {
-                window.lastE = "night";
-                document.body.classList.add('night-mode');
-                sendSystemNotif("Tarawih", "Inizio preghiera e Modalità Notte Serena attiva.");
+            if (timeNow === "20:30" && window.lE !== "night") {
+                window.lE = "night"; document.body.classList.add('night-mode'); sendAutoNotif("Tarawih", "Modalità Notte Serena attiva.");
             }
 
             const today = times[dateKey] || times["26/2"];
-            let html = ""; let nextPrayerTime = null; let nextPrayerName = "";
+            let html = ""; let nextP = null; let nextN = "";
 
             for (let k in prayerData) {
                 const pTime = today[k];
-                const [h, m_time] = pTime.split(":");
-                const pDate = new Date(); pDate.setHours(h, m_time, 0);
+                const [h, m] = pTime.split(":");
+                const pDate = new Date(); pDate.setHours(h, m, 0);
                 
-                let activeClass = "";
-                const diffMs = now - pDate;
-                const diffMin = diffMs / 60000;
+                let active = (now - pDate >= 0 && now - pDate < 600000) ? "active" : "";
 
-                if (diffMin >= 0 && diffMin < 10) { activeClass = "active"; }
-                if (pDate > now && !nextPrayerTime) {
-                    nextPrayerTime = pDate;
-                    nextPrayerName = prayerData[k].name;
+                if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].name; }
+
+                if (timeNow === pTime && window.lastN !== k) {
+                    window.lastN = k; audio.play().catch(()=>{});
+                    sendAutoNotif("صلاة " + prayerData[k].name, "حان الآن موعد الآذان");
                 }
 
-                if (timeNow === pTime && window.lastNotified !== k) {
-                    window.lastNotified = k;
-                    audio.play().catch(()=>{});
-                    sendSystemNotif("صلاة " + prayerData[k].name, "حان الآن موعد الآذان");
-                }
-
-                html += `
-                    <div class="prayer-card ${activeClass}">
-                        <div style="display:flex; align-items:center;">
-                            <span style="font-size:30px; margin-left:15px;">${prayerData[k].icon}</span>
-                            <span class="p-name">${prayerData[k].name}</span>
-                        </div>
-                        <span class="p-time">${pTime}</span>
-                    </div>`;
+                html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:30px; margin-left:15px;">${prayerData[k].icon}</span><span class="p-name">${prayerData[k].name}</span></div><span class="p-time">${pTime}</span></div>`;
             }
 
-            if (!nextPrayerTime) {
-                const [fh, fm] = today['f'].split(":");
-                nextPrayerTime = new Date(); nextPrayerTime.setDate(now.getDate() + 1);
-                nextPrayerTime.setHours(fh, fm, 0);
-                nextPrayerName = prayerData['f'].name;
+            if (nextP) {
+                const diff = nextP - now;
+                const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
+                const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+                const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
+                document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
+                document.getElementById('next-prayer-label').innerText = "صلاة " + nextN;
             }
-
-            const diff = nextPrayerTime - now;
-            const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-            const mm_timer = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
-            const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-            
-            document.getElementById('timer-next').innerText = hh+":"+mm_timer+":"+ss;
-            document.getElementById('next-prayer-label').innerText = "صلاة " + nextPrayerName;
             document.getElementById('list-container').innerHTML = html;
         }
 
-        const hadiths = ["قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»", "«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»"];
-        const hText = hadiths.join("  • ✨ •  ") + "  • ✨ •  ";
+        const hText = "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ»  • ✨ •  «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»  • ✨ •  ";
         document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
 
         setInterval(update, 1000);
