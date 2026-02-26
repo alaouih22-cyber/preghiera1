@@ -119,12 +119,10 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات</h3>
-        <button class="menu-item" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
-        <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
-            <option value="adhan">آذان كامل</option>
-            <option value="bip">رنة + إشعار</option>
-        </select>
+        <button class="menu-item" onclick="adminDash()">⚙️ لوحة الإدارة (Test)</button>
+        <hr style="border-color: var(--mp-gold);">
+        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
     </div>
 
     <div class="dashboard">
@@ -156,55 +154,51 @@
             audioBip.play().then(() => audioBip.pause()).catch(e => {});
         }
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function enableNotifs() { 
-            Notification.requestPermission().then(p => { 
-                if(p === "granted") alert("🔔 تم تفعيل الإشعارات بنجاح! ستصلك في الستارة."); 
-                else alert("⚠️ الرجاء تفعيل الإشعارات من إعدادات المتصفح");
-            });
+            Notification.requestPermission().then(p => { if(p === "granted") alert("🔔 الإشعارات تعمل بنجاح!"); });
             toggleMenu();
-        }
-
-        function adminDash() {
-            const pin = prompt("PIN Admin:");
-            if (pin === "2026") {
-                const opt = prompt("1: إرسال إشعار للجميع (Pop-up)\n2: تجربة الآذان (Test Athan)");
-                if (opt === "1") {
-                    const m = prompt("نص الإشعار:");
-                    if (m) sendPush("تنبيه 📢", m, 'bip');
-                } else if (opt === "2") {
-                    sendPush("تجربة الآذان", "حان الآن موعد الآذان", 'adhan');
-                }
-            }
         }
 
         function sendPush(title, body, type) {
             if (Notification.permission === "granted") {
-                // Esecuzione Audio
-                if (type === 'adhan') {
-                    audioAdhan.currentTime = 0;
-                    audioAdhan.play().catch(e => console.log("Audio block:", e));
-                } else {
-                    audioBip.currentTime = 0;
-                    audioBip.play().catch(e => {});
-                }
+                if (type === 'adhan') { audioAdhan.currentTime = 0; audioAdhan.play(); } 
+                else { audioBip.currentTime = 0; audioBip.play(); }
 
-                // Esecuzione Pop-up Professionale (Tendina)
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
                         vibrate: [300, 100, 300],
-                        requireInteraction: true, // Fondamentale per farla restare
-                        dir: 'rtl'
+                        requireInteraction: true
                     });
                 });
+            }
+        }
+
+        // --- SISTEMA AUTOMATICO AGGIORNAMENTI (PER TUTTI GLI UTENTI) ---
+        async function checkGlobalNews() {
+            try {
+                // Ogni utente scaricherà news.json ogni 30 secondi
+                const response = await fetch('news.json?v=' + Date.now());
+                const data = await response.json();
+                const lastId = localStorage.getItem('last_news_id');
+                
+                if (data.id !== lastId) {
+                    sendPush(data.title, data.body, 'bip');
+                    localStorage.setItem('last_news_id', data.id);
+                }
+            } catch (e) { /* Errore silenzioso se news.json non esiste ancora */ }
+        }
+        setInterval(checkGlobalNews, 30000); 
+
+        function adminDash() {
+            const pin = prompt("PIN Admin:");
+            if (pin === "2026") {
+                sendPush("اختبار محلي", "هذا اختبار لموبايلك فقط للتأكد من الصوت", 'adhan');
             }
         }
 
@@ -213,6 +207,7 @@
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
         };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
+        const prayerIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
 
         function update() {
             const now = new Date();
@@ -222,7 +217,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // NOTIFICHE AUTOMATICHE FISSE
+            // AVVISI FISSI AUTOMATICI
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
@@ -237,19 +232,17 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
-                
-                // ARRIVO PREGHIERA: NOTIFICA E SCRITTA
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; 
-                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'adhan');
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'adhan');
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
                             <div style="display:flex; align-items:center;">
+                                <span style="font-size:30px; margin-left:15px;">${prayerIcons[k]}</span>
                                 <span class="p-name">${prayerNames[k]}</span>
                             </div>
                             <span class="p-time">${pTime}</span>
-                         </div>`;
+                        </div>`;
             }
 
             if (nextP) {
