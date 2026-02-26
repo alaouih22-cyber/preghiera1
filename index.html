@@ -168,9 +168,9 @@
     <script>
         const audio = document.getElementById('adhan-player');
         
-        // --- LOGICA PWA ---
+        // REGISTRAZIONE SERVICE WORKER
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(() => console.log("Web App Pronta"));
+            navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
         function enableSystemNotifications() {
@@ -192,11 +192,12 @@
                         vibrate: [200, 100, 200],
                         badge: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
                     });
+                }).catch(() => {
+                    new Notification(title, { body: msg });
                 });
             }
         }
 
-        // --- RESTO DEL CODICE ---
         window.onload = () => {
             const saved = localStorage.getItem('userAthan');
             if (saved) { audio.src = saved; document.getElementById('athan-select').value = saved; }
@@ -212,7 +213,16 @@
             a: { name: "العصر", icon: "🌤️" }, m: { name: "المغرب", icon: "🌇" }, i: { name: "العشاء", icon: "🌙" }
         };
 
-        const times = { "26/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"} };
+        // DATABASE ORARI CORRETTI PER OGGI E DOMANI
+        const times = { 
+            "26/2": {f:"05:35", dh:"12:24", a:"15:25", m:"17:55", i:"19:13"},
+            "27/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:14"}
+        };
+
+        const hijriMapping = {
+            "26/2": "09 رمضان 1447",
+            "27/2": "10 رمضان 1447"
+        };
 
         function update() {
             const now = new Date();
@@ -220,18 +230,20 @@
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
-            document.getElementById('hijri-date-full').innerText = "09 رمضان 1447";
+            document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "رمضان 1447";
 
+            // Eventi Programmati
             if (timeNow === "05:20" && window.lastE !== "imsak") {
-                window.lastE = "imsak"; showRealNotif("Imsak", "Fine Suhoor.");
+                window.lastE = "imsak"; showRealNotif("Imsak", "Fine Suhoor. Mancano 15 min al Fajr.");
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") {
-                window.lastE = "iftar"; audio.play().catch(()=>{}); showRealNotif("Iftar", "Mubarak!");
+                window.lastE = "iftar"; audio.play().catch(()=>{}); showRealNotif("Iftar", "Mubarak! È ora di rompere il digiuno.");
             }
             if (timeNow === "20:30" && window.lastE !== "night") {
-                window.lastE = "night"; document.body.classList.add('night-mode'); showRealNotif("Tarawih", "Inizio preghiera.");
+                window.lastE = "night"; document.body.classList.add('night-mode'); showRealNotif("Tarawih", "Modalità Notte Serena attiva.");
             }
 
+            // Selezione orario del giorno corrente
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
 
@@ -239,8 +251,11 @@
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
+                
                 let active = (now - pDate >= 0 && now - pDate < 600000) ? "active" : "";
+
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].name; }
+
                 if (timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; audio.play().catch(()=>{});
                     showRealNotif("صلاة " + prayerData[k].name, "حان الآن موعد الآذان");
@@ -248,19 +263,24 @@
                 html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:30px; margin-left:15px;">${prayerData[k].icon}</span><span class="p-name">${prayerData[k].name}</span></div><span class="p-time">${pTime}</span></div>`;
             }
 
-            if (nextP) {
-                const diff = nextP - now;
-                const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
-                const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
-                const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
-                document.getElementById('next-prayer-label').innerText = "صلاة " + nextN;
+            // Calcolo prossima preghiera (se tutte passate, prende il Fajr di domani)
+            if (!nextP) {
+                const tomorrowDate = new Date(); tomorrowDate.setDate(now.getDate()+1);
+                const tomorrowKey = tomorrowDate.getDate() + "/" + (tomorrowDate.getMonth() + 1);
+                const tomorrowTimes = times[tomorrowKey] || times["27/2"];
+                const [fh, fm] = tomorrowTimes.f.split(":");
+                nextP = new Date(); nextP.setDate(now.getDate()+1); nextP.setHours(fh, fm, 0);
+                nextN = prayerData.f.name;
             }
+
+            const diff = nextP - now;
+            const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
+            const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
+            const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
+            document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
+            document.getElementById('next-prayer-label').innerText = "صلاة " + nextN;
             document.getElementById('list-container').innerHTML = html;
         }
-
-        const hText = "قال رسول الله ﷺ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ» ";
-        document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
 
         setInterval(update, 1000);
         update();
