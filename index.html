@@ -106,11 +106,11 @@
             background: rgba(255,255,255,0.1); border: 1px solid var(--mp-gold);
             color: white; padding: 12px; border-radius: 10px; width: 100%;
             margin-bottom: 12px; cursor: pointer; text-align: right; font-weight: bold;
+            display: block; text-decoration: none;
         }
         
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 30px; z-index: 5; }
 
-        /* Striscia Avvisi (News Banner) */
         #news-banner {
             width: 90%; background: #fff3cd; color: #856404;
             padding: 12px; margin-bottom: 10px; border-radius: 12px;
@@ -133,8 +133,16 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer; margin-bottom: 20px;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:10px;">إدارة المسجد</h3>
-        <button class="menu-item" onclick="writeNotice()">📝 كتابة إعلان (Admin Only)</button>
+        
+        <button class="menu-item" onclick="writeNotice()">📝 كتابة إعلان (Admin)</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
+        <button class="menu-item" onclick="testNotif()">🧪 تجربة الإشعارات (Test)</button>
+        
+        <hr style="border-color: var(--mp-gold); margin: 15px 0;">
+        
+        <a href="https://quran.com" target="_blank" class="menu-item">📖 المصحف الشريف</a>
+        <a href="https://www.hisnmuslim.com" target="_blank" class="menu-item">🛡️ حصن المسلم</a>
+        
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
             <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
             <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب العربي</option>
@@ -167,19 +175,22 @@
     <script>
         const audio = document.getElementById('adhan-player');
         
-        // --- LOGICA ADMIN PER GLI AVVISI ---
         function writeNotice() {
             const pin = prompt("Inserisci PIN Amministratore:");
-            if (pin === "2026") { // Solo tu conosci questo PIN
-                const msg = prompt("Scrivi l'avviso per tutti gli utenti:");
-                if (msg) {
-                    localStorage.setItem('masjid_notice', msg);
+            if (pin === "2026") {
+                const action = confirm("Premi OK per SCRIVERE, ANNULLA per CANCELLARE l'avviso.");
+                if (action) {
+                    const msg = prompt("Scrivi l'avviso per tutti gli utenti:");
+                    if (msg) {
+                        localStorage.setItem('masjid_notice', msg);
+                        showBanner();
+                        sendPush("إعلان من المسجد", msg);
+                    }
+                } else {
+                    localStorage.removeItem('masjid_notice');
                     showBanner();
-                    sendPush("إعلان من المسجد", msg);
                 }
-            } else {
-                alert("PIN Errato!");
-            }
+            } else { alert("PIN Errato!"); }
         }
 
         function showBanner() {
@@ -188,6 +199,14 @@
             if (notice) {
                 banner.innerText = "📢 " + notice;
                 banner.style.display = "block";
+            } else { banner.style.display = "none"; }
+        }
+
+        function testNotif() {
+            if (Notification.permission === "granted") {
+                sendPush("اختبار الإشعارات", "هذا إشعار تجريبي من التطبيق");
+            } else {
+                alert("يرجى تفعيل الإشعارات أولاً");
             }
         }
 
@@ -202,7 +221,6 @@
             }
         }
 
-        // --- ORARI CALENDARIO 2026 ---
         const prayerData = {
             f: { name: "الفجر", icon: "🌅" }, sh: { name: "الشروق", icon: "☀️" },
             dh: { name: "الظهر", icon: "☀️" }, a: { name: "العصر", icon: "🌤️" }, 
@@ -210,8 +228,8 @@
         };
 
         const times = { 
-            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"}, // cite: 1000085942.jpg
-            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}  // cite: 1000085942.jpg
+            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
+            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
         };
 
         const hijriMapping = { "26/2": "09 رمضان 1447", "27/2": "10 رمضان 1447" };
@@ -224,7 +242,6 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "رمضان 1447";
 
-            // Notifiche Fisse richieste
             if (timeNow === "05:20" && window.lastE !== "imsak") {
                 window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor");
             }
@@ -251,7 +268,6 @@
                 html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:30px; margin-left:15px;">${prayerData[k].icon}</span><span class="p-name">${prayerData[k].name}</span></div><span class="p-time">${pTime}</span></div>`;
             }
 
-            // Timer
             if (nextP) {
                 const diff = nextP - now;
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
