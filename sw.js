@@ -1,15 +1,16 @@
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
+self.addEventListener('fetch', event => {
+  const url = event.request.url;
 
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true })
-        .then(function(clientList) {
-            if (clientList.length > 0) {
-                clientList[0].focus();
-                clientList[0].postMessage({ playAdhan: true });
-            } else {
-                clients.openWindow('./');
-            }
-        })
+  if (url.includes('archive.org') && url.endsWith('.mp3')) {
+    event.respondWith(
+      fetch(url, {
+        mode: 'cors',
+        headers: {
+          'Accept': 'audio/mpeg'
+        }
+      }).catch(() => {
+        return fetch('./fallback-adhan.mp3');
+      })
     );
+  }
 });
