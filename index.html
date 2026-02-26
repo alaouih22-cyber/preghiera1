@@ -107,7 +107,7 @@
 <body onclick="unlockAudio()">
 
     <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline>
-        <source src="https://archive.org/download/Adhan_201704/Adhan%20Makkah.mp3">
+        <source src="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_makkah.mp3">
     </audio>
     <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous" playsinline></audio>
 
@@ -134,9 +134,9 @@
 
         <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">اختر صوت الآذان:</div>
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
-            <option value="https://archive.org/download/Adhan_201704/Adhan%20Makkah.mp3">مكة المكرمة</option>
-            <option value="https://archive.org/download/azan_202102/azan.mp3">المغرب</option>
-            <option value="https://archive.org/download/Adhan_201704/Adhan%20Madina.mp3">المدينة المنورة</option>
+            <option value="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_makkah.mp3">مكة المكرمة</option>
+            <option value="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_maroc.mp3">المغرب</option>
+            <option value="https://raw.githubusercontent.com/alaouih22-cyber/alaouih22-cyber.github.io/main/adhan_madina.mp3">المدينة المنورة</option>
         </select>
 
         <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
@@ -193,11 +193,10 @@
             document.getElementById('athan-select').value = localStorage.getItem('userAthan');
         }
 
-        // REGISTRAZIONE SERVICE WORKER
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(reg => {
                 console.log("SW Pronto");
-                reg.update(); // Forza aggiornamento per intercettare fetch audio
+                reg.update();
             }).catch(err => console.log("Errore SW", err));
         }
 
