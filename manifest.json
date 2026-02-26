@@ -1,13 +1,13 @@
 {
-  "name": "مواقيت الصلاة Bastia Umbra",
-  "short_name": "Salat Bastia",
+  "name": "Muslim Pro Bastia",
+  "short_name": "MuslimPro",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#0b2328",
-  "theme_color": "#0b2328",
+  "background_color": "#004F3F",
+  "theme_color": "#004F3F",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2319/2319830.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
       "sizes": "512x512",
       "type": "image/png"
     }
