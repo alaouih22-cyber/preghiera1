@@ -27,7 +27,7 @@
 
         .ramadan-header {
             width: 100%; background: var(--mp-dark-green);
-            padding: 35px( 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
+            padding: 35px 0; text-align: center; border-bottom: 3px solid var(--mp-gold);
             position: relative; display: flex; justify-content: center; align-items: center;
             flex-shrink: 0;
         }
@@ -159,7 +159,7 @@
 
     <div class="hadith-footer">
         <div class="hadith-track">
-            <div class="hadith-text">رمضان مبارك في باستيا أومبريا • تقبل الله منا ومنكم صالح الأعمال</div>
+            <div class="hadith-text">رمضان مبارك في باستيا أومبريا • تقبل الله منا ومنكم صالح الأعمال • «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»</div>
         </div>
     </div>
 
@@ -172,7 +172,6 @@
             document.getElementById('athan-select').value = localStorage.getItem('userAthan');
         }
 
-        // IMPORTANTE: Sblocca l'audio al primo tocco
         function unlockAudio() {
             audioAdhan.play().then(() => { audioAdhan.pause(); audioAdhan.currentTime = 0; });
             audioBip.play().then(() => { audioBip.pause(); audioBip.currentTime = 0; });
@@ -188,21 +187,15 @@
             toggleMenu();
         }
 
-        // FUNZIONE NOTIFICA CON SCRITTA E AUDIO
         function sendPush(title, body, type) {
             if (Notification.permission === "granted") {
                 const style = localStorage.getItem('notifStyle') || 'adhan';
-                
-                // Audio
                 if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
-                    audioAdhan.currentTime = 0;
-                    audioAdhan.play().catch(e => console.log("Errore audio")); 
+                    audioAdhan.currentTime = 0; audioAdhan.play(); 
                 } else { 
-                    audioBip.currentTime = 0;
-                    audioBip.play().catch(e => {}); 
+                    audioBip.currentTime = 0; audioBip.play(); 
                 }
 
-                // Banner Notifica
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
@@ -215,6 +208,7 @@
             }
         }
 
+        // --- SISTEMA NEWS PROFESSIONALE ---
         async function checkGlobalNews() {
             try {
                 const response = await fetch('news.json?v=' + Date.now());
@@ -230,7 +224,9 @@
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                sendPush("اختبار محلي", "تنبيه من إدارة المسجد", 'adhan');
+                const opt = prompt("1: Test Athan\n2: Test Bip");
+                if (opt === "1") sendPush("اختبار الآذان", "صوت الآذان يعمل", 'adhan');
+                if (opt === "2") sendPush("اختبار التنبيه", "النغمة تعمل", 'bip');
             }
         }
 
@@ -248,7 +244,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // NOTIFICHE AUTOMATICHE FISSE
+            // ALLARMI AUTOMATICI
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
@@ -263,11 +259,8 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
-                
-                // QUANDO SCATTA L'ORA: SUONA E MOSTRA SCRITTA
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; 
-                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
