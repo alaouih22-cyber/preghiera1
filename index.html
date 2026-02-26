@@ -106,8 +106,8 @@
 </head>
 <body onclick="unlockAudio()">
 
-    <audio id="adhan-player" preload="auto"><source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3"></audio>
-    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto"></audio>
+    <audio id="adhan-player" preload="auto" crossorigin="anonymous"><source src="https://ia800701.us.archive.org/34/items/Adhan_201704/Adhan%20Makkah.mp3"></audio>
+    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous"></audio>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -120,7 +120,7 @@
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات</h3>
         
-        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الآذان (Sblocca e Prova)</button>
+        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الآذان</button>
         
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
         
@@ -165,22 +165,23 @@
     <script>
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
-
         let audioUnlocked = false;
 
-        // Funzione integrata nelle 3 strisce
+        // FUNZIONE CORRETTA: Deve essere chiamata da un click utente
         function forceUnlockAndTest() {
+            audioAdhan.muted = false;
             audioAdhan.play().then(() => {
                 audioUnlocked = true;
-                alert("Audio Sbloccato con successo!");
-            }).catch(e => alert("Tocca lo schermo e riprova"));
+                console.log("Audio Sbloccato");
+            }).catch(e => {
+                alert("Per favore, clicca di nuovo il tasto");
+            });
             toggleMenu();
         }
 
         function unlockAudio() {
             if (audioUnlocked) return;
-            audioAdhan.play().then(() => { audioAdhan.pause(); audioUnlocked = true; }).catch(e => console.log("Audio non ancora sbloccato"));
-            audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
+            audioAdhan.play().then(() => { audioAdhan.pause(); audioUnlocked = true; }).catch(e => {});
         }
 
         if (localStorage.getItem('userAthan')) {
@@ -204,7 +205,7 @@
             if (Notification.permission === "granted") {
                 const style = localStorage.getItem('notifStyle') || 'adhan';
                 if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
-                    audioAdhan.currentTime = 0; audioAdhan.play().catch(e => console.log("Attesa interazione")); 
+                    audioAdhan.currentTime = 0; audioAdhan.play().catch(e => console.log("Lock")); 
                 } else { 
                     audioBip.currentTime = 0; audioBip.play().catch(e => {}); 
                 }
@@ -213,8 +214,7 @@
                     reg.showNotification(title, {
                         body: body,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        vibrate: [300, 100, 300],
-                        data: { url: window.location.href }
+                        vibrate: [300, 100, 300]
                     });
                 });
             }
@@ -223,7 +223,6 @@
         async function checkGlobalNews() {
             try {
                 const response = await fetch('./news.json?v=' + Date.now());
-                if (!response.ok) return;
                 const data = await response.json();
                 const lastId = localStorage.getItem('last_news_id');
                 if (data.id && data.id !== lastId) {
