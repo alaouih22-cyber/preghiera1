@@ -1,4 +1,6 @@
-// Installazione e attivazione immediata
+const CACHE_NAME = 'muslim-pro-audio-v1';
+
+// Installazione: l'app si prende il controllo subito
 self.addEventListener('install', event => {
     self.skipWaiting();
 });
@@ -7,28 +9,37 @@ self.addEventListener('activate', event => {
     event.waitUntil(clients.claim());
 });
 
-// GESTIONE AUDIO OTTIMIZZATA
+// GESTIONE FETCH CON CACHING AUDIO
 self.addEventListener('fetch', event => {
     const url = event.request.url;
 
-    // Intercettiamo solo i file MP3
+    // Gestiamo solo i file MP3
     if (url.endsWith('.mp3')) {
         event.respondWith(
-            fetch(event.request, {
-                mode: 'cors',
-                credentials: 'omit',
-                headers: {
-                    'Accept': 'audio/mpeg'
+            caches.match(event.request).then(cachedResponse => {
+                // 1. Se il file è già in cache, lo usiamo subito (velocissimo)
+                if (cachedResponse) {
+                    return cachedResponse;
                 }
-            })
-            .then(response => {
-                // Se la risposta è valida, la restituiamo
-                if (response.ok) return response;
-                throw new Error('Network response was not ok');
-            })
-            .catch(() => {
-                // Se fallisce (offline o blocco), cerca il file locale
-                return fetch('./fallback-adhan.mp3');
+
+                // 2. Altrimenti lo scarichiamo con le impostazioni CORS corrette
+                return fetch(event.request, {
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: { 'Accept': 'audio/mpeg' }
+                }).then(networkResponse => {
+                    // Se lo scaricamento va a buon fine, salviamo una copia in cache
+                    if (networkResponse.ok) {
+                        const responseToCache = networkResponse.clone();
+                        caches.open(CACHE_NAME).then(cache => {
+                            cache.put(event.request, responseToCache);
+                        });
+                    }
+                    return networkResponse;
+                }).catch(() => {
+                    // 3. Se fallisce tutto (offline), proviamo il fallback locale
+                    return fetch('./fallback-adhan.mp3');
+                });
             })
         );
     }
