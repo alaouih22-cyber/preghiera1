@@ -179,24 +179,27 @@
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                const opt = prompt("1: إرسال إشعار (Pop-up)\n2: تجربة الآذان (Test Athan)");
+                const opt = prompt("1: إرسال إشعار (Pop-up Only)\n2: تجربة الآذان (Test Athan)\n3: تجربة نغمة قصيرة (Test Bip)");
                 if (opt === "1") {
                     const m = prompt("نص الإشعار:");
-                    if (m) sendPush("تنبيه من المسجد 📢", m, false);
+                    if (m) sendPush("تنبيه من المسجد 📢", m, 'bip');
                 } else if (opt === "2") {
-                    sendPush("تجربة الآذان", "اختبار صوت الآذان والإشعارات", true);
+                    sendPush("تجربة الآذان", "اختبار صوت الآذان الكامل في الستارة", 'adhan');
+                } else if (opt === "3") {
+                    sendPush("تجربة التنبيه", "اختبار النغمة القصيرة في الستارة", 'bip');
                 }
             }
         }
 
-        function sendPush(title, body, forceAthan = false) {
+        function sendPush(title, body, type = 'auto') {
             if (Notification.permission === "granted") {
-                const style = localStorage.getItem('notifStyle') || 'adhan';
+                const style = type === 'auto' ? (localStorage.getItem('notifStyle') || 'adhan') : type;
                 
-                if (forceAthan || style === 'adhan') {
+                if (style === 'adhan') {
                     audioAdhan.currentTime = 0;
-                    audioAdhan.play().catch(e => console.log("Audio block:", e));
+                    audioAdhan.play().catch(e => {});
                 } else {
+                    audioBip.currentTime = 0;
                     audioBip.play().catch(e => {});
                 }
 
@@ -225,10 +228,10 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // AVVISI AUTOMATICI
-            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", false); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم", true); }
-            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", false); }
+            // NOTIFICHE AUTOMATICHE
+            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "Ramadan Mubarak! Iftar time", 'adhan'); }
+            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
 
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
@@ -240,10 +243,9 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000) ? "active" : "";
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].n; }
                 
-                // NOTIFICA AUTOMATICA ARRIVO PREGHIERA
                 if (timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; 
-                    sendPush("صلاة " + prayerData[k].n, "حان الآن موعد الآذان", true);
+                    sendPush("صلاة " + prayerData[k].n, "حان الآن موعد الآذان", 'adhan');
                 }
 
                 html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:35px; margin-left:15px;">${prayerData[k].i}</span><span class="p-name">${prayerData[k].n}</span></div><span class="p-time">${pTime}</span></div>`;
