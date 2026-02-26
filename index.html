@@ -155,13 +155,18 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
+        // FUNZIONE DI SBLOCCO FORZATO PER ANDROID
         function forceUnlockAndTest() {
             if (navigator.vibrate) navigator.vibrate(100);
-            audioAdhan.muted = false;
+            
+            // Proviamo a ricaricare il file prima di suonare
+            audioAdhan.load(); 
+            
             audioAdhan.play().then(() => {
                 audioUnlocked = true;
+                console.log("Adhan partito!");
             }).catch(e => {
-                alert("Tocca lo schermo e riprova!");
+                alert("Errore audio: " + e.message);
             });
             toggleMenu();
         }
@@ -181,12 +186,18 @@
 
         function sendPush(title, body, type) {
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            
+            // Reset e play dell'Adhan
             audioAdhan.currentTime = 0;
-            audioAdhan.play().catch(e => console.log("Audio in attesa"));
+            audioAdhan.play().catch(e => console.log("Audio bloccato dal sistema"));
 
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png' });
+                    reg.showNotification(title, { 
+                        body: body, 
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                        vibrate: [200, 100, 200]
+                    });
                 });
             }
         }
@@ -194,7 +205,7 @@
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                sendPush("تجربة الآذان", "اختبار الصوت", 'adhan');
+                sendPush("تجربة الآذان", "اختبار صوت الآذان المكي", 'adhan');
             }
         }
 
@@ -213,7 +224,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // ALLARMI RICHIESTI
+            // ALLARMI PERSONALIZZATI
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
