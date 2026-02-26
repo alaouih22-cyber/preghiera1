@@ -1,5 +1,5 @@
 {
-  "name": "Muslim Pro Bastia",
+  "name": "Muslim Pro",
   "short_name": "MuslimPro",
   "start_url": "index.html",
   "display": "standalone",
@@ -7,9 +7,10 @@
   "theme_color": "#004F3F",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
+      "src": "icona_preghiere.jpg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpg",
+      "purpose": "any maskable"
     }
   ]
 }
