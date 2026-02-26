@@ -116,6 +116,16 @@
         .hisn-btn { background: #ffffff; color: var(--mp-dark-green) !important; border: 2px solid var(--mp-gold); }
         
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 30px; z-index: 5; }
+        
+        /* News Banner Style */
+        #news-banner {
+            width: 90%; background: #fff3cd; color: #856404;
+            padding: 12px; margin: 10px 0; border-radius: 15px;
+            border: 2px solid var(--mp-gold); font-size: 14px; text-align: center;
+            font-weight: bold; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -132,8 +142,8 @@
     <div class="sidebar" id="sidebar">
         <div style="font-size:35px; cursor:pointer; margin-bottom: 20px;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:1px solid var(--mp-gold); padding-bottom:10px;">القائمة الرئيسية</h3>
-        <button class="menu-item" onclick="enableSystemNotifications()">🔔 تفعيل تنبيهات الهاتف</button>
-        <button class="menu-item" onclick="testSystemNotif()">🚀 تجربة التنبيه (Prova)</button>
+        <button class="menu-item" onclick="enableNotifications()">🔔 تفعيل تنبيهات الهاتف</button>
+        <button class="menu-item" onclick="manageMosqueStatus()">🕌 إدارة حالة المسجد (Admin)</button>
         <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
             <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
             <option value="https://www.islamcan.com/audio/adhan/azan20.mp3">المغرب العربي</option>
@@ -141,7 +151,6 @@
         </select>
         <button class="menu-item" onclick="testSound()">▶️ تجربة الأذان</button>
         <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="nav-btn mushaf-btn">📖 المصحف الملون (ورش)</a>
-        <a href="https://hisnmuslim.com/index.php?lang=ar" target="_blank" class="nav-btn hisn-btn">🛡️ حصن المسلم (Web)</a>
     </div>
 
     <div class="dashboard">
@@ -159,6 +168,8 @@
         </div>
     </div>
 
+    <div id="news-banner"></div>
+
     <div class="prayer-list" id="list-container"></div>
 
     <div class="hadith-footer">
@@ -168,69 +179,60 @@
     <script>
         const audio = document.getElementById('adhan-player');
         
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
+        // --- FUNZIONALITÀ ADMIN NEWS ---
+        function manageMosqueStatus() {
+            const pass = prompt("Inserisci PIN Amministratore:");
+            if (pass === "2026") { // Cambia qui la tua password
+                const msg = prompt("Cosa vuoi annunciare oggi? (es: Tarawih ore 20:30)");
+                if (msg !== null) {
+                    localStorage.setItem('masjid_news', msg);
+                    localStorage.setItem('masjid_news_time', Date.now());
+                    checkNews();
+                    // Simula l'invio della notifica banner
+                    sendBannerNotification("Stato della Moschea", msg);
+                }
+            } else {
+                alert("Accesso negato.");
+            }
         }
 
-        function enableSystemNotifications() {
-            Notification.requestPermission().then(p => {
-                if(p === "granted") showRealNotif("Muslim Pro", "تم تفعيل التنبيهات!");
-            });
+        function checkNews() {
+            const msg = localStorage.getItem('masjid_news');
+            const banner = document.getElementById('news-banner');
+            if (msg) {
+                banner.innerText = "📢 " + msg;
+                banner.style.display = "block";
+            } else {
+                banner.style.display = "none";
+            }
         }
 
-        function testSystemNotif() {
-            showRealNotif("تجربة التنبيه", "هذا التنبيه يظهر في القائمة العلوية!");
-        }
-
-        function showRealNotif(title, msg) {
+        function sendBannerNotification(title, body) {
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
-                        body: msg,
+                        body: body,
                         icon: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
                         vibrate: [200, 100, 200],
-                        badge: "https://cdn-icons-png.flaticon.com/512/2619/2619277.png"
+                        tag: 'admin-broadcast'
                     });
-                }).catch(() => {
-                    new Notification(title, { body: msg });
                 });
             }
         }
 
-        window.onload = () => {
-            const saved = localStorage.getItem('userAthan');
-            if (saved) { audio.src = saved; document.getElementById('athan-select').value = saved; }
-            else { audio.src = document.getElementById('athan-select').value; }
-        };
-
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
-        function saveAthan(url) { audio.src = url; localStorage.setItem('userAthan', url); }
-        function testSound() { audio.paused ? audio.play() : audio.pause(); }
-
+        // --- CALENDARIO E ORARI (DATI DAL TUO FOGLIO) ---
         const prayerData = {
-            f: { name: "الفجر", icon: "🌅" }, 
-            sh: { name: "الشروق", icon: "☀️" },
-            dh: { name: "الظهر", icon: "☀️" },
-            a: { name: "العصر", icon: "🌤️" }, 
-            m: { name: "المغرب", icon: "🌇" }, 
-            i: { name: "العشاء", icon: "🌙" }
+            f: { name: "الفجر", icon: "🌅" }, sh: { name: "الشروق", icon: "☀️" },
+            dh: { name: "الظهر", icon: "☀️" }, a: { name: "العصر", icon: "🌤️" }, 
+            m: { name: "المغرب", icon: "🌇" }, i: { name: "العشاء", icon: "🌙" }
         };
 
-        // DATI ESTRATTI DIRETTAMENTE DAL CALENDARIO CARICATO
         const times = { 
-            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
-            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
-            "28/2": {f:"05:30", sh:"06:48", dh:"12:23", a:"15:28", m:"17:59", i:"19:17"},
-            "1/3": {f:"05:28", sh:"06:46", dh:"12:23", a:"15:29", m:"18:00", i:"19:18"},
-            "2/3": {f:"05:27", sh:"06:45", dh:"12:23", a:"15:30", m:"18:01", i:"19:19"}
+            "26/2": {f:"05:33", sh:"06:51", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"}, // cite: 1000085942.jpg
+            "27/2": {f:"05:31", sh:"06:50", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}  // cite: 1000085942.jpg
         };
 
-        const hijriMapping = {
-            "26/2": "09 رمضان 1447",
-            "27/2": "10 رمضان 1447",
-            "28/2": "11 رمضان 1447",
-            "1/3": "12 رمضان 1447"
-        };
+        const hijriMapping = { "26/2": "09 رمضان 1447", "27/2": "10 رمضان 1447" };
 
         function update() {
             const now = new Date();
@@ -240,46 +242,38 @@
             document.getElementById('greg-date-full').innerText = now.getDate() + "/" + (now.getMonth() + 1) + "/" + now.getFullYear();
             document.getElementById('hijri-date-full').innerText = hijriMapping[dateKey] || "رمضان 1447";
 
-            // Notifiche specifiche basate sugli orari del calendario
-            const today = times[dateKey] || times["26/2"];
-
-            // Allarme Imsak 5:20 (Fisso come richiesto)
+            // Notifiche Custom richieste
             if (timeNow === "05:20" && window.lastE !== "imsak") {
-                window.lastE = "imsak"; showRealNotif("Imsak", "Avviso fine Suhoor (5:20)");
+                window.lastE = "imsak"; sendBannerNotification("Imsak", "Fine Suhoor");
             }
-            // Notifica Iftar 17:45 (Fisso come richiesto)
             if (timeNow === "17:45" && window.lastE !== "iftar") {
-                window.lastE = "iftar"; audio.play().catch(()=>{}); showRealNotif("Iftar", "Ora di rompere il digiuno (17:45)");
+                window.lastE = "iftar"; audio.play().catch(()=>{}); sendBannerNotification("Iftar", "Mubarak!");
             }
-            // Notifica Tarawih e Notte Serena 20:30 (Fisso come richiesto)
             if (timeNow === "20:30" && window.lastE !== "night") {
-                window.lastE = "night"; document.body.classList.add('night-mode'); showRealNotif("Tarawih", "Inizio preghiera e Modalità Notte Serena");
+                window.lastE = "night"; document.body.classList.add('night-mode'); sendBannerNotification("Tarawih", "Inizio preghiera");
             }
 
+            const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
 
             for (let k in prayerData) {
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
-                
                 let active = (now - pDate >= 0 && now - pDate < 600000) ? "active" : "";
-
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerData[k].name; }
-
-                // Adhan automatico per le preghiere (escluso Shuruk)
                 if (k !== 'sh' && timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; audio.play().catch(()=>{});
-                    showRealNotif("صلاة " + prayerData[k].name, "حان الآن موعد الآذان (" + pTime + ")");
+                    sendBannerNotification("صلاة " + prayerData[k].name, "حان الآن موعد الآذان");
                 }
                 html += `<div class="prayer-card ${active}"><div style="display:flex; align-items:center;"><span style="font-size:30px; margin-left:15px;">${prayerData[k].icon}</span><span class="p-name">${prayerData[k].name}</span></div><span class="p-time">${pTime}</span></div>`;
             }
 
+            // Timer prossima preghiera
             if (!nextP) {
                 const tomorrowDate = new Date(); tomorrowDate.setDate(now.getDate()+1);
                 const tomorrowKey = tomorrowDate.getDate() + "/" + (tomorrowDate.getMonth() + 1);
-                const tomorrowTimes = times[tomorrowKey] || times["27/2"];
-                const [fh, fm] = tomorrowTimes.f.split(":");
+                const [fh, fm] = (times[tomorrowKey] || times["27/2"]).f.split(":");
                 nextP = new Date(); nextP.setDate(now.getDate()+1); nextP.setHours(fh, fm, 0);
                 nextN = prayerData.f.name;
             }
@@ -293,10 +287,12 @@
             document.getElementById('list-container').innerHTML = html;
         }
 
-        const hText = "قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً»";
-        document.getElementById('hadith-track').innerHTML = `<div class="hadith-text">${hText}</div><div class="hadith-text">${hText}</div>`;
+        function enableNotifications() {
+            Notification.requestPermission().then(p => { if(p === "granted") alert("Notifiche attivate!"); });
+        }
 
         setInterval(update, 1000);
+        checkNews();
         update();
     </script>
 </body>
