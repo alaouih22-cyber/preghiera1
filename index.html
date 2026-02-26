@@ -163,18 +163,23 @@
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
 
-        // Carica l'athan preferito se salvato
-        if(localStorage.getItem('userAthan')) {
+        // Sblocco audio ottimizzato
+        let audioUnlocked = false;
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            audioAdhan.play().then(() => { audioAdhan.pause(); audioUnlocked = true; }).catch(e => console.log("Audio non ancora sbloccato"));
+            audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
+        }
+
+        if (localStorage.getItem('userAthan')) {
             audioAdhan.src = localStorage.getItem('userAthan');
             document.getElementById('athan-select').value = localStorage.getItem('userAthan');
         }
 
-        function unlockAudio() {
-            audioAdhan.play().then(() => audioAdhan.pause()).catch(e => {});
-            audioBip.play().then(() => audioBip.pause()).catch(e => {});
+        // Registrazione SW con percorso corretto
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(reg => console.log("SW Pronto")).catch(err => console.log("Errore SW", err));
         }
-
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
         function saveAthan(url) { audioAdhan.src = url; audioAdhan.load(); localStorage.setItem('userAthan', url); }
@@ -188,9 +193,9 @@
             if (Notification.permission === "granted") {
                 const style = localStorage.getItem('notifStyle') || 'adhan';
                 if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
-                    audioAdhan.currentTime = 0; audioAdhan.play(); 
+                    audioAdhan.currentTime = 0; audioAdhan.play().catch(e => console.log("Attesa interazione")); 
                 } else { 
-                    audioBip.currentTime = 0; audioBip.play(); 
+                    audioBip.currentTime = 0; audioBip.play().catch(e => {}); 
                 }
 
                 navigator.serviceWorker.ready.then(reg => {
@@ -198,19 +203,19 @@
                         body: body,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
                         vibrate: [300, 100, 300],
-                        requireInteraction: true
+                        data: { url: window.location.href }
                     });
                 });
             }
         }
 
-        // --- SISTEMA GLOBALE NEWS ---
         async function checkGlobalNews() {
             try {
-                const response = await fetch('news.json?v=' + Date.now());
+                const response = await fetch('./news.json?v=' + Date.now());
+                if (!response.ok) return;
                 const data = await response.json();
                 const lastId = localStorage.getItem('last_news_id');
-                if (data.id !== lastId) {
+                if (data.id && data.id !== lastId) {
                     sendPush(data.title, data.body, 'bip');
                     localStorage.setItem('last_news_id', data.id);
                 }
@@ -221,12 +226,13 @@
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                const opt = prompt("1: تجربة الآذان (Local Athan)\n2: تجربة نغمة (Local Bip)");
-                if (opt === "1") sendPush("تجربة الآذان", "اختبار الصوت الكامل", 'adhan');
-                if (opt === "2") sendPush("تنبيه", "اختبار النغمة القصيرة", 'bip');
+                const opt = prompt("1: تجربة الآذان\n2: تجربة نغمة");
+                if (opt === "1") sendPush("تجربة الآذان", "اختبار الصوت", 'adhan');
+                if (opt === "2") sendPush("تنبيه", "اختبار النغمة", 'bip');
             }
         }
 
+        // Orari per Bastia Umbra (Febbraio 2026)
         const times = { 
             "26/2": {f:"05:33", dh:"12:24", a:"15:26", m:"17:56", i:"19:15"},
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"}
@@ -242,6 +248,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
+            // Eventi configurati
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
