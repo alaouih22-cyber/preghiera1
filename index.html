@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="app-icon.png">
-    <link rel="apple-touch-icon" href="app-icon.png">
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
-        /* IL TUO CSS RIMANE IDENTICO */
         :root {
             --mp-dark-green: #004F3F; 
             --mp-gold: #C5A059; 
@@ -167,18 +164,12 @@
     </div>
 
     <script>
-        /* IL TUO SCRIPT RIMANE IDENTICO */
         const audioAdhan = document.getElementById('adhan-player');
         const audioBip = document.getElementById('bip-player');
 
-        if(localStorage.getItem('userAthan')) {
-            audioAdhan.src = localStorage.getItem('userAthan');
-            document.getElementById('athan-select').value = localStorage.getItem('userAthan');
-        }
-
         function unlockAudio() {
-            audioAdhan.play().then(() => { audioAdhan.pause(); audioAdhan.currentTime = 0; });
-            audioBip.play().then(() => { audioBip.pause(); audioBip.currentTime = 0; });
+            audioAdhan.play().then(() => { audioAdhan.pause(); audioAdhan.currentTime = 0; }).catch(() => {});
+            audioBip.play().then(() => { audioBip.pause(); audioBip.currentTime = 0; }).catch(() => {});
         }
 
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
@@ -195,18 +186,17 @@
             if (Notification.permission === "granted") {
                 const style = localStorage.getItem('notifStyle') || 'adhan';
                 if (type === 'adhan' || (type === 'auto' && style === 'adhan')) { 
-                    audioAdhan.currentTime = 0; audioAdhan.play(); 
+                    audioAdhan.currentTime = 0; audioAdhan.play().catch(e => console.log("Audio block")); 
                 } else { 
-                    audioBip.currentTime = 0; audioBip.play(); 
+                    audioBip.currentTime = 0; audioBip.play().catch(e => {}); 
                 }
 
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, {
                         body: body,
-                        icon: 'app-icon.png',
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
                         vibrate: [500, 200, 500],
-                        requireInteraction: true,
-                        dir: 'rtl'
+                        requireInteraction: true
                     });
                 });
             }
@@ -226,11 +216,7 @@
 
         function adminDash() {
             const pin = prompt("PIN Admin:");
-            if (pin === "2026") {
-                const opt = prompt("1: Test Athan\n2: Test Bip");
-                if (opt === "1") sendPush("اختبار الآذان", "صوت الآذان يعمل", 'adhan');
-                if (opt === "2") sendPush("اختبار التنبيه", "النغمة تعمل", 'bip');
-            }
+            if (pin === "2026") { sendPush("اختبار", "تجربة الصوت", 'adhan'); }
         }
 
         const times = { 
@@ -258,25 +244,23 @@
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
-                let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 if (timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
                 }
 
-                html += `<div class="prayer-card ${active ? 'active' : ''}">
-                            <span class="p-name">${prayerNames[k]}</span>
-                            <span class="p-time">${pTime}</span>
-                        </div>`;
+                let active = (timeNow === pTime) ? "active" : "";
+                html += `<div class="prayer-card ${active}"><span class="p-name">${prayerNames[k]}</span><span class="p-time">${pTime}</span></div>`;
             }
 
+            // --- FIX COUNTDOWN ---
             if (nextP) {
                 const diff = nextP - now;
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                 const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
-                document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
+                document.getElementById('timer-next').innerText = hh + ":" + mm + ":" + ss;
                 document.getElementById('next-prayer-label').innerText = "صلاة " + nextN;
             }
             document.getElementById('list-container').innerHTML = html;
