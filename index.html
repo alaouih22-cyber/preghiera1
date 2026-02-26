@@ -107,7 +107,7 @@
 <body onclick="unlockAudio()">
 
     <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline>
-        <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg">
+        <source src="https://www.islamcan.com/audio/adhan/makkah.mp3">
     </audio>
     <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous" playsinline></audio>
 
@@ -122,7 +122,7 @@
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات</h3>
         
-        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الصوت</button>
+        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الآذان</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
         
         <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
@@ -194,7 +194,7 @@
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                sendPush("تجربة", "اختبار الصوت", 'adhan');
+                sendPush("تجربة الآذان", "اختبار الصوت", 'adhan');
             }
         }
 
@@ -213,6 +213,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
+            // ALLARMI RICHIESTI
             if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
             if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
             if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
@@ -228,7 +229,7 @@
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'auto');
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'adhan');
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
@@ -242,7 +243,7 @@
 
             if (nextP) {
                 const diff = nextP - now;
-                const hh = Math.floor(diff/3600000).padStart(2,"0");
+                const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                 const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
                 document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
