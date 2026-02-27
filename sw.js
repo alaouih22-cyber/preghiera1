@@ -9,26 +9,44 @@ self.addEventListener('activate', event => {
     event.waitUntil(clients.claim());
 });
 
-// GESTIONE FETCH CON CACHING AUDIO
+// --- NUOVO: GESTIONE NOTIFICHE PUSH ---
+self.addEventListener('push', event => {
+    const data = event.data ? event.data.json() : { title: 'Muslim Pro', body: 'È il momento della preghiera' };
+    const options = {
+        body: data.body,
+        icon: 'https://cdn-icons-png.flaticon.com/512/2798/2798007.png',
+        badge: 'https://cdn-icons-png.flaticon.com/512/2798/2798007.png',
+        vibrate: [200, 100, 200],
+        data: { url: './index.html' }
+    };
+    event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+// --- NUOVO: CLIC SULLA NOTIFICA PER APRIRE L'APP ---
+self.addEventListener('notificationclick', event => {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window' }).then(clientList => {
+            if (clientList.length > 0) return clientList[0].focus();
+            return clients.openWindow('./index.html');
+        })
+    );
+});
+
+// GESTIONE FETCH CON CACHING AUDIO (Invariato come da tua richiesta)
 self.addEventListener('fetch', event => {
     const url = event.request.url;
-
-    // Gestiamo solo i file MP3
     if (url.endsWith('.mp3')) {
         event.respondWith(
             caches.match(event.request).then(cachedResponse => {
-                // 1. Se il file è già in cache, lo usiamo subito (velocissimo)
                 if (cachedResponse) {
                     return cachedResponse;
                 }
-
-                // 2. Altrimenti lo scarichiamo con le impostazioni CORS corrette
                 return fetch(event.request, {
                     mode: 'cors',
                     credentials: 'omit',
                     headers: { 'Accept': 'audio/mpeg' }
                 }).then(networkResponse => {
-                    // Se lo scaricamento va a buon fine, salviamo una copia in cache
                     if (networkResponse.ok) {
                         const responseToCache = networkResponse.clone();
                         caches.open(CACHE_NAME).then(cache => {
@@ -37,7 +55,6 @@ self.addEventListener('fetch', event => {
                     }
                     return networkResponse;
                 }).catch(() => {
-                    // 3. Se fallisce tutto (offline), proviamo il fallback locale
                     return fetch('./fallback-adhan.mp3');
                 });
             })
