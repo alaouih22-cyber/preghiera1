@@ -172,6 +172,7 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
+        // Recupero impostazioni
         if(localStorage.getItem('savedAthan')) {
             audioAdhan.src = localStorage.getItem('savedAthan');
             document.getElementById('athan-select').value = localStorage.getItem('savedAthan');
@@ -186,7 +187,7 @@
                 audioAdhan.pause();
                 audioAdhan.currentTime = 0;
                 audioUnlocked = true;
-                console.log("Audio Engine Ready");
+                console.log("Audio Sbloccato");
             }).catch(e => {});
             audioBip.play().then(() => { audioBip.pause(); }).catch(e => {});
         }
@@ -201,26 +202,24 @@
         }
 
         function forceUnlockAndTest() {
-            audioAdhan.load();
             audioAdhan.play().then(() => {
                 audioUnlocked = true;
-                alert("صوت الآذان يعمل بنجاح! - Audio funziona!");
-            }).catch(e => {
-                alert("Tocca lo schermo prima di provare.");
-            });
+                alert("Audio OK!");
+            }).catch(e => alert("Tocca lo schermo prima"));
             toggleMenu();
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // --- SISTEMA REGISTRAZIONE E NOTIFICHE INTEGRATO (Secondo i tuoi modelli) ---
+        // --- SISTEMA REPAIR NOTIFICHE ---
         function enableNotifs() { 
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js').then(registration => {
-                    console.log('Service Worker registrato');
+                navigator.serviceWorker.register('./sw.js?v=2').then(reg => {
                     Notification.requestPermission().then(permission => {
                         if (permission === 'granted') {
-                            alert("🔔 الإشعارات تعمل! - Banner attivi!");
+                            alert("🔔 Banner Attivati!");
+                            // Test immediato del banner
+                            reg.showNotification("Muslim Pro", { body: "Notifiche Banner OK", icon: "https://cdn-icons-png.flaticon.com/512/2798/2798007.png" });
                         }
                     });
                 });
@@ -230,20 +229,24 @@
 
         function sendPush(title, body, type) {
             const style = localStorage.getItem('notifStyle') || 'adhan';
-            if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
-
+            
+            // Audio immediato se l'app è aperta
             if (style !== 'silent') {
                 let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
-                player.currentTime = 0;
-                player.play().catch(e => console.log("Permesso audio negato"));
+                player.play().catch(e => console.log("Audio in background bloccato"));
             }
 
+            // Banner Pop-up tramite Service Worker
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, { 
                         body: body, 
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        data: { url: './index.html?play=true' } // Parametro per bypassare blocco audio
+                        badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                        vibrate: [300, 100, 300],
+                        data: { url: './index.html?play=true' },
+                        requireInteraction: true,
+                        tag: 'adhan-notif'
                     });
                 });
             }
@@ -251,9 +254,7 @@
 
         function adminDash() {
             const pin = prompt("PIN Admin:");
-            if (pin === "2026") {
-                sendPush("Test Admin", "Funzionamento Banner e Audio OK", 'adhan');
-            }
+            if (pin === "2026") sendPush("Test Notifica", "Questo è un banner pop-up", 'adhan');
         }
 
         const times = { 
@@ -270,23 +271,12 @@
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
-            
-            // STATO DELLA MOSCHEA INVARIATO
             document.getElementById('mosque-status').innerText = "Live News: Caricamento...";
 
-            if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; 
-                sendPush("Imsak (سحور)", "Avviso: fine Suhoor tra 10 minuti.", 'bip'); 
-            }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; 
-                sendPush("Iftar (إفطار)", "Manca poco al Maghrib. تقبل الله صيامكم", 'auto'); 
-            }
-            if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE = "night"; 
-                document.body.classList.add('night-mode'); 
-                sendPush("Tarawih (تراويح)", "Promemoria Tarawih e attivazione Notte Serena.", 'bip'); 
-            }
+            // Allarmi Speciali (Imsak, Iftar, Tarawih)
+            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak (سحور)", "Fine Suhoor tra 10 min.", 'bip'); }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Manca poco al Maghrib.", 'auto'); }
+            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih (تراويح)", "Inizio Tarawih.", 'bip'); }
 
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
@@ -327,23 +317,21 @@
         setInterval(update, 1000);
         update();
 
-        // --- GESTORE MESSAGGI DAL SERVICE WORKER (Per attivazione Adhan) ---
+        // --- GESTORE MESSAGGI SW ---
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data.action === 'FORCE_PLAY_ADHAN') {
-                    audioAdhan.play().catch(e => console.log("Blocco audio attivo: clicca sulla notifica"));
-                }
+            navigator.serviceWorker.register('./sw.js').then(() => {
+                navigator.serviceWorker.addEventListener('message', event => {
+                    if (event.data.action === 'FORCE_PLAY_ADHAN') {
+                        audioAdhan.play().catch(e => console.log("Clicca sulla notifica per sbloccare audio"));
+                    }
+                });
             });
         }
 
-        // --- CONTROLLO AUTO-PLAY ALL'APERTURA (Parametro URL) ---
-        window.addEventListener('DOMContentLoaded', () => {
-            if (new URLSearchParams(window.location.search).get('play') === 'true') {
-                setTimeout(() => {
-                    audioAdhan.play().catch(e => console.log("Attendo interazione manuale"));
-                }, 1000);
-            }
-        });
+        // Controllo ?play=true
+        if (new URLSearchParams(window.location.search).get('play') === 'true') {
+            setTimeout(() => { audioAdhan.play().catch(e => {}); }, 1000);
+        }
     </script>
 </body>
 </html>
