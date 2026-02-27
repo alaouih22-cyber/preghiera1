@@ -169,6 +169,7 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
+        // Funzione UNIVERSALE di sblocco
         function unlockAudioEngine() {
             if (audioUnlocked) return;
             const p1 = audioAdhan.play();
@@ -177,12 +178,34 @@
                 audioAdhan.pause(); audioAdhan.currentTime = 0;
                 audioBip.pause(); audioBip.currentTime = 0;
                 audioUnlocked = true;
-                console.log("Audio Sbloccato");
-            }).catch(e => {});
+                console.log("AUDIO SBLOCCATO");
+            }).catch(e => console.log("Attesa tocco..."));
         }
 
         document.getElementById('main-body').addEventListener('touchstart', unlockAudioEngine);
         document.getElementById('main-body').addEventListener('click', unlockAudioEngine);
+
+        // --- INTEGRAZIONE FORZATA SERVICE WORKER ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log("Service Worker registrato correttamente");
+            });
+
+            // Ascolta il comando "suona" dal Service Worker quando clicchi la notifica
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data.action === 'FORCE_PLAY_ADHAN') {
+                    console.log("Comando Ricevuto: Riproduzione Adhan forzata dal SW");
+                    audioAdhan.play().catch(e => alert("Tocca la notifica per sbloccare l'audio!"));
+                }
+            });
+        }
+
+        // Se l'app viene aperta dal clic con parametro ?play=true
+        if (new URLSearchParams(window.location.search).get('play') === 'true') {
+            setTimeout(() => {
+                audioAdhan.play().catch(e => console.log("Audio non ancora sbloccato dal browser"));
+            }, 1000);
+        }
 
         function updateAthanSource(url) {
             audioAdhan.src = url;
@@ -191,7 +214,7 @@
         }
 
         function forceUnlockAndTest() {
-            if(!audioUnlocked) { alert("Tocca prima lo schermo!"); return; }
+            if(!audioUnlocked) { alert("Per favore, tocca lo schermo un punto qualsiasi prima!"); return; }
             audioAdhan.play(); toggleMenu();
         }
 
@@ -201,7 +224,7 @@
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
                     Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') alert("🔔 Banner Attivati!");
+                        if (permission === 'granted') alert("🔔 Banner Pop-up Attivati!");
                     });
                 });
             }
@@ -210,10 +233,14 @@
 
         function sendPush(title, body, type) {
             const style = localStorage.getItem('notifStyle') || 'adhan';
+            
+            // Audio immediato se l'app è già aperta in primo piano
             if (audioUnlocked && style !== 'silent') {
                 let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
-                player.play().catch(e => console.log("Errore background"));
+                player.play().catch(e => console.log("Audio bloccato dal sistema operativo"));
             }
+
+            // Invia la notifica banner pop-up
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, { 
@@ -222,15 +249,15 @@
                         requireInteraction: true,
                         tag: 'adhan-notif',
                         renotify: true,
-                        priority: 2
+                        data: { url: './index.html?play=true' }
                     });
                 });
             }
         }
 
         function adminDash() {
-            const pin = prompt("PIN Admin:");
-            if (pin === "2026") sendPush("Test Notifica", "Il banner pop-up funziona!", 'adhan');
+            const pin = prompt("PIN Amministratore:");
+            if (pin === "2026") sendPush("Test Adhan", "Clicca qui per sentire l'Adhan subito!", 'adhan');
         }
 
         const times = { 
@@ -248,12 +275,12 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Funzionalità richieste
+            // Funzionalità Promemoria
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Avviso fine Suhoor (5:20)", 'bip'); 
+                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Avviso fine Suhoor tra 10 minuti", 'bip'); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Notifica Iftar (17:45)", 'auto'); 
+                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Preparazione per il Maghrib", 'auto'); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE = "night"; document.body.classList.add('night-mode'); 
