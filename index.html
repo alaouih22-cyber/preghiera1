@@ -109,7 +109,6 @@
     <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline>
         <source src="https://www.islamcan.com/audio/adhan/makkah.mp3">
     </audio>
-    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous" playsinline></audio>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -122,19 +121,11 @@
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات - Settings</h3>
         
-        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 Prova Audio (Test)</button>
-        <button class="menu-item" onclick="enableNotifs()">🔔 Attiva Banner (Pop-up)</button>
-
-        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">Scegli tipo Notifica:</div>
-        <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
-            <option value="adhan">Adhan + Banner</option>
-            <option value="bip">Bip + Banner</option>
-            <option value="silent">Solo Banner</option>
-        </select>
+        <button class="menu-item" onclick="enableNotifs()">🔔 ATTIVA NOTIFICHE (BANNER)</button>
+        <button class="menu-item" style="background: var(--mp-gold); color: black;" onclick="adminDash()">🚀 TEST FORZATO (PIN 2026)</button>
         
-        <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ PROVA BANNER (PIN 2026)</button>
         <hr style="border-color: var(--mp-gold);">
-        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
+        <button class="menu-item" onclick="location.reload(true)">🔄 RESET APP / REFRESH</button>
     </div>
 
     <div class="dashboard">
@@ -158,49 +149,49 @@
     </div>
 
     <script>
-        const audioAdhan = document.getElementById('adhan-player');
-        const audioBip = document.getElementById('bip-player');
-        let audioUnlocked = false;
-
-        function unlockAudioEngine() {
-            if (audioUnlocked) return;
-            audioAdhan.play().then(() => {
-                audioAdhan.pause(); audioAdhan.currentTime = 0;
-                audioUnlocked = true;
-            }).catch(e => {});
-        }
-
-        document.getElementById('main-body').addEventListener('click', unlockAudioEngine);
-
+        // --- LOGICA DI REGISTRAZIONE SERVICE WORKER AGGRESSIVA ---
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js?v=' + Date.now()) // Forza aggiornamento con timestamp
+                .then(reg => {
+                    console.log("Service Worker Attivo!");
+                    reg.update(); // Forza il controllo di nuovi aggiornamenti
+                });
+            });
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function enableNotifs() { 
             Notification.requestPermission().then(permission => {
-                if (permission === 'granted') alert("Notifiche attivate correttamente!");
+                if (permission === 'granted') {
+                    alert("✅ Notifiche attivate! Ora prova il tasto TEST.");
+                } else {
+                    alert("❌ Hai negato le notifiche. Vai nelle impostazioni di Chrome per sbloccarle.");
+                }
             });
             toggleMenu();
         }
 
-        // --- FUNZIONE DI TEST CORRETTA ---
-        function adminDash() {
-            const pin = prompt("PIN Amministratore:");
+        // --- TEST FORZATO: COMUNICA CON IL SERVICE WORKER ---
+        async function adminDash() {
+            const pin = prompt("Inserisci PIN per il Test:");
             if (pin === "2026") {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.ready.then(registration => {
-                        registration.showNotification("Muslim Pro - Test Banner", {
-                            body: "Il banner pop-up funziona! Riceverai gli orari delle preghiere.",
-                            icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                            requireInteraction: true,
-                            vibrate: [200, 100, 200]
-                        });
-                    });
-                } else {
-                    alert("Service Worker non attivo.");
+                if (!("Notification" in window) || Notification.permission !== "granted") {
+                    alert("Errore: Devi prima cliccare su 'ATTIVA NOTIFICHE'!");
+                    return;
                 }
+
+                const reg = await navigator.serviceWorker.ready;
+                reg.showNotification("Muslim Pro - TEST OK", {
+                    body: "Se vedi questo messaggio, le notifiche funzionano perfettamente!",
+                    icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                    requireInteraction: true, // Il banner non scompare finché non lo tocchi
+                    vibrate: [200, 100, 200],
+                    importance: 'high',
+                    priority: 2
+                });
+                toggleMenu();
             }
         }
 
@@ -210,17 +201,14 @@
                     reg.showNotification(title, { 
                         body: body, 
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        requireInteraction: true
+                        requireInteraction: true,
+                        priority: 2
                     });
                 });
             }
         }
 
-        function forceUnlockAndTest() {
-            audioAdhan.play().catch(() => alert("Tocca prima lo schermo!"));
-            toggleMenu();
-        }
-
+        // --- LOGICA ORARI (COPIATA E INTEGRATA) ---
         const times = { 
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
             "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"}
@@ -236,16 +224,16 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Funzioni richieste
+            // Promemoria richiesti
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Avviso fine Suhoor (5:20)"); 
+                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Fine Suhoor imminente!"); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Notifica Iftar (17:45)"); 
+                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Manca poco al Maghrib!"); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE = "night"; document.body.classList.add('night-mode'); 
-                sendPush("Tarawih (تراويح)", "Promemoria Tarawih e Notte Serena (20:30)"); 
+                sendPush("Tarawih", "Promemoria Tarawih e Notte Serena"); 
             }
 
             const today = times[dateKey] || times["27/2"];
@@ -259,7 +247,7 @@
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "È il momento della preghiera di " + prayerNames[k]);
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "È il momento della preghiera.");
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
