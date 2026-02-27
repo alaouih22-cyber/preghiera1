@@ -109,6 +109,7 @@
     <audio id="adhan-player" preload="auto" crossorigin="anonymous" playsinline>
         <source src="https://www.islamcan.com/audio/adhan/makkah.mp3">
     </audio>
+    <audio id="bip-player" src="https://www.soundjay.com/buttons/beep-07a.mp3" preload="auto" crossorigin="anonymous" playsinline></audio>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -121,11 +122,26 @@
         <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات - Settings</h3>
         
-        <button class="menu-item" onclick="enableNotifs()">🔔 ATTIVA NOTIFICHE (BANNER)</button>
-        <button class="menu-item" style="background: var(--mp-gold); color: black;" onclick="adminDash()">🚀 TEST FORZATO (PIN 2026)</button>
+        <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الآذان (Test Athan)</button>
+        <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات (Enable Banner)</button>
+
+        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">Scegli tipo Notifica:</div>
+        <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
+            <option value="adhan">Adhan Completo + Banner</option>
+            <option value="bip">Bip Corto + Banner</option>
+            <option value="silent">Solo Banner (Silenzioso)</option>
+        </select>
+
+        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">Scegli Voce Adhan:</div>
+        <select class="menu-item" id="athan-select" onchange="updateAthanSource(this.value)">
+            <option value="https://www.islamcan.com/audio/adhan/makkah.mp3">Makkah (مكة)</option>
+            <option value="https://www.islamcan.com/audio/adhan/madina.mp3">Madina (المدينة)</option>
+            <option value="https://www.islamcan.com/audio/adhan/morocco.mp3">Morocco (المغرب)</option>
+        </select>
         
+        <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ PROVA BANNER (PIN 2026)</button>
         <hr style="border-color: var(--mp-gold);">
-        <button class="menu-item" onclick="location.reload(true)">🔄 RESET APP / REFRESH</button>
+        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
     </div>
 
     <div class="dashboard">
@@ -149,14 +165,28 @@
     </div>
 
     <script>
-        // --- LOGICA DI REGISTRAZIONE SERVICE WORKER AGGRESSIVA ---
+        const audioAdhan = document.getElementById('adhan-player');
+        const audioBip = document.getElementById('bip-player');
+        let audioUnlocked = false;
+
+        function unlockAudioEngine() {
+            if (audioUnlocked) return;
+            const p1 = audioAdhan.play();
+            const p2 = audioBip.play();
+            Promise.all([p1, p2]).then(() => {
+                audioAdhan.pause(); audioAdhan.currentTime = 0;
+                audioBip.pause(); audioBip.currentTime = 0;
+                audioUnlocked = true;
+                console.log("Audio Sbloccato");
+            }).catch(e => {});
+        }
+
+        document.getElementById('main-body').addEventListener('touchstart', unlockAudioEngine);
+        document.getElementById('main-body').addEventListener('click', unlockAudioEngine);
+
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=' + Date.now()) // Forza aggiornamento con timestamp
-                .then(reg => {
-                    console.log("Service Worker Attivo!");
-                    reg.update(); // Forza il controllo di nuovi aggiornamenti
-                });
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log("SW Registrato");
             });
         }
 
@@ -164,34 +194,23 @@
 
         function enableNotifs() { 
             Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    alert("✅ Notifiche attivate! Ora prova il tasto TEST.");
-                } else {
-                    alert("❌ Hai negato le notifiche. Vai nelle impostazioni di Chrome per sbloccarle.");
-                }
+                if (permission === 'granted') alert("🔔 Notifiche Banner Attivate!");
             });
             toggleMenu();
         }
 
-        // --- TEST FORZATO: COMUNICA CON IL SERVICE WORKER ---
-        async function adminDash() {
-            const pin = prompt("Inserisci PIN per il Test:");
+        function adminDash() {
+            const pin = prompt("PIN Amministratore:");
             if (pin === "2026") {
-                if (!("Notification" in window) || Notification.permission !== "granted") {
-                    alert("Errore: Devi prima cliccare su 'ATTIVA NOTIFICHE'!");
-                    return;
-                }
-
-                const reg = await navigator.serviceWorker.ready;
-                reg.showNotification("Muslim Pro - TEST OK", {
-                    body: "Se vedi questo messaggio, le notifiche funzionano perfettamente!",
-                    icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                    requireInteraction: true, // Il banner non scompare finché non lo tocchi
-                    vibrate: [200, 100, 200],
-                    importance: 'high',
-                    priority: 2
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification("Muslim Pro - Test Banner", {
+                        body: "Se vedi questo messaggio, le notifiche funzionano!",
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                        requireInteraction: true,
+                        vibrate: [200, 100, 200],
+                        priority: 2
+                    });
                 });
-                toggleMenu();
             }
         }
 
@@ -208,7 +227,17 @@
             }
         }
 
-        // --- LOGICA ORARI (COPIATA E INTEGRATA) ---
+        function updateAthanSource(url) {
+            audioAdhan.src = url;
+            audioAdhan.load();
+            localStorage.setItem('savedAthan', url);
+        }
+
+        function forceUnlockAndTest() {
+            if(!audioUnlocked) { alert("Tocca prima lo schermo!"); return; }
+            audioAdhan.play(); toggleMenu();
+        }
+
         const times = { 
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
             "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"}
@@ -224,16 +253,16 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Promemoria richiesti
+            // Funzionalità Promemoria
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Fine Suhoor imminente!"); 
+                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Avviso fine Suhoor (5:20)"); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Manca poco al Maghrib!"); 
+                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Notifica Iftar (17:45)"); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE = "night"; document.body.classList.add('night-mode'); 
-                sendPush("Tarawih", "Promemoria Tarawih e Notte Serena"); 
+                sendPush("Tarawih (تراويح)", "Promemoria Tarawih e Notte Serena (20:30)"); 
             }
 
             const today = times[dateKey] || times["27/2"];
@@ -247,7 +276,7 @@
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "È il momento della preghiera.");
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k]);
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
