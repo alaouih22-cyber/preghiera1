@@ -147,7 +147,9 @@
     <script>
         // Registrazione Service Worker per le notifiche
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log("SW registrato con successo");
+            }).catch(err => console.log("Errore registrazione SW:", err));
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -166,17 +168,27 @@
             }
         }
 
+        // FUNZIONE AGGIORNATA: Comunica direttamente con lo sw.js via postMessage
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { 
-                        body: body, 
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        requireInteraction: true,
-                        priority: 2,
-                        vibrate: [200, 100, 200]
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'SHOW_NOTIFICATION',
+                        title: title,
+                        body: body
                     });
-                });
+                } else {
+                    // Fallback se il controller non è pronto
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification(title, { 
+                            body: body, 
+                            icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                            requireInteraction: true,
+                            priority: 2,
+                            vibrate: [200, 100, 200]
+                        });
+                    });
+                }
             }
         }
 
