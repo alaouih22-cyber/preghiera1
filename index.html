@@ -124,6 +124,20 @@
         
         <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الآذان</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات</button>
+
+        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">نوع التنبيه (Banner + Audio):</div>
+        <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
+            <option value="adhan">آذان كامل</option>
+            <option value="bip">رنة خفيفة + إشعار</option>
+            <option value="none">إشعار فقط (صامت)</option>
+        </select>
+
+        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">اختر صوت الآذان:</div>
+        <select class="menu-item" id="athan-select" onchange="saveAthan(this.value)">
+            <option value="https://www.islamcan.com/audio/adhan/makkah.mp3">مكة المكرمة</option>
+            <option value="https://www.islamcan.com/audio/adhan/madina.mp3">المدينة المنورة</option>
+            <option value="https://www.islamcan.com/audio/adhan/morocco.mp3">المغرب</option>
+        </select>
         
         <button class="menu-item" style="margin-top:20px;" onclick="adminDash()">⚙️ لوحة الإدارة (Admin)</button>
         <hr style="border-color: var(--mp-gold);">
@@ -155,20 +169,30 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
-        // FUNZIONE DI SBLOCCO FORZATO PER ANDROID
+        // Carica impostazioni salvate
+        if(localStorage.getItem('userAthan')) {
+            audioAdhan.src = localStorage.getItem('userAthan');
+            document.getElementById('athan-select').value = localStorage.getItem('userAthan');
+        }
+        if(localStorage.getItem('notifStyle')) {
+            document.getElementById('notif-style').value = localStorage.getItem('notifStyle');
+        }
+
         function forceUnlockAndTest() {
             if (navigator.vibrate) navigator.vibrate(100);
-            
-            // Proviamo a ricaricare il file prima di suonare
             audioAdhan.load(); 
-            
             audioAdhan.play().then(() => {
                 audioUnlocked = true;
-                console.log("Adhan partito!");
             }).catch(e => {
-                alert("Errore audio: " + e.message);
+                alert("يرجى النقر على الشاشة أولاً لتفعيل الصوت");
             });
             toggleMenu();
+        }
+
+        function saveAthan(url) {
+            audioAdhan.src = url;
+            audioAdhan.load();
+            localStorage.setItem('userAthan', url);
         }
 
         function unlockAudio() {
@@ -180,23 +204,35 @@
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function enableNotifs() { 
-            Notification.requestPermission().then(p => { if(p === "granted") alert("🔔 الإشعارات تعمل بنجاح!"); });
+            Notification.requestPermission().then(p => { 
+                if(p === "granted") alert("🔔 تم تفعيل الإشعارات بنجاح!"); 
+                else alert("⚠️ يرجى تفعيل الإشعارات من إعدادات الهاتف");
+            });
             toggleMenu();
         }
 
         function sendPush(title, body, type) {
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            const style = localStorage.getItem('notifStyle') || 'adhan';
             
-            // Reset e play dell'Adhan
-            audioAdhan.currentTime = 0;
-            audioAdhan.play().catch(e => console.log("Audio bloccato dal sistema"));
+            // Vibrazione
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
+            // Gestione Suono
+            if (style !== 'none') {
+                let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
+                player.currentTime = 0;
+                player.play().catch(e => console.log("Permesso audio mancante"));
+            }
+
+            // Banner Pop-up
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, { 
                         body: body, 
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        vibrate: [200, 100, 200]
+                        badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                        vibrate: [200, 100, 200],
+                        tag: 'prayer-notif'
                     });
                 });
             }
@@ -205,7 +241,9 @@
         function adminDash() {
             const pin = prompt("PIN Admin:");
             if (pin === "2026") {
-                sendPush("تجربة الآذان", "اختبار صوت الآذان المكي", 'adhan');
+                const opt = prompt("1: تجربة إشعار + آذان\n2: تجربة إشعار + رنة");
+                if(opt === "1") sendPush("تجربة الآذان", "هذا اختبار لإشعار الآذان", 'adhan');
+                if(opt === "2") sendPush("تنبيه", "هذا اختبار للإشعار القصير", 'bip');
             }
         }
 
@@ -224,10 +262,20 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
 
-            // ALLARMI PERSONALIZZATI
-            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء", 'bip'); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'adhan'); }
-            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "وقت صلاة التراويح", 'bip'); }
+            // ALLARMI FISSI
+            if (timeNow === "05:20" && window.lastE !== "imsak") { 
+                window.lastE = "imsak"; 
+                sendPush("Imsak", "تنبيه: السحور قارب على الانتهاء (5:20)", 'bip'); 
+            }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { 
+                window.lastE = "iftar"; 
+                sendPush("Iftar", "تقبل الله صيامكم - وقت الإفطار", 'auto'); 
+            }
+            if (timeNow === "20:30" && window.lastE !== "night") { 
+                window.lastE = "night"; 
+                document.body.classList.add('night-mode'); 
+                sendPush("Tarawih", "وقت صلاة التراويح وقيام الليل", 'bip'); 
+            }
 
             const today = times[dateKey] || times["26/2"];
             let html = ""; let nextP = null; let nextN = "";
@@ -239,8 +287,11 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
+                
+                // NOTIFICA AL MOMENTO DELLA PREGHIERA
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الآذان", 'adhan');
+                    window.lastN = k; 
+                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد آذان صلاة " + prayerNames[k], 'auto');
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
@@ -265,6 +316,11 @@
 
         setInterval(update, 1000);
         update();
+
+        // Registrazione Service Worker per Banner
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
     </script>
 </body>
 </html>
