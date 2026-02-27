@@ -21,7 +21,6 @@
             height: 100vh; overflow: hidden;
             font-family: 'Segoe UI', Roboto, sans-serif;
             transition: background 0.5s ease;
-            cursor: pointer; /* Indica che puoi cliccare ovunque */
         }
 
         body.night-mode { background-color: #001a14; color: white; }
@@ -126,9 +125,6 @@
         <button class="menu-item" onclick="forceUnlockAndTest()">🔊 تجربة الآذان (Test Athan)</button>
         <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات (Enable Banner)</button>
 
-        <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">Stato della Moschea:</div>
-        <div id="mosque-status" class="menu-item" style="background:rgba(0,0,0,0.3);">Live News: Caricamento...</div>
-
         <div style="margin: 10px 0 5px; font-size: 12px; color: var(--mp-gold);">Scegli tipo Notifica:</div>
         <select class="menu-item" id="notif-style" onchange="localStorage.setItem('notifStyle', this.value)">
             <option value="adhan">Adhan Completo + Banner</option>
@@ -173,27 +169,18 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
-        // Funzione UNIVERSALE per sbloccare l'audio
         function unlockAudioEngine() {
             if (audioUnlocked) return;
-            
-            // Prova a riprodurre e mettere subito in pausa entrambi
             const p1 = audioAdhan.play();
             const p2 = audioBip.play();
-
             Promise.all([p1, p2]).then(() => {
-                audioAdhan.pause();
-                audioAdhan.currentTime = 0;
-                audioBip.pause();
-                audioBip.currentTime = 0;
+                audioAdhan.pause(); audioAdhan.currentTime = 0;
+                audioBip.pause(); audioBip.currentTime = 0;
                 audioUnlocked = true;
-                console.log("SISTEMA AUDIO ATTIVO");
-            }).catch(err => {
-                console.log("In attesa di tocco reale...");
-            });
+                console.log("Audio Sbloccato");
+            }).catch(e => {});
         }
 
-        // Ascolta il tocco ovunque sul corpo della pagina
         document.getElementById('main-body').addEventListener('touchstart', unlockAudioEngine);
         document.getElementById('main-body').addEventListener('click', unlockAudioEngine);
 
@@ -204,13 +191,8 @@
         }
 
         function forceUnlockAndTest() {
-            if(!audioUnlocked) {
-                alert("Tocca lo sfondo bianco o un punto qualsiasi e riprova!");
-                return;
-            }
-            audioAdhan.currentTime = 0;
-            audioAdhan.play();
-            toggleMenu();
+            if(!audioUnlocked) { alert("Tocca prima lo schermo!"); return; }
+            audioAdhan.play(); toggleMenu();
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -228,21 +210,19 @@
 
         function sendPush(title, body, type) {
             const style = localStorage.getItem('notifStyle') || 'adhan';
-            
             if (audioUnlocked && style !== 'silent') {
                 let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
                 player.play().catch(e => console.log("Errore background"));
             }
-
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification(title, { 
                         body: body, 
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        data: { url: './index.html?play=true' },
                         requireInteraction: true,
                         tag: 'adhan-notif',
-                        renotify: true
+                        renotify: true,
+                        priority: 2
                     });
                 });
             }
@@ -250,10 +230,9 @@
 
         function adminDash() {
             const pin = prompt("PIN Admin:");
-            if (pin === "2026") sendPush("Test Adhan", "Se senti l'audio, è tutto OK!", 'adhan');
+            if (pin === "2026") sendPush("Test Notifica", "Il banner pop-up funziona!", 'adhan');
         }
 
-        // Orari e Date
         const times = { 
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
             "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"}
@@ -268,12 +247,18 @@
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
-            document.getElementById('mosque-status').innerText = "Live News: Caricamento...";
 
-            // Notifiche Orari
-            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE = "imsak"; sendPush("Imsak (سحور)", "Fine Suhoor tra 10 min.", 'bip'); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Preparati per il Maghrib.", 'auto'); }
-            if (timeNow === "20:30" && window.lastE !== "night") { window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih (تراويح)", "Promemoria Tarawih.", 'bip'); }
+            // Funzionalità richieste
+            if (timeNow === "05:20" && window.lastE !== "imsak") { 
+                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Avviso fine Suhoor (5:20)", 'bip'); 
+            }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { 
+                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Notifica Iftar (17:45)", 'auto'); 
+            }
+            if (timeNow === "20:30" && window.lastE !== "night") { 
+                window.lastE = "night"; document.body.classList.add('night-mode'); 
+                sendPush("Tarawih (تراويح)", "Promemoria Tarawih e Notte Serena", 'bip'); 
+            }
 
             const today = times[dateKey] || times["27/2"];
             let html = ""; let nextP = null; let nextN = "";
@@ -285,10 +270,8 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
-                
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; 
-                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد آذان صلاة " + prayerNames[k], 'auto');
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k], 'auto');
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
@@ -313,15 +296,6 @@
 
         setInterval(update, 1000);
         update();
-
-        // Service Worker Listener
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data.action === 'FORCE_PLAY_ADHAN') {
-                    audioAdhan.play().catch(e => console.log("Sblocca l'app con un tocco"));
-                }
-            });
-        }
     </script>
 </body>
 </html>
