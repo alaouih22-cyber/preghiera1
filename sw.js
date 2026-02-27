@@ -1,6 +1,5 @@
 const CACHE_NAME = 'muslim-pro-audio-v1';
 
-// Installazione: l'app si prende il controllo subito
 self.addEventListener('install', event => {
     self.skipWaiting();
 });
@@ -9,30 +8,26 @@ self.addEventListener('activate', event => {
     event.waitUntil(clients.claim());
 });
 
-// --- NUOVO: LOGICA SVEGLIA (Aggiunta senza modificare il resto) ---
+// GESTIONE NOTIFICA COME SVEGLIA PRIORITARIA
 self.addEventListener('push', event => {
     const options = {
         body: 'È il momento della preghiera. Tocca per ascoltare l\'Adhan.',
         icon: 'https://cdn-icons-png.flaticon.com/512/2798/2798007.png',
         badge: 'https://cdn-icons-png.flaticon.com/512/2798/2798007.png',
-        
-        // Caratteristiche "Sveglia Google"
-        vibrate: [500, 200, 500, 200, 500, 200, 500, 200, 800], // Vibrazione continua
-        tag: 'adhan-alarm', // Identifica la notifica come allarme
+        vibrate: [500, 200, 500, 200, 800], 
+        tag: 'adhan-alarm',
         renotify: true,
-        requireInteraction: true, // Non scompare finché non la premi
-        priority: 2, // Forza la comparsa sopra altre app
-        
+        requireInteraction: true, // Come una sveglia: resta finché non premi
+        priority: 2,
         actions: [
             { action: 'play_adhan', title: '🔊 APRI E ASCOLTA ADHAN' }
         ],
         data: { url: './index.html' }
     };
-
     event.waitUntil(self.registration.showNotification('Muslim Pro - Bastia Umbra', options));
 });
 
-// Gestore clic per attivare l'audio nell'HTML
+// CLIC SULLA NOTIFICA: Sblocca l'audio e parla con l'index.html
 self.addEventListener('notificationclick', event => {
     event.notification.close();
     event.waitUntil(
@@ -49,26 +44,18 @@ self.addEventListener('notificationclick', event => {
     );
 });
 
-// GESTIONE FETCH CON CACHING AUDIO (Invariato come da tua richiesta)
+// IL TUO CACHING ORIGINALE (Invariato)
 self.addEventListener('fetch', event => {
     const url = event.request.url;
-
-    // Gestiamo solo i file MP3
     if (url.endsWith('.mp3')) {
         event.respondWith(
             caches.match(event.request).then(cachedResponse => {
-                // 1. Se il file è già in cache, lo usiamo subito (velocissimo)
-                if (cachedResponse) {
-                    return cachedResponse;
-                }
-
-                // 2. Altrimenti lo scarichiamo con le impostazioni CORS corrette
+                if (cachedResponse) return cachedResponse;
                 return fetch(event.request, {
                     mode: 'cors',
                     credentials: 'omit',
                     headers: { 'Accept': 'audio/mpeg' }
                 }).then(networkResponse => {
-                    // Se lo scaricamento va a buon fine, salviamo una copia in cache
                     if (networkResponse.ok) {
                         const responseToCache = networkResponse.clone();
                         caches.open(CACHE_NAME).then(cache => {
@@ -77,7 +64,6 @@ self.addEventListener('fetch', event => {
                     }
                     return networkResponse;
                 }).catch(() => {
-                    // 3. Se fallisce tutto (offline), proviamo il fallback locale
                     return fetch('./fallback-adhan.mp3');
                 });
             })
