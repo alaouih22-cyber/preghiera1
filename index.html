@@ -213,10 +213,20 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
+        // --- SISTEMA REGISTRAZIONE SERVICE WORKER E NOTIFICHE (Secondo i tuoi modelli) ---
         function enableNotifs() { 
-            Notification.requestPermission().then(p => { 
-                if(p === "granted") alert("🔔 الإشعارات تعمل! - Banner attivi!"); 
-            });
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js').then(registration => {
+                    console.log('Service Worker registrato');
+                    
+                    // Chiedi il permesso (come nel tuo screenshot)
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            alert("🔔 الإشعارات تعمل! - Banner attivi!");
+                        }
+                    });
+                });
+            }
             toggleMenu();
         }
 
@@ -227,7 +237,7 @@
             if (style !== 'silent') {
                 let player = (type === 'adhan' || (type === 'auto' && style === 'adhan')) ? audioAdhan : audioBip;
                 player.currentTime = 0;
-                player.play().catch(e => console.log("Permesso audio negato dal sistema"));
+                player.play().catch(e => console.log("Permesso audio negato"));
             }
 
             if (Notification.permission === "granted") {
@@ -235,7 +245,7 @@
                     reg.showNotification(title, { 
                         body: body, 
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        vibrate: [200, 100, 200]
+                        data: { url: './index.html?play=true' } // URL modello
                     });
                 });
             }
@@ -262,8 +272,6 @@
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
-            
-            // STATO DELLA MOSCHEA RIPRISTINATO
             document.getElementById('mosque-status').innerText = "Live News: Caricamento...";
 
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
@@ -319,24 +327,23 @@
         setInterval(update, 1000);
         update();
 
-        // --- SISTEMA ARMONIZZATO SERVICE WORKER + AUDIO ---
-        if ('serviceWorker' in navigator) { 
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                // Ricevitore del comando Adhan inviato dal sw.js
-                navigator.serviceWorker.addEventListener('message', event => {
-                    if (event.data.action === 'FORCE_PLAY_ADHAN') {
-                        audioAdhan.play().catch(e => console.log("Errore riproduzione Adhan via SW"));
-                    }
-                });
-            }); 
+        // --- GESTORE MESSAGGI SW (Per attivazione audio) ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data.action === 'FORCE_PLAY_ADHAN') {
+                    audioAdhan.play().catch(e => console.log("Blocco audio attivo"));
+                }
+            });
         }
 
-        // Gestione apertura da notifica tramite parametro URL
-        if (new URLSearchParams(window.location.search).get('play') === 'true') {
-            setTimeout(() => {
-                audioAdhan.play().catch(e => console.log("Permesso audio richiesto all'apertura"));
-            }, 1000);
-        }
+        // --- CONTROLLO AUTO-PLAY ALL'APERTURA (Parametro URL) ---
+        window.addEventListener('DOMContentLoaded', () => {
+            if (new URLSearchParams(window.location.search).get('play') === 'true') {
+                setTimeout(() => {
+                    audioAdhan.play().catch(e => console.log("Attendo interazione manuale"));
+                }, 1000);
+            }
+        });
     </script>
 </body>
 </html>
