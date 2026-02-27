@@ -323,3 +323,18 @@
     </script>
 </body>
 </html>
+
+// Ascolta il comando dal Service Worker per far partire l'audio
+navigator.serviceWorker.addEventListener('message', event => {
+    if (event.data.action === 'FORCE_PLAY_ADHAN') {
+        audioAdhan.play().catch(e => console.log("Errore riproduzione"));
+    }
+});
+
+// Se l'app viene aperta dalla notifica tramite URL
+if (new URLSearchParams(window.location.search).get('play') === 'true') {
+    setTimeout(() => {
+        audioAdhan.play().catch(e => console.log("Tocca per avviare"));
+    }, 1000);
+}
+
