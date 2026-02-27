@@ -262,7 +262,9 @@
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
-            document.getElementById('mosque-status').innerText = "Live News: Preghiera regolarmente in corso a Bastia.";
+            
+            // STATO DELLA MOSCHEA RIPRISTINATO
+            document.getElementById('mosque-status').innerText = "Live News: Caricamento...";
 
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; 
@@ -318,20 +320,18 @@
         update();
 
         if ('serviceWorker' in navigator) { 
-            navigator.serviceWorker.register('./sw.js'); 
-            
-            // --- SISTEMATO: Ascolto comandi Service Worker ---
-            navigator.serviceWorker.addEventListener('message', event => {
-                if (event.data.action === 'FORCE_PLAY_ADHAN') {
-                    audioAdhan.play().catch(e => console.log("Errore riproduzione Adhan"));
-                }
-            });
+            navigator.serviceWorker.register('./sw.js').then(() => {
+                navigator.serviceWorker.addEventListener('message', event => {
+                    if (event.data.action === 'FORCE_PLAY_ADHAN') {
+                        audioAdhan.play().catch(e => console.log("Errore riproduzione"));
+                    }
+                });
+            }); 
         }
 
-        // --- SISTEMATO: Gestione apertura da notifica ---
         if (new URLSearchParams(window.location.search).get('play') === 'true') {
             setTimeout(() => {
-                audioAdhan.play().catch(e => console.log("Tocca per avviare l'audio dopo apertura"));
+                audioAdhan.play().catch(e => console.log("Tocca per avviare"));
             }, 1000);
         }
     </script>
