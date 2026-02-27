@@ -9,6 +9,8 @@
   "background_color": "#004F3F",
   "theme_color": "#004F3F",
   "orientation": "portrait",
+  "categories": ["lifestyle", "utilities"],
+  "permissions": ["notifications", "vibrate"],
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2798/2798007.png",
@@ -30,4 +32,3 @@
     }
   ]
 }
-
