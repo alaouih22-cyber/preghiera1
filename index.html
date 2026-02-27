@@ -319,19 +319,22 @@
         setInterval(update, 1000);
         update();
 
+        // --- SISTEMA ARMONIZZATO SERVICE WORKER + AUDIO ---
         if ('serviceWorker' in navigator) { 
-            navigator.serviceWorker.register('./sw.js').then(() => {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                // Ricevitore del comando Adhan inviato dal sw.js
                 navigator.serviceWorker.addEventListener('message', event => {
                     if (event.data.action === 'FORCE_PLAY_ADHAN') {
-                        audioAdhan.play().catch(e => console.log("Errore riproduzione"));
+                        audioAdhan.play().catch(e => console.log("Errore riproduzione Adhan via SW"));
                     }
                 });
             }); 
         }
 
+        // Gestione apertura da notifica tramite parametro URL
         if (new URLSearchParams(window.location.search).get('play') === 'true') {
             setTimeout(() => {
-                audioAdhan.play().catch(e => console.log("Tocca per avviare"));
+                audioAdhan.play().catch(e => console.log("Permesso audio richiesto all'apertura"));
             }, 1000);
         }
     </script>
