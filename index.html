@@ -172,7 +172,6 @@
         const audioBip = document.getElementById('bip-player');
         let audioUnlocked = false;
 
-        // Recupero impostazioni
         if(localStorage.getItem('savedAthan')) {
             audioAdhan.src = localStorage.getItem('savedAthan');
             document.getElementById('athan-select').value = localStorage.getItem('savedAthan');
@@ -181,7 +180,6 @@
             document.getElementById('notif-style').value = localStorage.getItem('notifStyle');
         }
 
-        // --- SISTEMA DI SBLOCCO PROFESSIONALE ANTI-ERRORE ---
         function unlockAudio() {
             if (audioUnlocked) return;
             audioAdhan.play().then(() => {
@@ -264,9 +262,8 @@
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
-            document.getElementById('mosque-status').innerText = "Live: Preghiera regolarmente in corso a Bastia.";
+            document.getElementById('mosque-status').innerText = "Live News: Preghiera regolarmente in corso a Bastia.";
 
-            // --- ALLARMI SPECIFICI RICHIESTI ---
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; 
                 sendPush("Imsak (سحور)", "Avviso: fine Suhoor tra 10 minuti.", 'bip'); 
@@ -319,23 +316,24 @@
 
         setInterval(update, 1000);
         update();
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
+
+        if ('serviceWorker' in navigator) { 
+            navigator.serviceWorker.register('./sw.js'); 
+            
+            // --- SISTEMATO: Ascolto comandi Service Worker ---
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data.action === 'FORCE_PLAY_ADHAN') {
+                    audioAdhan.play().catch(e => console.log("Errore riproduzione Adhan"));
+                }
+            });
+        }
+
+        // --- SISTEMATO: Gestione apertura da notifica ---
+        if (new URLSearchParams(window.location.search).get('play') === 'true') {
+            setTimeout(() => {
+                audioAdhan.play().catch(e => console.log("Tocca per avviare l'audio dopo apertura"));
+            }, 1000);
+        }
     </script>
 </body>
 </html>
-
-//Ascolta il comando dal Service Worker per far partire l'audio
-navigator.serviceWorker.addEventListener('message', event => {
-    if (event.data.action === 'FORCE_PLAY_ADHAN') {
-        audioAdhan.play().catch(e => console.log("Errore riproduzione"));
-    }
-});
-
-//Se l'app viene aperta dalla notifica tramite URL
-if (new URLSearchParams(window.location.search).get('play') === 'true') {
-    setTimeout(() => {
-        audioAdhan.play().catch(e => console.log("Tocca per avviare"));
-    }, 1000);
-}
-
-
