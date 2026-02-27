@@ -213,13 +213,11 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // --- SISTEMA REGISTRAZIONE SERVICE WORKER E NOTIFICHE (Secondo i tuoi modelli) ---
+        // --- SISTEMA REGISTRAZIONE E NOTIFICHE INTEGRATO (Secondo i tuoi modelli) ---
         function enableNotifs() { 
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js').then(registration => {
                     console.log('Service Worker registrato');
-                    
-                    // Chiedi il permesso (come nel tuo screenshot)
                     Notification.requestPermission().then(permission => {
                         if (permission === 'granted') {
                             alert("🔔 الإشعارات تعمل! - Banner attivi!");
@@ -245,7 +243,7 @@
                     reg.showNotification(title, { 
                         body: body, 
                         icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                        data: { url: './index.html?play=true' } // URL modello
+                        data: { url: './index.html?play=true' } // Parametro per bypassare blocco audio
                     });
                 });
             }
@@ -272,6 +270,8 @@
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = (dateKey === "26/2") ? "09 رمضان 1447" : "10 رمضان 1447";
+            
+            // STATO DELLA MOSCHEA INVARIATO
             document.getElementById('mosque-status').innerText = "Live News: Caricamento...";
 
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
@@ -327,11 +327,11 @@
         setInterval(update, 1000);
         update();
 
-        // --- GESTORE MESSAGGI SW (Per attivazione audio) ---
+        // --- GESTORE MESSAGGI DAL SERVICE WORKER (Per attivazione Adhan) ---
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.addEventListener('message', event => {
                 if (event.data.action === 'FORCE_PLAY_ADHAN') {
-                    audioAdhan.play().catch(e => console.log("Blocco audio attivo"));
+                    audioAdhan.play().catch(e => console.log("Blocco audio attivo: clicca sulla notifica"));
                 }
             });
         }
