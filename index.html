@@ -77,28 +77,24 @@
         .p-name { font-size: 24px; font-weight: 800; color: var(--mp-dark-green); }
         .p-time { font-size: 25px; font-weight: 900; }
 
-        /* STRISCIA HADITH INFINITA */
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
             overflow: hidden; flex-shrink: 0;
-            white-space: nowrap;
         }
         .hadith-track { 
-            display: inline-block; 
-            padding-left: 100%; 
-            animation: scroll-hadith 85s linear infinite; 
+            display: flex; 
+            width: max-content; 
+            animation: scroll-hadith 90s linear infinite; 
         }
         .hadith-text { 
-            color: var(--mp-gold); 
-            font-weight: 600; 
-            font-size: 15px; 
-            display: inline-block;
+            color: var(--mp-gold); font-weight: 600; font-size: 15px; 
+            white-space: nowrap; padding-left: 100vw; 
         }
         
         @keyframes scroll-hadith { 
             from { transform: translateX(0); } 
-            to { transform: translateX(100%); } 
+            to { transform: translateX(-100%); } 
         }
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
@@ -118,7 +114,7 @@
             width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--mp-gold);
             color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; margin-top: 5px;
         }
-        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; border: none; }
         
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
     </style>
@@ -199,13 +195,15 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // KILL DEFINITIVO DEL WIDGET MULTIMEDIALE
-        function hideSystemPlayer() {
+        // PULIZIA MEDIA SESSION PER NASCONDERE PLAYER
+        function killPlayerWidget() {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
                 navigator.mediaSession.playbackState = 'none';
                 const actions = ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'];
-                actions.forEach(act => { try { navigator.mediaSession.setActionHandler(act, null); } catch(e) {} });
+                actions.forEach(action => {
+                    try { navigator.mediaSession.setActionHandler(action, null); } catch(e) {}
+                });
             }
         }
 
@@ -219,18 +217,18 @@
                 athanAudio.src = athanSource;
                 athanAudio.currentTime = 0;
                 athanAudio.play().then(() => {
-                    setTimeout(hideSystemPlayer, 150);
-                });
+                    setTimeout(killPlayerWidget, 200);
+                }).catch(e => console.log("Audio play blocked"));
                 
-                // Stop automatico dopo 45 secondi
+                // Stop automatico Athan dopo 45 secondi
                 setTimeout(() => {
                     athanAudio.pause();
                     athanAudio.currentTime = 0;
-                    hideSystemPlayer();
+                    killPlayerWidget();
                 }, 45000);
             } else {
                 bipAudio.currentTime = 0;
-                bipAudio.play();
+                bipAudio.play().catch(e => console.log("Bip play blocked"));
             }
         }
 
@@ -238,7 +236,7 @@
             Notification.requestPermission().then(p => {
                 if (p === 'granted') {
                     alert("🔔 Notifiche attivate correttamente!");
-                    // Sblocco audio per sistemi mobili
+                    // "Sveglia" l'audio per bypassare i blocchi mobile
                     const a = document.getElementById('athanAudio');
                     a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
                 }
@@ -280,7 +278,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Logica eventi basata sul tempo
+            // Controllo Orari Speciali (Imsak, Iftar, Night)
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
