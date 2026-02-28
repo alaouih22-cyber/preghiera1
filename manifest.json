@@ -2,7 +2,7 @@
   "name": "Muslim Pro - Bastia Umbra",
   "short_name": "PrayerTimes",
   "description": "Orari di preghiera con notifiche automatiche - Bastia Umbra",
-  "start_url": "./index.html",
+  "start_url": "https://alaouih22-cyber.github.io/preghiera1/",
   "display": "standalone",
   "background_color": "#004F3F",
   "theme_color": "#004F3F",
