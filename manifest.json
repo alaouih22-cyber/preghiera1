@@ -9,10 +9,12 @@
   "background_color": "#004F3F",
   "theme_color": "#004F3F",
   "orientation": "portrait",
-  "categories": ["lifestyle", "utilities"],
+  "categories": [
+    "lifestyle",
+    "utilities"
+  ],
   "lang": "it",
   "dir": "ltr",
-
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/192/192/192.png",
@@ -27,7 +29,6 @@
       "purpose": "maskable"
     }
   ],
-
   "screenshots": [
     {
       "src": "https://via.placeholder.com/1080x1920.png?text=Muslim+Pro+Bastia+Umbra",
@@ -37,7 +38,7 @@
       "label": "Schermata principale orari"
     },
     {
-      "src": "https://via.placeholder.com/1920x1080.png?text=Versione+Desktop",
+      "src": "https://via.placeholder.com/1920x1080.png?text=Vista+Desktop",
       "sizes": "1920x1080",
       "type": "image/png",
       "form_factor": "wide",
