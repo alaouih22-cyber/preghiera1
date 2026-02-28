@@ -77,7 +77,6 @@
         .p-name { font-size: 24px; font-weight: 800; color: var(--mp-dark-green); }
         .p-time { font-size: 25px; font-weight: 900; }
 
-        /* HADITH FOOTER - SCORRIMENTO INFINITO OTTIMIZZATO */
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
@@ -87,7 +86,7 @@
         .hadith-track { 
             display: inline-block; 
             padding-left: 100%; 
-            animation: scroll-hadith 80s linear infinite; 
+            animation: scroll-hadith 85s linear infinite; 
         }
         .hadith-text { 
             color: var(--mp-gold); 
@@ -199,10 +198,15 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        function hideMediaPlayer() {
+        // FUNZIONE DEFINITIVA PER KILLARE IL PLAYER WIDGET
+        function killPlayerWidget() {
             if ('mediaSession' in navigator) {
+                // Svuota i metadati e ferma lo stato
                 navigator.mediaSession.metadata = null;
                 navigator.mediaSession.playbackState = 'none';
+                // Disabilita i controlli
+                navigator.mediaSession.setActionHandler('play', null);
+                navigator.mediaSession.setActionHandler('pause', null);
             }
         }
 
@@ -215,8 +219,10 @@
             if (type === 'athan') {
                 athanAudio.src = athanSource;
                 athanAudio.currentTime = 0;
-                athanAudio.play();
-                hideMediaPlayer();
+                athanAudio.play().then(() => {
+                    // Esegui subito il kill del widget dopo l'avvio
+                    setTimeout(killPlayerWidget, 100);
+                });
             } else {
                 bipAudio.currentTime = 0;
                 bipAudio.play();
