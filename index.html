@@ -86,7 +86,6 @@
         .hadith-track { 
             display: flex; 
             width: max-content; 
-            /* Velocità rallentata a 90s per scorrimento professionale */
             animation: scroll-hadith 90s linear infinite; 
         }
 
@@ -94,10 +93,9 @@
             color: var(--mp-gold); font-weight: 600; 
             font-size: 14px; 
             white-space: nowrap; 
-            padding-right: 50px; /* Spazio tra i blocchi */
+            padding-right: 50px;
         }
         
-        /* Animazione per loop infinito senza interruzioni */
         @keyframes scroll-hadith { 
             from { transform: translateX(0); } 
             to { transform: translateX(50%); } 
@@ -273,7 +271,8 @@
 
         const times = { 
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
-            "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"}
+            "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"},
+            "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"}
         };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
         const prayerIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
@@ -283,7 +282,10 @@
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
-            document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
+            
+            // AGGIORNATO A 11 RAMADAN
+            document.getElementById('hijri-date-full').innerText = "11 رمضان 1447"; 
+
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
