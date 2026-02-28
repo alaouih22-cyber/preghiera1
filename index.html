@@ -191,7 +191,7 @@
                 • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
                 • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
                 • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام sulla خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
+                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
                 • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
                 • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
                 • قال ﷺ: "تسحروا فإن في السحور بركة"
@@ -204,7 +204,7 @@
                 • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
                 • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
                 • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام sulla خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
+                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
                 • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
                 • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
                 • قال ﷺ: "تسحروا فإن في السحور بركة"
@@ -214,11 +214,12 @@
     </div>
 
     <script>
+        // Registrazione Service Worker per l'App
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW registrato!'))
-                .catch(err => console.log('Errore SW:', err));
+                .then(reg => console.log('SW pronto'))
+                .catch(err => console.log('SW Errore', err));
             });
         }
 
@@ -294,8 +295,10 @@
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             
+            // Impostazione 11 Ramadan
             document.getElementById('hijri-date-full').innerText = "11 رمضان 1447"; 
 
+            // Funzionalità Ramadan richieste
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
@@ -303,8 +306,9 @@
                 window.lastE = "iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Tarawih (20:30)"); 
+                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Tarawih e Notte Serena (20:30)"); 
             }
+
             const today = times[dateKey] || times["28/2"];
             let html = ""; let nextP = null; let nextN = "";
             for (let k in prayerNames) {
