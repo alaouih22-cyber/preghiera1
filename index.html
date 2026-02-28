@@ -82,18 +82,23 @@
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
             overflow: hidden; flex-shrink: 0;
         }
+
         .hadith-track { 
-            display: flex; width: max-content; 
-            animation: scroll-hadith 250s linear infinite; 
+            display: flex; 
+            width: max-content; 
+            animation: scroll-hadith 200s linear infinite; 
         }
+
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; font-size: 15px; 
-            white-space: nowrap; padding-right: 100vw; 
+            white-space: nowrap; 
+            padding-left: 50px; /* Spazio tra la fine e l'inizio del ciclo */
         }
         
+        /* FIX: Animazione da Sinistra a Destra corretta */
         @keyframes scroll-hadith { 
-            from { transform: translateX(-100%); } 
-            to { transform: translateX(100%); } 
+            0% { transform: translateX(100vw); } 
+            100% { transform: translateX(-100%); } 
         }
         
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
@@ -187,7 +192,6 @@
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 audioContext.resume().then(() => {
                     audioUnlocked = true;
-                    console.log("Audio Unlocked");
                 });
             }
         }
@@ -218,15 +222,10 @@
                 source.start(0);
                 cleanMediaSession();
 
-                source.onended = () => {
-                    cleanMediaSession();
-                };
+                source.onended = () => { cleanMediaSession(); };
 
                 if (type === 'athan') {
-                    setTimeout(() => { 
-                        source.stop(); 
-                        cleanMediaSession(); 
-                    }, 45000);
+                    setTimeout(() => { source.stop(); cleanMediaSession(); }, 45000);
                 }
             } catch (e) {
                 const a = new Audio(sourceUrl);
@@ -268,7 +267,6 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Logiche Automatiche Ramadan
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor (5:20)"); playSound(); 
             }
@@ -291,7 +289,6 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 
-                // CONTROLLO AUTOMATICO PREGHIERE
                 if (timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; 
                     sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); 
