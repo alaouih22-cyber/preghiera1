@@ -1,47 +1,52 @@
 const CACHE_NAME = 'muslim-pro-bastia-v2026';
 const ASSETS_TO_CACHE = [
-  'index.html',
-  'manifest.json',
-  '1000087707.png',
+  './',
+  './index.html',
+  './manifest.json',
+  './1000087707.png',
   'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
 ];
 
-// Installazione: Salva i file necessari nella cache
-self.addEventListener('install', (event) => {
+// INSTALL
+self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
   );
 });
 
-// Attivazione: Pulisce le vecchie versioni della cache
-self.addEventListener('activate', (event) => {
+// ACTIVATE
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      )
+    )
   );
-  return self.clients.claim();
+  self.clients.claim();
 });
 
-// Fetch: Serve i file dalla cache se offline
-self.addEventListener('fetch', (event) => {
+// FETCH (cache-first + network fallback)
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    caches.match(event.request).then(cached =>
+      cached || fetch(event.request).catch(() => caches.match('./index.html'))
+    )
   );
 });
 
-// Gestione Notifiche Push
-self.addEventListener('notificationclick', (event) => {
+// NOTIFICATION CLICK
+self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(
-    clients.openWindow('/')
+    clients.matchAll({ type: 'window' }).then(clientList => {
+      for (let client of clientList) {
+        if (client.url === '/' && 'focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow('./');
+    })
   );
 });
