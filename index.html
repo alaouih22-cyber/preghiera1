@@ -77,6 +77,7 @@
         .p-name { font-size: 24px; font-weight: 800; color: var(--mp-dark-green); }
         .p-time { font-size: 25px; font-weight: 900; }
 
+        /* STRISCIA HADITH: SCORRIMENTO DA SINISTRA A DESTRA SENZA STATO MOSCHEA */
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
@@ -86,19 +87,18 @@
         .hadith-track { 
             display: flex; 
             width: max-content; 
-            animation: scroll-hadith 200s linear infinite; 
+            animation: scroll-left-to-right 250s linear infinite; 
         }
 
         .hadith-text { 
-            color: var(--mp-gold); font-weight: 600; font-size: 15px; 
+            color: var(--mp-gold); font-weight: 600; font-size: 16px; 
             white-space: nowrap; 
-            padding-left: 50px; /* Spazio tra la fine e l'inizio del ciclo */
+            padding-right: 50px;
         }
         
-        /* FIX: Animazione da Sinistra a Destra corretta */
-        @keyframes scroll-hadith { 
-            0% { transform: translateX(100vw); } 
-            100% { transform: translateX(-100%); } 
+        @keyframes scroll-left-to-right { 
+            0% { transform: translateX(-100%); } 
+            100% { transform: translateX(100vw); } 
         }
         
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
@@ -174,7 +174,7 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • 1: إنما الأعمال بالنيات وإنما لكل امرئ ما نوى • 2: بني الإسلام على خمس • 3: إن أحدكم يجمع خلقه في بطن أمه • 4: من أحدث في أمرنا هذا ما ليس منه فهو رد • 5: الحلال بين والحرام بين • 6: الدين النصيحة • 7: أمرت أن أقاتل الناس حتى يشهدوا أن لا إله إلا الله • 8: ما نهيتكم عنه فاجتنبوه • 9: إن الله طيب لا يقبل إلا طيبا • 10: دع ما يريبك إلى ما لا يريبك • 11: من حسن إسلام المرء تركه ما لا يعنيه • 12: لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • 13: لا يحل دم امرئ مسلم إلا بإحدى ثلاث • 14: من كان يؤمن بالله واليوم الآخر فليقل خيرا أو ليصمت • 15: لا تغضب • 16: إن الله كتب الإحسان على كل شيء • 17: اتق الله حيثما كنت • 18: احفظ الله يحفظك • 19: إذا لم تستح فاصنع ما شئت • 20: قل آمنت بالله ثم استقم • 21: استقيموا ولن تحصوا • 22: الطهور شطر الإيمان • 23: يا عبادي إني حرمت الظلم على نفسي • 24: إن الله تجاوز لي عن أمتي الخطأ والنسيان • 25: المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف • 26: كل سلامى من الناس عليه صدقة • 27: البر حسن الخلق • 28: أوصيك بتقوى الله والسمع والطاعة • 29: لا تحاسدوا ولا تباغضوا • 30: من نفس عن مؤمن كربة • 31: اتقوا النار ولو بشق تمرة • 32: لا ضرر ولا ضرار • 33: البينة على المدعي واليمين على من أنكر • 34: من رأى منكم منكرا فليغيره • 35: المسلم أخو المسلم • 36: الله في عون العبد ما كان العبد في عون أخيه • 37: إن الله كتب الحسنات والسيئات • 38: من عادى لي وليا فقد آذنته بالحرب • 39: ارفعوا أيديكم بالدعاء • 40: كن في الدنيا كأنك غريب أو عابر سبيل • Stato della Moschea: Live News • 2026 •
+                • 1: إنما الأعمال بالنيات وإنما لكل امرئ ما نوى • 2: بني الإسلام على خمس • 3: إن أحدكم يجمع خلقه في بطن أمه • 4: من أحدث في أمرنا هذا ما ليس منه فهو رد • 5: الحلال بين والحرام بين • 6: الدين النصيحة • 7: أمرت أن أقاتل الناس حتى يشهدوا أن لا إله إلا الله • 8: ما نهيتكم عنه فاجتنبوه • 9: إن الله طيب لا يقبل إلا طيبا • 10: دع ما يريبك إلى ما لا يريبك • 11: من حسن إسلام المرء تركه ما لا يعنيه • 12: لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • 13: لا يحل دم امرئ مسلم إلا بإحدى ثلاث • 14: من كان يؤمن بالله واليوم الآخر فليقل خيرا أو ليصمت • 15: لا تغضب • 16: إن الله كتب الإحسان على كل شيء • 17: اتق الله حيثما كنت • 18: احفظ الله يحفظك • 19: إذا لم تستح فاصنع ما شئت • 20: قل آمنت بالله ثم استقم • 21: استقيموا ولن تحصوا • 22: الطهور شطر الإيمان • 23: يا عبادي إني حرمت الظلم على نفسي • 24: إن الله تجاوز لي عن أمتي الخطأ والنسيان • 25: المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف • 26: كل سلامى من الناس عليه صدقة • 27: البر حسن الخلق • 28: أوصيك بتقوى الله والسمع والطاعة • 29: لا تحاسدوا ولا تباغضوا • 30: من نفس عن مؤمن كربة • 31: اتقوا النار ولو بشق تمرة • 32: لا ضرر ولا ضرار • 33: البينة على المدعي واليمين على من أنكر • 34: من رأى منكم منكرا فليغيره • 35: المسلم أخو المسلم • 36: الله في عون العبد ما كان العبد في عون أخيه • 37: إن الله كتب الحسنات والسيئات • 38: من عادى لي وليا فقد آذنته بالحرب • 39: ارفعوا أيديكم بالدعاء • 40: كن في الدنيا كأنك غريب أو عابر سبيل • 2026 •
             </div>
         </div>
     </div>
@@ -190,9 +190,7 @@
         function unlockAudio() {
             if (!audioUnlocked) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                audioContext.resume().then(() => {
-                    audioUnlocked = true;
-                });
+                audioContext.resume().then(() => { audioUnlocked = true; });
             }
         }
 
@@ -200,9 +198,6 @@
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
                 navigator.mediaSession.playbackState = 'none';
-                ['play', 'pause', 'stop', 'seekto'].forEach(action => {
-                    try { navigator.mediaSession.setActionHandler(action, null); } catch(e) {}
-                });
             }
         }
 
@@ -218,15 +213,10 @@
                 const source = audioContext.createBufferSource();
                 source.buffer = audioBuffer;
                 source.connect(audioContext.destination);
-                
                 source.start(0);
                 cleanMediaSession();
-
                 source.onended = () => { cleanMediaSession(); };
-
-                if (type === 'athan') {
-                    setTimeout(() => { source.stop(); cleanMediaSession(); }, 45000);
-                }
+                if (type === 'athan') { setTimeout(() => { source.stop(); cleanMediaSession(); }, 45000); }
             } catch (e) {
                 const a = new Audio(sourceUrl);
                 a.play().then(() => { cleanMediaSession(); setTimeout(cleanMediaSession, 1000); });
@@ -234,17 +224,12 @@
         }
 
         function enableNotifs() { 
-            Notification.requestPermission().then(p => {
-                if (p === 'granted') alert("🔔 Notifiche e Athan automatico attivati!");
-            });
+            Notification.requestPermission().then(p => { if (p === 'granted') alert("🔔 Notifiche e Athan automatico attivati!"); });
             toggleMenu();
         }
 
         function adminDash() {
-            if (prompt("PIN:") === "2026") {
-                sendPush("Test Muslim Pro", "Riproduzione Athan...");
-                playSound();
-            }
+            if (prompt("PIN:") === "2026") { sendPush("Test Muslim Pro", "Riproduzione Athan..."); playSound(); }
         }
 
         function sendPush(title, body) {
@@ -274,8 +259,7 @@
                 window.lastE = "iftar"; sendPush("Iftar", "Notifica Iftar imminente (17:45)"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE = "night"; 
-                document.body.classList.add('night-mode'); 
+                window.lastE = "night"; document.body.classList.add('night-mode'); 
                 sendPush("Tarawih", "Promemoria Tarawih & Modalità Notte Serena"); 
             }
 
@@ -285,14 +269,11 @@
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
-                
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; 
-                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); 
-                    playSound(); 
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); playSound(); 
                 }
                 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
