@@ -79,20 +79,22 @@
 
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
-            /* ADATTAMENTO: Ridotta l'altezza della striscia */
-            padding: 8px 0; 
+            /* Ripristinate le dimensioni originali della striscia */
+            padding: 12px 0; 
             border-top: 3px solid var(--mp-gold);
             overflow: hidden; flex-shrink: 0;
         }
+        
         .hadith-track { 
             display: flex; 
             width: max-content; 
             animation: scroll-hadith 60s linear infinite; 
         }
+
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; 
-            /* ADATTAMENTO: Ridotta la dimensione del testo a 12px */
-            font-size: 12px; 
+            /* Adattata la dimensione delle scritte alla striscia */
+            font-size: 14px; 
             white-space: nowrap; 
             padding-left: 100vw; 
         }
