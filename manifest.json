@@ -1,26 +1,23 @@
 {
-  "short_name": "MuslimPro",
   "name": "Muslim Pro - Bastia Umbra",
+  "short_name": "Muslim Pro",
+  "description": "Orari di preghiera e notifiche per Bastia Umbra",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#004F3F",
+  "theme_color": "#004F3F",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2619/2619277.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "start_url": "./index.html",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#004F3F",
-  "theme_color": "#004F3F",
-  "description": "Orari preghiera e Adhan automatico per Bastia Umbra",
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  }
+  ]
 }
