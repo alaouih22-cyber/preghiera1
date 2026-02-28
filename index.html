@@ -6,9 +6,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#004F3F">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="1000087707.png">
     
     <title>Muslim Pro - Bastia Umbra</title>
@@ -214,12 +212,12 @@
     </div>
 
     <script>
-        // Registrazione Service Worker per l'App
+        // Registrazione del Service Worker esterno
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW pronto'))
-                .catch(err => console.log('SW Errore', err));
+                .then(reg => console.log('App Muslim Pro: Pronto'))
+                .catch(err => console.log('Errore SW:', err));
             });
         }
 
@@ -257,7 +255,7 @@
         function enableNotifs() { 
             Notification.requestPermission().then(p => {
                 if (p === 'granted') {
-                    alert("🔔 Notifiche attivate correttamente!");
+                    alert("🔔 Notifiche attivate!");
                     const a = document.getElementById('athanAudio');
                     a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
                 }
@@ -268,7 +266,7 @@
         function adminDash() {
             const pin = prompt("PIN:");
             if (pin === "2026") {
-                sendPush("اختبار Muslim Pro", "تم تفعيل التنبيه بنجاح");
+                sendPush("Test Muslim Pro", "Notifica di prova funzionante!");
                 playSound();
             }
         }
@@ -294,19 +292,17 @@
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
-            
-            // Impostazione 11 Ramadan
             document.getElementById('hijri-date-full').innerText = "11 رمضان 1447"; 
 
-            // Funzionalità Ramadan richieste
+            // Automazioni Ramadan richieste
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
+                window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor"); playSound(); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
+                window.lastE = "iftar"; sendPush("Iftar", "Manca poco all'Iftar"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Tarawih e Notte Serena (20:30)"); 
+                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Tarawih e Notte Serena"); 
             }
 
             const today = times[dateKey] || times["28/2"];
