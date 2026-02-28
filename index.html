@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <link rel="manifest" href="manifest.json?v=2">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#004F3F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="1000087707.png">
     
     <title>Muslim Pro - Bastia Umbra</title>
@@ -188,7 +191,7 @@
                 • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
                 • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
                 • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
+                • قال ﷺ: "بني الإسلام sulla خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
                 • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
                 • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
                 • قال ﷺ: "تسحروا فإن في السحور بركة"
@@ -201,7 +204,7 @@
                 • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
                 • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
                 • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
+                • قال ﷺ: "بني الإسلام sulla خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
                 • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
                 • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
                 • قال ﷺ: "تسحروا فإن في السحور بركة"
@@ -212,7 +215,11 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js?v=2');
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registrato!'))
+                .catch(err => console.log('Errore SW:', err));
+            });
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -287,7 +294,6 @@
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             
-            // AGGIORNATO A 11 RAMADAN
             document.getElementById('hijri-date-full').innerText = "11 رمضان 1447"; 
 
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
