@@ -88,10 +88,14 @@
         }
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; font-size: 15px; 
-            white-space: nowrap; padding-left: 100vw; 
+            white-space: nowrap; padding-right: 100vw; 
         }
         
-        @keyframes scroll-hadith { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        @keyframes scroll-hadith { 
+            from { transform: translateX(-100%); } 
+            to { transform: translateX(100%); } 
+        }
+        
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
         .sidebar {
@@ -114,7 +118,7 @@
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
     </style>
 </head>
-<body id="main-body">
+<body id="main-body" onclick="unlockAudio()">
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -171,11 +175,23 @@
     </div>
 
     <script>
+        let audioUnlocked = false;
+        let audioContext;
+
         if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // RESET TOTALE SESSIONE PER EVITARE IL WIDGET
+        function unlockAudio() {
+            if (!audioUnlocked) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioContext.resume().then(() => {
+                    audioUnlocked = true;
+                    console.log("Audio Unlocked");
+                });
+            }
+        }
+
         function cleanMediaSession() {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
@@ -191,33 +207,28 @@
             const sourceUrl = (type === 'athan') ? document.getElementById('athan-source').value : "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
             
             try {
-                // AudioContext: Metodo più profondo per evitare i widget di sistema
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const response = await fetch(sourceUrl);
                 const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-                const source = audioCtx.createBufferSource();
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                const source = audioContext.createBufferSource();
                 source.buffer = audioBuffer;
-                source.connect(audioCtx.destination);
+                source.connect(audioContext.destination);
                 
                 source.start(0);
                 cleanMediaSession();
 
-                // Chiude il contesto audio alla fine per forzare la chiusura del widget
                 source.onended = () => {
-                    audioCtx.close();
                     cleanMediaSession();
                 };
 
                 if (type === 'athan') {
                     setTimeout(() => { 
                         source.stop(); 
-                        audioCtx.close(); 
                         cleanMediaSession(); 
                     }, 45000);
                 }
             } catch (e) {
-                // Fallback standard se AudioContext fallisce
                 const a = new Audio(sourceUrl);
                 a.play().then(() => { cleanMediaSession(); setTimeout(cleanMediaSession, 1000); });
             }
@@ -225,7 +236,7 @@
 
         function enableNotifs() { 
             Notification.requestPermission().then(p => {
-                if (p === 'granted') alert("🔔 Notifiche attivate!");
+                if (p === 'granted') alert("🔔 Notifiche e Athan automatico attivati!");
             });
             toggleMenu();
         }
@@ -257,7 +268,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Funzionalità richieste Ramadan
+            // Logiche Automatiche Ramadan
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor (5:20)"); playSound(); 
             }
@@ -276,11 +287,17 @@
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
+                
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
+                
+                // CONTROLLO AUTOMATICO PREGHIERE
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); playSound(); 
+                    window.lastN = k; 
+                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); 
+                    playSound(); 
                 }
+                
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
                             <div style="display:flex; align-items:center;">
                                 <span style="font-size:30px; margin-left:15px;">${prayerIcons[k]}</span>
@@ -289,6 +306,7 @@
                             <span class="p-time">${pTime}</span>
                         </div>`;
             }
+            
             if (nextP) {
                 const diff = nextP - now;
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
