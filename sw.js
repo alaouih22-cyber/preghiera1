@@ -1,30 +1,47 @@
-const CACHE_NAME = 'muslimpro-bastia-v5';
-const ASSETS = [
+const CACHE_NAME = 'muslim-pro-bastia-v2026';
+const ASSETS_TO_CACHE = [
   'index.html',
   'manifest.json',
-  '1000087707.png'
+  '1000087707.png',
+  'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
 ];
 
-self.addEventListener('install', (e) => {
+// Installazione: Salva i file necessari nella cache
+self.addEventListener('install', (event) => {
   self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(keys.map((k) => {
-        if (k !== CACHE_NAME) return caches.delete(k);
-      }));
+// Attivazione: Pulisce le vecchie versioni della cache
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
     })
   );
   return self.clients.claim();
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((res) => res || fetch(e.request))
+// Fetch: Serve i file dalla cache se offline
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
+
+// Gestione Notifiche Push
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow('/')
   );
 });
