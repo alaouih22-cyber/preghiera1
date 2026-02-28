@@ -77,32 +77,45 @@
         .p-name { font-size: 24px; font-weight: 800; color: var(--mp-dark-green); }
         .p-time { font-size: 25px; font-weight: 900; }
 
+        /* SEZIONE AHADITH PROFESSIONALE */
         .hadith-footer {
-            width: 100%; background: var(--mp-dark-green);
-            padding: 12px 0; border-top: 3px solid var(--mp-gold);
-            overflow: hidden; flex-shrink: 0;
+            width: 100%; 
+            background: linear-gradient(to bottom, #004F3F, #003a2e);
+            padding: 15px 0; 
+            border-top: 2px solid var(--mp-gold);
+            overflow: hidden; 
+            flex-shrink: 0;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
         }
 
-        /* Sistema lo scorrimento infinito */
         .hadith-track { 
             display: flex; 
             width: max-content; 
-            animation: scroll-hadith 40s linear infinite; 
+            animation: scroll-hadith 60s linear infinite; 
+            will-change: transform;
         }
 
         .hadith-text { 
             color: var(--mp-gold); 
-            font-weight: 600; 
-            font-size: 15px; 
+            font-weight: 500; 
+            font-size: 16px; 
             white-space: nowrap; 
-            padding-left: 0; /* Parte da sinistra come da foto */
-            padding-right: 50px; /* Spazio tra la fine e l'inizio del loop */
+            padding-left: 50px; /* Spazio tra i blocchi per il loop */
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .hadith-separator {
+            margin: 0 15px;
+            color: rgba(197, 160, 89, 0.5);
+            font-size: 20px;
         }
         
-        /* Animazione corretta da sinistra a destra (loop infinito) */
+        /* Animazione infinita da Sinistra a Destra */
         @keyframes scroll-hadith { 
-            from { transform: translateX(-50%); } 
-            to { transform: translateX(0%); } 
+            0% { transform: translateX(-50%); } 
+            100% { transform: translateX(0%); } 
         }
 
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
@@ -185,24 +198,24 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" 
-                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" 
-                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" 
-                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
-                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
-                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
-                • قال ﷺ: "الدين النصيحة" • رمضان مبارك • Bastia Umbra • 2026 •
+                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" <span class="hadith-separator">✦</span>
+                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" <span class="hadith-separator">✦</span>
+                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله" <span class="hadith-separator">✦</span>
+                • رمضان مبارك • Bastia Umbra • 2026
             </div>
             <div class="hadith-text">
-                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" 
-                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" 
-                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" 
-                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
-                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
-                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
-                • قال ﷺ: "الدين النصيحة" • رمضان مبارك • Bastia Umbra • 2026 •
+                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" <span class="hadith-separator">✦</span>
+                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" <span class="hadith-separator">✦</span>
+                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" <span class="hadith-separator">✦</span>
+                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله" <span class="hadith-separator">✦</span>
+                • رمضان مبارك • Bastia Umbra • 2026
             </div>
         </div>
     </div>
