@@ -1,13 +1,12 @@
-const CACHE_NAME = 'muslim-pro-bastia-v2026';
+const CACHE_NAME = 'prayer-times-bastia-v2026';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './1000087707.png',
+  './prayer-icon.png',
   'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
 ];
 
-// INSTALL
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
@@ -15,7 +14,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// ACTIVATE
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -27,10 +25,8 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// FETCH (cache-first + network fallback)
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-
   event.respondWith(
     caches.match(event.request).then(cached =>
       cached || fetch(event.request).catch(() => caches.match('./index.html'))
@@ -38,7 +34,6 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// NOTIFICATION CLICK
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(
