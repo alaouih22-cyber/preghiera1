@@ -1,6 +1,6 @@
 {
-  "name": "Muslim Pro - Bastia Umbra",
-  "short_name": "Muslim Pro",
+  "name": "PrayerTimes Bastia Umbra",
+  "short_name": "PrayerTimes",
   "description": "App per orari di preghiera, Ramadan e notifiche",
   "start_url": "./index.html",
   "scope": "./",
@@ -13,13 +13,13 @@
   "dir": "rtl",
   "icons": [
     {
-      "src": "1000087707.png",
+      "src": "prayer-icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "1000087707.png",
+      "src": "prayer-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
