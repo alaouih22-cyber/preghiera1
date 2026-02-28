@@ -1,47 +1,47 @@
-const CACHE_NAME = 'prayer-times-bastia-v2026';
+const CACHE_NAME = 'muslim-pro-bastia-v2026';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './prayer-icon.png',
+  'index.html',
+  'manifest.json',
+  '1000087707.png',
   'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'
 ];
 
-self.addEventListener('install', event => {
+// Installazione: Salva i file necessari nella cache
+self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
 });
 
-self.addEventListener('activate', event => {
+// Attivazione: Pulisce le vecchie versioni della cache
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      )
-    )
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    })
   );
-  self.clients.claim();
+  return self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+// Fetch: Serve i file dalla cache se offline
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then(cached =>
-      cached || fetch(event.request).catch(() => caches.match('./index.html'))
-    )
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
   );
 });
 
-self.addEventListener('notificationclick', event => {
+// Gestione Notifiche Push
+self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then(clientList => {
-      for (let client of clientList) {
-        if (client.url === '/' && 'focus' in client) return client.focus();
-      }
-      if (clients.openWindow) return clients.openWindow('./');
-    })
+    clients.openWindow('/')
   );
 });
