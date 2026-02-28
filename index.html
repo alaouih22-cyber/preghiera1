@@ -91,10 +91,7 @@
             white-space: nowrap; padding-left: 100vw; 
         }
         
-        @keyframes scroll-hadith { 
-            from { transform: translateX(0); } 
-            to { transform: translateX(-100%); } 
-        }
+        @keyframes scroll-hadith { from { transform: translateX(0); } to { transform: translateX(-100%); } }
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
         .sidebar {
@@ -114,7 +111,6 @@
             color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; margin-top: 5px;
         }
         .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; border: none; }
-        
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
     </style>
 </head>
@@ -177,38 +173,48 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // TECNICA DEFINITIVA: Svuotamento MediaSession
-        function clearMediaSession() {
+        // KILLER DEFINITIVO DEL WIDGET
+        function killWidget() {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
                 navigator.mediaSession.playbackState = 'none';
-                ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'].forEach(action => {
-                    try { navigator.mediaSession.setActionHandler(action, null); } catch(e) {}
+                ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'].forEach(a => {
+                    try { navigator.mediaSession.setActionHandler(a, null); } catch(e) {}
                 });
             }
         }
 
-        function playSound() {
+        async function playSound() {
             const type = document.getElementById('notif-type').value;
-            const source = (type === 'athan') ? document.getElementById('athan-source').value : "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
+            const sourceUrl = (type === 'athan') ? document.getElementById('athan-source').value : "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
             
-            // Creazione dinamica dell'oggetto audio per non lasciare tracce nel DOM
-            const audio = new Audio(source);
-            
-            audio.play().then(() => {
-                // Killer del widget immediato
-                clearMediaSession();
-                setTimeout(clearMediaSession, 300);
-                setTimeout(clearMediaSession, 1000);
-            }).catch(e => console.log("Audio play blocked"));
+            try {
+                // Usiamo AudioContext invece di HTML5 Audio per "nasconderci" dal sistema
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const response = await fetch(sourceUrl);
+                const arrayBuffer = await response.arrayBuffer();
+                const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                
+                const source = audioCtx.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioCtx.destination);
+                
+                source.start(0);
+                killWidget(); // Pulizia immediata
 
-            // Se è l'Athan, fermalo dopo 45 secondi e pulisci tutto
-            if (type === 'athan') {
-                setTimeout(() => {
-                    audio.pause();
-                    audio.remove();
-                    clearMediaSession();
-                }, 45000);
+                if (type === 'athan') {
+                    // Ferma dopo 45 secondi
+                    setTimeout(() => {
+                        source.stop();
+                        audioCtx.close();
+                        killWidget();
+                    }, 45000);
+                }
+            } catch (e) {
+                console.error("Audio Context Error, fallback to standard");
+                // Fallback minimo se AudioContext fallisce
+                const a = new Audio(sourceUrl);
+                a.play().then(() => { killWidget(); setTimeout(killWidget, 1000); });
             }
         }
 
@@ -221,7 +227,7 @@
 
         function adminDash() {
             if (prompt("PIN:") === "2026") {
-                sendPush("Test Muslim Pro", "Riproduzione Athan in corso...");
+                sendPush("Test Muslim Pro", "Riproduzione Athan...");
                 playSound();
             }
         }
@@ -242,27 +248,19 @@
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
-
             const today = times[dateKey] || times["28/2"];
             let html = ""; let nextP = null; let nextN = "";
-
             for (let k in prayerNames) {
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 let active = (now - pDate >= 0 && now - pDate < 600000);
-                
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
-                
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; 
-                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); 
-                    playSound(); 
+                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); playSound(); 
                 }
-
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
                             <div style="display:flex; align-items:center;">
                                 <span style="font-size:30px; margin-left:15px;">${prayerIcons[k]}</span>
@@ -281,7 +279,6 @@
             }
             document.getElementById('list-container').innerHTML = html;
         }
-
         setInterval(update, 1000);
         update();
     </script>
