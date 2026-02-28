@@ -164,7 +164,7 @@
 
     <div class="hadith-footer">
         <div class="hadith-track">
-            <div class="hadith-text">• إنما الأعمال بالنيات • من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت • لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • اتق الله حيثما كنت • تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً • 2026 •</div>
+            <div class="hadith-text">• Stato della Moschea: Live News attive • إنما الأعمال بالنيات • من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت • لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • اتق الله حيثما كنت • تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً • 2026 •</div>
         </div>
     </div>
 
@@ -173,7 +173,6 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // KILLER DEFINITIVO DEL WIDGET
         function killWidget() {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
@@ -189,30 +188,19 @@
             const sourceUrl = (type === 'athan') ? document.getElementById('athan-source').value : "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
             
             try {
-                // Usiamo AudioContext invece di HTML5 Audio per "nasconderci" dal sistema
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const response = await fetch(sourceUrl);
                 const arrayBuffer = await response.arrayBuffer();
                 const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-                
                 const source = audioCtx.createBufferSource();
                 source.buffer = audioBuffer;
                 source.connect(audioCtx.destination);
-                
                 source.start(0);
-                killWidget(); // Pulizia immediata
-
+                killWidget();
                 if (type === 'athan') {
-                    // Ferma dopo 45 secondi
-                    setTimeout(() => {
-                        source.stop();
-                        audioCtx.close();
-                        killWidget();
-                    }, 45000);
+                    setTimeout(() => { source.stop(); audioCtx.close(); killWidget(); }, 45000);
                 }
             } catch (e) {
-                console.error("Audio Context Error, fallback to standard");
-                // Fallback minimo se AudioContext fallisce
                 const a = new Audio(sourceUrl);
                 a.play().then(() => { killWidget(); setTimeout(killWidget, 1000); });
             }
@@ -248,8 +236,23 @@
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
+
+            // Logiche Speciali Ramadan 2026
+            if (timeNow === "05:20" && window.lastE !== "imsak") { 
+                window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor (5:20)"); playSound(); 
+            }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { 
+                window.lastE = "iftar"; sendPush("Iftar", "Notifica Iftar imminente (17:45)"); playSound(); 
+            }
+            if (timeNow === "20:30" && window.lastE !== "night") { 
+                window.lastE = "night"; 
+                document.body.classList.add('night-mode'); 
+                sendPush("Tarawih", "Promemoria Tarawih & Modalità Notte Serena"); 
+            }
+
             const today = times[dateKey] || times["28/2"];
             let html = ""; let nextP = null; let nextN = "";
             for (let k in prayerNames) {
