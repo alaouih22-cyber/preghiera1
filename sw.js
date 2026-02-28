@@ -1,43 +1,34 @@
-// sw.js
-self.addEventListener('install', (event) => {
-    self.skipWaiting();
-    console.log("SW: Installato");
+self.addEventListener('install', event => {
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
-    console.log("SW: Attivato");
+self.addEventListener('activate', event => {
+  event.waitUntil(self.clients.claim());
 });
 
-// Ascolta i messaggi inviati dall'app (Test o Orari)
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
-        const data = event.data;
-        const options = {
-            body: data.body,
-            icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-            badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-            vibrate: [500, 110, 500, 110, 450],
-            tag: 'prayer-notif',
-            renotify: true,
-            requireInteraction: true,
-            priority: 2,
-            importance: 'high',
-            data: { url: './index.html' }
-        };
-
-        event.waitUntil(
-            self.registration.showNotification(data.title, options)
-        );
-    }
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+    self.registration.showNotification(event.data.title, {
+      body: event.data.body,
+      icon: 'icon-192.png',
+      badge: 'icon-192.png',
+      vibrate: [200, 100, 200],
+      requireInteraction: true,
+      tag: 'prayer-notification'
+    });
+  }
 });
 
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-            if (clientList.length > 0) return clientList[0].focus();
-            return clients.openWindow('./index.html');
-        })
-    );
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
+        if (clientList.length > 0) {
+          clientList[0].focus();
+        } else {
+          clients.openWindow('./index.html');
+        }
+      })
+  );
 });
