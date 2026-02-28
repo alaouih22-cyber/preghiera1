@@ -1,22 +1,19 @@
 // sw.js
 self.addEventListener('install', (event) => {
     self.skipWaiting();
-    console.log("SW: Installato");
 });
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
-    console.log("SW: Attivato");
 });
 
-// Ascolta i messaggi inviati dall'app (Test o Orari)
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
         const data = event.data;
         const options = {
             body: data.body,
-            icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-            badge: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+            icon: '1000087707.png', // Solo l'icona aggiornata
+            badge: '1000087707.png',
             vibrate: [500, 110, 500, 110, 450],
             tag: 'prayer-notif',
             renotify: true,
