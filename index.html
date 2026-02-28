@@ -89,12 +89,12 @@
         }
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; font-size: 15px; 
-            white-space: nowrap; padding-left: 100vw; 
+            white-space: nowrap; padding-right: 100vw; 
         }
         
         @keyframes scroll-hadith { 
-            from { transform: translateX(0); } 
-            to { transform: translateX(-100%); } 
+            from { transform: translateX(100%); } 
+            to { transform: translateX(0); } 
         }
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
@@ -195,7 +195,6 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        // PULIZIA MEDIA SESSION PER NASCONDERE PLAYER
         function killPlayerWidget() {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
@@ -220,7 +219,6 @@
                     setTimeout(killPlayerWidget, 200);
                 }).catch(e => console.log("Audio play blocked"));
                 
-                // Stop automatico Athan dopo 45 secondi
                 setTimeout(() => {
                     athanAudio.pause();
                     athanAudio.currentTime = 0;
@@ -236,7 +234,6 @@
             Notification.requestPermission().then(p => {
                 if (p === 'granted') {
                     alert("🔔 Notifiche attivate correttamente!");
-                    // "Sveglia" l'audio per bypassare i blocchi mobile
                     const a = document.getElementById('athanAudio');
                     a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
                 }
@@ -278,7 +275,6 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Controllo Orari Speciali (Imsak, Iftar, Night)
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
