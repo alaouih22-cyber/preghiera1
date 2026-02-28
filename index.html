@@ -82,29 +82,47 @@
             padding: 12px 0; border-top: 3px solid var(--mp-gold);
             overflow: hidden; flex-shrink: 0;
         }
-        .hadith-track { display: flex; width: max-content; animation: scroll-hadith 30s linear infinite; }
-        .hadith-text { color: var(--mp-gold); font-weight: 600; font-size: 15px; white-space: nowrap; padding-left: 100vw; }
+        .hadith-track { 
+            display: flex; 
+            width: max-content; 
+            animation: scroll-hadith 90s linear infinite; 
+        }
+        .hadith-text { 
+            color: var(--mp-gold); font-weight: 600; font-size: 15px; 
+            white-space: nowrap; padding-left: 100vw; 
+        }
         
-        @keyframes scroll-hadith { from { transform: translateX(0); } to { transform: translateX(100%); } }
+        @keyframes scroll-hadith { 
+            from { transform: translateX(0); } 
+            to { transform: translateX(-100%); } 
+        }
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
         .sidebar {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: var(--mp-dark-green); z-index: 1000; transition: 0.4s;
             padding: 30px 20px; box-sizing: border-box; color: white; overflow-y: auto;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
         }
         .sidebar.open { left: 0; }
-        .menu-item {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--mp-gold);
-            color: white; padding: 14px; border-radius: 12px; width: 100%;
-            margin-bottom: 12px; cursor: pointer; text-align: right; font-weight: bold;
-            display: block; text-decoration: none; font-size: 14px;
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px; }
+        
+        .settings-group { margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(197, 160, 89, 0.3); }
+        .settings-label { color: var(--mp-gold); font-size: 14px; font-weight: bold; margin-bottom: 10px; display: block; text-align: right; }
+        
+        .mp-select, .mp-btn-side {
+            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--mp-gold);
+            color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; margin-top: 5px;
         }
+        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; border: none; }
         
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
     </style>
 </head>
 <body id="main-body">
+
+    <audio id="athanAudio"></audio>
+    <audio id="bipAudio" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
@@ -114,14 +132,31 @@
     </div>
 
     <div class="sidebar" id="sidebar">
-        <div style="font-size:35px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
-        <h3 style="color:var(--mp-gold); border-bottom:2px solid var(--mp-gold); padding-bottom:10px;">الإعدادات - Settings</h3>
+        <div class="sidebar-header">
+            <span style="font-size:24px; color:var(--mp-gold); font-weight:bold;">Muslim Pro</span>
+            <div style="font-size:30px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
+        </div>
         
-        <button class="menu-item" onclick="enableNotifs()">🔔 تفعيل الإشعارات (Attiva Banner)</button>
-        <button class="menu-item" style="background: var(--mp-gold); color: black;" onclick="adminDash()">⚙️ تجربة الإشعارات (Test PIN 2026)</button>
-        
-        <hr style="border-color: var(--mp-gold);">
-        <a href="https://easyquran.com/ar/%d8%b1%d8%aa%d9%91%d9%84-%d9%85%d8%b5%d8%ad%d9%81-%d8%a7%d9%84%d8%aa%d8%ac%d9%88%d9%8a%d8%af-%d8%a8%d8%b1%d9%88%d8%a7%d9%8a%d8%a9-%d9%88%d8%b1%d8%b4-%d8%b9%d9%86-%d9%86%d8%a7%d9%81%d8%b9/#1" target="_blank" class="menu-item">📖 مصحف التجويد (ورش)</a>
+        <div class="settings-group">
+            <label class="settings-label">🔔 نوع التنبيه (Tipo Notifica)</label>
+            <select id="notif-type" class="mp-select">
+                <option value="athan">أذان + إشعار (Athan + Notifica)</option>
+                <option value="bip">رنين + إشعار (Bip + Notifica)</option>
+            </select>
+        </div>
+
+        <div class="settings-group">
+            <label class="settings-label">🔊 اختيار المؤذن (Scegli Athan)</label>
+            <select id="athan-source" class="mp-select">
+                <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة (Makkah)</option>
+                <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">المدينة المنورة (Medina)</option>
+                <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">الأقصى (Al-Aqsa)</option>
+                <option value="adhan.mp3">افتراضي (Default Local)</option>
+            </select>
+        </div>
+
+        <button class="mp-btn-side" onclick="enableNotifs()">تفعيل التنبيهات (Attiva Banner)</button>
+        <button class="mp-btn-side" style="background:transparent; color:var(--mp-gold);" onclick="adminDash()">اختبار (Test Audio PIN 2026)</button>
     </div>
 
     <div class="dashboard">
@@ -140,23 +175,71 @@
 
     <div class="hadith-footer">
         <div class="hadith-track">
-            <div class="hadith-text">قال رسول الله ﷺ: «تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً» • رمضان مبارك • اللهم بلغنا ليلة القدر • Bastia Umbra • 2026</div>
+            <div class="hadith-text">
+                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" 
+                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" 
+                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" 
+                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
+                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
+                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
+                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
+                • قال ﷺ: "الدين النصيحة" • رمضان مبارك • Bastia Umbra • 2026 •
+            </div>
         </div>
     </div>
 
     <script>
-        // Registrazione Service Worker per le notifiche
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                console.log("SW registrato con successo");
-            }).catch(err => console.log("Errore registrazione SW:", err));
+            navigator.serviceWorker.register('./sw.js');
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
+        // PULIZIA MEDIA SESSION PER NASCONDERE PLAYER
+        function killPlayerWidget() {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = null;
+                navigator.mediaSession.playbackState = 'none';
+                const actions = ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'];
+                actions.forEach(action => {
+                    try { navigator.mediaSession.setActionHandler(action, null); } catch(e) {}
+                });
+            }
+        }
+
+        function playSound() {
+            const type = document.getElementById('notif-type').value;
+            const athanSource = document.getElementById('athan-source').value;
+            const athanAudio = document.getElementById('athanAudio');
+            const bipAudio = document.getElementById('bipAudio');
+
+            if (type === 'athan') {
+                athanAudio.src = athanSource;
+                athanAudio.currentTime = 0;
+                athanAudio.play().then(() => {
+                    setTimeout(killPlayerWidget, 200);
+                }).catch(e => console.log("Audio play blocked"));
+                
+                // Stop automatico Athan dopo 45 secondi
+                setTimeout(() => {
+                    athanAudio.pause();
+                    athanAudio.currentTime = 0;
+                    killPlayerWidget();
+                }, 45000);
+            } else {
+                bipAudio.currentTime = 0;
+                bipAudio.play().catch(e => console.log("Bip play blocked"));
+            }
+        }
+
         function enableNotifs() { 
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') alert("🔔 الإشعارات مفعلة! (Banner Attivati)");
+            Notification.requestPermission().then(p => {
+                if (p === 'granted') {
+                    alert("🔔 Notifiche attivate correttamente!");
+                    // "Sveglia" l'audio per bypassare i blocchi mobile
+                    const a = document.getElementById('athanAudio');
+                    a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
+                }
             });
             toggleMenu();
         }
@@ -164,31 +247,19 @@
         function adminDash() {
             const pin = prompt("PIN:");
             if (pin === "2026") {
-                sendPush("اختبار الإشعار", "إشعار الصلاة يعمل بنجاح!");
+                sendPush("اختبار Muslim Pro", "تم تفعيل التنبيه بنجاح");
+                playSound();
             }
         }
 
-        // FUNZIONE AGGIORNATA: Comunica direttamente con lo sw.js via postMessage
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({
-                        type: 'SHOW_NOTIFICATION',
-                        title: title,
-                        body: body
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, { 
+                        body: body, 
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png'
                     });
-                } else {
-                    // Fallback se il controller non è pronto
-                    navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification(title, { 
-                            body: body, 
-                            icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                            requireInteraction: true,
-                            priority: 2,
-                            vibrate: [200, 100, 200]
-                        });
-                    });
-                }
+                });
             }
         }
 
@@ -207,19 +278,18 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Promemoria richiesti
+            // Controllo Orari Speciali (Imsak, Iftar, Night)
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Avviso fine Suhoor (5:20)"); 
+                window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Notifica Iftar (17:45)"); 
+                window.lastE = "iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE = "night"; document.body.classList.add('night-mode'); 
-                sendPush("Tarawih (تراويح)", "Promemoria Tarawih e Notte Serena (20:30)"); 
+                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Tarawih (20:30)"); 
             }
 
-            const today = times[dateKey] || times["27/2"];
+            const today = times[dateKey] || times["28/2"];
             let html = ""; let nextP = null; let nextN = "";
 
             for (let k in prayerNames) {
@@ -229,8 +299,11 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
+                
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k]);
+                    window.lastN = k; 
+                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k]); 
+                    playSound(); 
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
