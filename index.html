@@ -79,29 +79,28 @@
 
         .hadith-footer {
             width: 100%; background: var(--mp-dark-green);
-            /* Ripristinate le dimensioni originali della striscia */
-            padding: 12px 0; 
-            border-top: 3px solid var(--mp-gold);
+            padding: 12px 0; border-top: 3px solid var(--mp-gold);
             overflow: hidden; flex-shrink: 0;
         }
         
         .hadith-track { 
             display: flex; 
             width: max-content; 
-            animation: scroll-hadith 60s linear infinite; 
+            /* Velocità rallentata a 90s per scorrimento professionale */
+            animation: scroll-hadith 90s linear infinite; 
         }
 
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; 
-            /* Adattata la dimensione delle scritte alla striscia */
             font-size: 14px; 
             white-space: nowrap; 
-            padding-left: 100vw; 
+            padding-right: 50px; /* Spazio tra i blocchi */
         }
         
+        /* Animazione per loop infinito senza interruzioni */
         @keyframes scroll-hadith { 
-            0% { transform: translateX(-100%); } 
-            100% { transform: translateX(100%); } 
+            from { transform: translateX(0); } 
+            to { transform: translateX(50%); } 
         }
 
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
@@ -144,7 +143,6 @@
             <span style="font-size:24px; color:var(--mp-gold); font-weight:bold;">Muslim Pro</span>
             <div style="font-size:30px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         </div>
-        
         <div class="settings-group">
             <label class="settings-label">🔔 نوع التنبيه (Tipo Notifica)</label>
             <select id="notif-type" class="mp-select">
@@ -152,7 +150,6 @@
                 <option value="bip">رنين + إشعار (Bip + Notifica)</option>
             </select>
         </div>
-
         <div class="settings-group">
             <label class="settings-label">🔊 اختيار المؤذن (Scegli Athan)</label>
             <select id="athan-source" class="mp-select">
@@ -162,7 +159,6 @@
                 <option value="adhan.mp3">افتراضي (Default Local)</option>
             </select>
         </div>
-
         <button class="mp-btn-side" onclick="enableNotifs()">تفعيل التنبيهات (Attiva Banner)</button>
         <button class="mp-btn-side" style="background:transparent; color:var(--mp-gold);" onclick="adminDash()">اختبار (Test Audio PIN 2026)</button>
     </div>
@@ -191,7 +187,23 @@
                 • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
                 • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
                 • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
-                • قال ﷺ: "الدين النصيحة" • رمضان مبارك • Bastia Umbra • 2026 •
+                • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
+                • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
+                • قال ﷺ: "تسحروا فإن في السحور بركة"
+                • رمضان مبارك • Bastia Umbra • 2026 •
+            </div>
+            <div class="hadith-text">
+                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" 
+                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" 
+                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" 
+                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
+                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
+                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
+                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
+                • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
+                • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
+                • قال ﷺ: "تسحروا فإن في السحور بركة"
+                • رمضان مبارك • Bastia Umbra • 2026 •
             </div>
         </div>
     </div>
@@ -219,19 +231,13 @@
             const athanSource = document.getElementById('athan-source').value;
             const athanAudio = document.getElementById('athanAudio');
             const bipAudio = document.getElementById('bipAudio');
-
             if (type === 'athan') {
                 athanAudio.src = athanSource;
                 athanAudio.currentTime = 0;
                 athanAudio.play().then(() => {
                     setTimeout(killPlayerWidget, 200);
                 }).catch(e => console.log("Audio play blocked"));
-                
-                setTimeout(() => {
-                    athanAudio.pause();
-                    athanAudio.currentTime = 0;
-                    killPlayerWidget();
-                }, 45000);
+                setTimeout(() => { athanAudio.pause(); athanAudio.currentTime = 0; killPlayerWidget(); }, 45000);
             } else {
                 bipAudio.currentTime = 0;
                 bipAudio.play().catch(e => console.log("Bip play blocked"));
@@ -260,18 +266,14 @@
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { 
-                        body: body, 
-                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png'
-                    });
+                    reg.showNotification(title, { body: body, icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png' });
                 });
             }
         }
 
         const times = { 
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
-            "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"},
-            "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"}
+            "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"}
         };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
         const prayerIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
@@ -280,10 +282,8 @@
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
-
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
@@ -293,24 +293,19 @@
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Tarawih (20:30)"); 
             }
-
             const today = times[dateKey] || times["28/2"];
             let html = ""; let nextP = null; let nextN = "";
-
             for (let k in prayerNames) {
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 let active = (now - pDate >= 0 && now - pDate < 600000);
-                
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
-                
                 if (timeNow === pTime && window.lastN !== k) {
                     window.lastN = k; 
                     sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k]); 
                     playSound(); 
                 }
-
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
                             <div style="display:flex; align-items:center;">
                                 <span style="font-size:30px; margin-left:15px;">${prayerIcons[k]}</span>
@@ -319,7 +314,6 @@
                             <span class="p-time">${pTime}</span>
                         </div>`;
             }
-
             if (nextP) {
                 const diff = nextP - now;
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
@@ -330,7 +324,6 @@
             }
             document.getElementById('list-container').innerHTML = html;
         }
-
         setInterval(update, 1000);
         update();
     </script>
