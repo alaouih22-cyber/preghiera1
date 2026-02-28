@@ -106,6 +106,11 @@
 </head>
 <body id="main-body">
 
+    <audio id="athanAudio">
+        <source src="adhan.mp3" type="audio/mpeg">
+        <source src="https://www.islamcan.com/audio/adhan/azan1.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
         <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
@@ -145,18 +150,22 @@
     </div>
 
     <script>
-        // Registrazione Service Worker per le notifiche
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(reg => {
-                console.log("SW registrato con successo");
-            }).catch(err => console.log("Errore registrazione SW:", err));
+                console.log("SW registrato");
+            }).catch(err => console.log("Errore SW:", err));
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function enableNotifs() { 
             Notification.requestPermission().then(permission => {
-                if (permission === 'granted') alert("🔔 الإشعارات مفعلة! (Banner Attivati)");
+                if (permission === 'granted') {
+                    alert("🔔 Notifiche e Audio Sbloccati!");
+                    // Sblocca l'audio per il browser
+                    const a = document.getElementById('athanAudio');
+                    a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(e => console.log("Audio ready"));
+                }
             });
             toggleMenu();
         }
@@ -164,31 +173,22 @@
         function adminDash() {
             const pin = prompt("PIN:");
             if (pin === "2026") {
-                sendPush("اختبار الإشعار", "إشعار الصلاة يعمل بنجاح!");
+                sendPush("Test Audio", "Riproduzione Athan in corso...");
+                const a = document.getElementById('athanAudio');
+                a.currentTime = 0;
+                a.play();
             }
         }
 
-        // FUNZIONE AGGIORNATA: Comunica direttamente con lo sw.js via postMessage
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({
-                        type: 'SHOW_NOTIFICATION',
-                        title: title,
-                        body: body
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, { 
+                        body: body, 
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
+                        requireInteraction: true 
                     });
-                } else {
-                    // Fallback se il controller non è pronto
-                    navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification(title, { 
-                            body: body, 
-                            icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png',
-                            requireInteraction: true,
-                            priority: 2,
-                            vibrate: [200, 100, 200]
-                        });
-                    });
-                }
+                });
             }
         }
 
@@ -203,23 +203,29 @@
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            const athan = document.getElementById('athanAudio');
 
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Promemoria richiesti
+            // LOGICA AUDIO PER PROMEMORIA SPECIALI
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak (سحور)", "Avviso fine Suhoor (5:20)"); 
+                window.lastE = "imsak"; 
+                sendPush("Imsak", "Fine Suhoor (5:20)"); 
+                athan.currentTime = 0; athan.play(); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar (إفطار)", "Notifica Iftar (17:45)"); 
+                window.lastE = "iftar"; 
+                sendPush("Iftar", "Manca poco all'Iftar (17:45)"); 
+                athan.currentTime = 0; athan.play(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE = "night"; document.body.classList.add('night-mode'); 
-                sendPush("Tarawih (تراويح)", "Promemoria Tarawih e Notte Serena (20:30)"); 
+                window.lastE = "night"; 
+                document.body.classList.add('night-mode'); 
+                sendPush("Tarawih", "Inizio Tarawih (20:30)"); 
             }
 
-            const today = times[dateKey] || times["27/2"];
+            const today = times[dateKey] || times["28/2"];
             let html = ""; let nextP = null; let nextN = "";
 
             for (let k in prayerNames) {
@@ -229,8 +235,13 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
+                
+                // LOGICA AUDIO PER TUTTE LE PREGHIERE
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k]);
+                    window.lastN = k; 
+                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k]); 
+                    athan.currentTime = 0;
+                    athan.play(); 
                 }
 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
