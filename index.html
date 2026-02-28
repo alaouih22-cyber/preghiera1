@@ -11,7 +11,7 @@
             --mp-gold: #C5A059; 
             --mp-bg: #F6F7F9; 
             --white: #ffffff;
-            --glow-color: rgba(197, 160, 89, 0.6);
+            --glow-color: rgba(197, 160, 89, 0.8);
         }
 
         body {
@@ -77,58 +77,67 @@
         .p-name { font-size: 24px; font-weight: 800; color: var(--mp-dark-green); }
         .p-time { font-size: 25px; font-weight: 900; }
 
-        /* --- CORREZIONE STRISCIA SCORREVOLE --- */
+        /* --- GRAFICA BELLA STRISCIA AHADITH --- */
         .hadith-footer {
             width: 100%; 
-            background: var(--mp-dark-green);
-            padding: 12px 0; 
+            background: linear-gradient(90deg, #003329 0%, #004F3F 50%, #003329 100%);
+            height: 55px;
             border-top: 3px solid var(--mp-gold);
             overflow: hidden; 
-            flex-shrink: 0;
             position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
         }
 
         .hadith-track { 
-            display: inline-block;
+            position: absolute;
             white-space: nowrap;
             will-change: transform;
-            animation: scroll-ltr 300s linear infinite; /* Scorrimento lento per 40 Hadith */
+            animation: scroll-ltr 280s linear infinite; /* Tempo lento per leggere tutto */
+            display: flex;
+            align-items: center;
+            direction: ltr; /* Necessario per il calcolo dell'animazione LTR */
         }
 
-        .hadith-text { 
-            display: inline-block;
-            color: var(--mp-gold); 
-            font-weight: 600; 
-            font-size: 16px; 
-            padding-right: 100vw; /* Crea lo stacco per il loop infinito */
+        .hadith-item {
+            display: inline-flex;
+            align-items: center;
+            color: var(--mp-gold);
+            font-size: 18px;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5), 0 0 8px var(--glow-color);
+            padding: 0 40px;
         }
-        
+
+        .hadith-sep {
+            color: #fff;
+            font-size: 24px;
+            margin: 0 15px;
+            filter: drop-shadow(0 0 5px var(--mp-gold));
+        }
+
         @keyframes scroll-ltr { 
-            from { transform: translateX(-100%); } 
-            to { transform: translateX(100%); } 
+            0% { transform: translateX(-100%); } 
+            100% { transform: translateX(100vw); } 
         }
-        /* ------------------------------------- */
+        /* -------------------------------------- */
         
-        @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
-
+        .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
+        
         .sidebar {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: var(--mp-dark-green); z-index: 1000; transition: 0.4s;
             padding: 30px 20px; box-sizing: border-box; color: white; overflow-y: auto;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
         }
         .sidebar.open { left: 0; }
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px; }
-        
-        .settings-group { margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(197, 160, 89, 0.3); }
-        .settings-label { color: var(--mp-gold); font-size: 14px; font-weight: bold; margin-bottom: 10px; display: block; text-align: right; }
         
         .mp-select, .mp-btn-side {
             width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--mp-gold);
-            color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; margin-top: 5px;
+            color: white; padding: 10px; border-radius: 8px; margin-top: 10px;
         }
-        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; border: none; }
-        .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
+        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; border: none; cursor: pointer; }
     </style>
 </head>
 <body id="main-body" onclick="unlockAudio()">
@@ -136,43 +145,28 @@
     <div class="ramadan-header">
         <div class="menu-btn" onclick="toggleMenu()">☰</div>
         <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
-        <h1 class="ramadan-title">رمضان مبارك</h1>
+        <h1 class="ramadan-title">الأربعون النووية</h1>
         <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
     </div>
 
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <span style="font-size:24px; color:var(--mp-gold); font-weight:bold;">Muslim Pro</span>
-            <div style="font-size:30px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
-        </div>
-        <div class="settings-group">
-            <label class="settings-label">🔔 نوع التنبيه</label>
-            <select id="notif-type" class="mp-select">
-                <option value="athan">أذان + إشعار</option>
-                <option value="bip">رنين + إشعار</option>
-            </select>
-        </div>
-        <div class="settings-group">
-            <label class="settings-label">🔊 اختيار المؤذن</label>
-            <select id="athan-source" class="mp-select">
-                <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">المدينة المنورة</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">الأقصى</option>
-                <option value="adhan.mp3">Default Local</option>
-            </select>
-        </div>
-        <button class="mp-btn-side" onclick="enableNotifs()">تفعيل التنبيهات</button>
-        <button class="mp-btn-side" style="background:transparent; color:var(--mp-gold);" onclick="adminDash()">Test PIN 2026</button>
+        <div style="font-size:30px; cursor:pointer; text-align:left;" onclick="toggleMenu()">&times;</div>
+        <h2 style="color:var(--mp-gold)">Impostazioni</h2>
+        <select id="notif-type" class="mp-select">
+            <option value="athan">Athan</option>
+            <option value="bip">Notifica</option>
+        </select>
+        <button class="mp-btn-side" onclick="enableNotifs()">Attiva Notifiche</button>
+        <button class="mp-btn-side" style="margin-top:20px; background:transparent; color:white;" onclick="adminDash()">Admin PIN 2026</button>
     </div>
 
     <div class="dashboard">
         <div class="dash-card">
-            <span class="label-small">Data</span>
+            <span class="label-small">Data Hijri</span>
             <span class="date-value" id="hijri-date-full">...</span>
-            <span class="date-value" id="greg-date-full" style="opacity:0.6; font-size:11px;">...</span>
         </div>
         <div class="dash-card">
-            <span class="label-small" id="next-prayer-label">الصلاة القادمة</span>
+            <span class="label-small" id="next-prayer-label">Prossima Preghiera</span>
             <span class="timer-main" id="timer-next">00:00:00</span>
         </div>
     </div>
@@ -180,18 +174,56 @@
     <div class="prayer-list" id="list-container"></div>
 
     <div class="hadith-footer">
-        <div class="hadith-track">
-            <div class="hadith-text">
-                • 1: إنما الأعمال بالنيات وإنما لكل امرئ ما نوى • 2: بني الإسلام على خمس • 3: إن أحدكم يجمع خلقه في بطن أمه • 4: من أحدث في أمرنا هذا ما ليس منه فهو رد • 5: الحلال بين والحرام بين • 6: الدين النصيحة • 7: أمرت أن أقاتل الناس حتى يشهدوا أن لا إله إلا الله • 8: ما نهيتكم عنه فاجتنبوه • 9: إن الله طيب لا يقبل إلا طيبا • 10: دع ما يريبك إلى ما لا يريبك • 11: من حسن إسلام المرء تركه ما لا يعنيه • 12: لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • 13: لا يحل دم امرئ مسلم إلا بإحدى ثلاث • 14: من كان يؤمن بالله واليوم الآخر fليقل خيرا أو ليصمت • 15: لا تغضب • 16: إن الله كتب الإحسان على كل شيء • 17: اتق الله حيثما كنت • 18: احفظ الله يحفظك • 19: إذا لم تستح فاصنع ما شئت • 20: قل آمنت بالله ثم استقم • 21: استقيموا ولن تحصوا • 22: الطهور شطر الإيمان • 23: يا عبادي إني حرمت الظلم على نفسي • 24: إن الله تجاوز لي عن أمتي الخطأ والنسيان • 25: المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف • 26: كل سلامى من الناس عليه صدقة • 27: البر حسن الخلق • 28: أوصيك بتقوى الله والسمع والطاعة • 29: لا تحاسدوا ولا تباغضوا • 30: من نفس عن مؤمن كربة • 31: اتقوا النار ولو بشق تمرة • 32: لا ضرر ولا ضرار • 33: البينة على المدعي واليمين على من أنكر • 34: من رأى منكم منكرا فليغيره • 35: المسلم أخو المسلم • 36: الله في عون العبد ما كان العبد في عون أخيه • 37: إن الله كتب الحسنات والسيئات • 38: من عادى لي وليا فقد آذنته بالحرب • 39: ارفعوا أيديكم بالدعاء • 40: كن في الدنيا كأنك غريب أو عابر سبيل • 2026 •
-            </div>
+        <div class="hadith-track" id="hadith-track">
+            <div class="hadith-item">1: إنما الأعمال بالنيات</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">2: مراتب الدين (الإسلام، الإيمان، الإحسان)</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">3: أركان الإسلام الخمسة</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">4: مراحل خلق الإنسان والقدر</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">5: النهي عن الابتداع في الدين</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">6: الابتعاد عن الشبهات</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">7: الدين النصيحة</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">8: حرمة دم المسلم وماله</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">9: التكليف بما يستطاع</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">10: أكل الحلال وسبب إجابة الدعاء</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">11: ترك الشبهات إلى اليقين</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">12: الاشتغال بما يفيد</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">13: محبة الخير للمؤمنين</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">14: متى يهدر دم المسلم</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">15: إكرام الضيف وقول الخير</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">16: النهي عن الغضب</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">17: الأمر بالإحسان في كل شيء</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">18: التقوى وحسن الخلق</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">19: نصائح الرسول لابن عباس</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">20: الحياء من الإيمان</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">21: الاستقامة على الدين</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">22: الطريق إلى الجنة</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">23: جوامع الخير</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">24: تحريم الظلم</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">25: فضل الذكر والصدقة</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">26: فضل الإصلاح بين الناس</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">27: تعريف البر والإثم</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">28: لزوم السنة والسمع والطاعة</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">29: أبواب الخير وطريق الجنة</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">30: الوقوف عند حدود الله</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">31: الزهد في الدنيا</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">32: لا ضرر ولا ضرار</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">33: البينة على المدعي</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">34: تغيير المنكر باليد واللسان والقلب</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">35: الأخوة الإسلامية وحقوق المسلم</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">36: قضاء حوائج المسلمين</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">37: فضل الله وكرمه في الحسنات</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">38: التقرب إلى الله بالنوافل</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">39: التجاوز عن الخطأ والنسيان</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">40: كن في الدنيا كأنك غريب</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">41: اتباع الرسول ﷺ</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">42: سعة مغفرة الله عز وجل</div> <span class="hadith-sep">✦</span>
+            <div class="hadith-item">Ramadan 2026 - Bastia Umbra</div>
         </div>
     </div>
 
     <script>
         let audioUnlocked = false;
         let audioContext;
-
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
@@ -202,16 +234,10 @@
             }
         }
 
-        function cleanMediaSession() {
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = null;
-                navigator.mediaSession.playbackState = 'none';
-            }
-        }
-
         async function playSound() {
-            const type = document.getElementById('notif-type').value;
-            const sourceUrl = (type === 'athan') ? document.getElementById('athan-source').value : "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
+            const sourceUrl = (document.getElementById('notif-type').value === 'athan') ? 
+                "https://www.islamcan.com/audio/adhan/azan2.mp3" : 
+                "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
             
             try {
                 if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -222,73 +248,59 @@
                 source.buffer = audioBuffer;
                 source.connect(audioContext.destination);
                 source.start(0);
-                cleanMediaSession();
-                source.onended = () => { cleanMediaSession(); };
-                if (type === 'athan') { setTimeout(() => { source.stop(); cleanMediaSession(); }, 45000); }
             } catch (e) {
-                const a = new Audio(sourceUrl);
-                a.play().then(() => { cleanMediaSession(); setTimeout(cleanMediaSession, 1000); });
+                new Audio(sourceUrl).play();
             }
         }
 
         function enableNotifs() { 
-            Notification.requestPermission().then(p => { if (p === 'granted') alert("🔔 Notifiche e Athan automatico attivati!"); });
+            Notification.requestPermission().then(p => { if (p === 'granted') alert("Notifiche Attive!"); });
             toggleMenu();
-        }
-
-        function adminDash() {
-            if (prompt("PIN:") === "2026") { sendPush("Test Muslim Pro", "Riproduzione Athan..."); playSound(); }
         }
 
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, icon: 'https://cdn-icons-png.flaticon.com/512/2619/2619277.png' });
-                });
+                new Notification(title, { body: body });
             }
         }
 
         const times = { "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"} };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
-        const prayerIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
 
         function update() {
             const now = new Date();
             const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             
-            document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
-            document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
+            document.getElementById('hijri-date-full').innerText = "10 Ramadan 1447"; 
 
+            // Logica Automazioni Ramadan
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor (5:20)"); playSound(); 
+                window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor"); playSound(); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar", "Notifica Iftar imminente (17:45)"); playSound(); 
+                window.lastE = "iftar"; sendPush("Iftar", "Manca poco all'Iftar!"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE = "night"; document.body.classList.add('night-mode'); 
-                sendPush("Tarawih", "Promemoria Tarawih & Modalità Notte Serena"); 
+                sendPush("Tarawih", "Modalità Notte Serena attiva"); 
             }
 
             const today = times[dateKey] || times["28/2"];
-            let html = ""; let nextP = null; let nextN = "";
+            let html = ""; let nextP = null;
             for (let k in prayerNames) {
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 let active = (now - pDate >= 0 && now - pDate < 600000);
-                if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
+                if (pDate > now && !nextP) { nextP = pDate; }
                 
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush("صلاة " + prayerNames[k], "حان الآن موعد الصلاة"); playSound(); 
+                    window.lastN = k; sendPush("Ora di " + prayerNames[k], "È il momento della preghiera"); playSound(); 
                 }
                 
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
-                            <div style="display:flex; align-items:center;">
-                                <span style="font-size:30px; margin-left:15px;">${prayerIcons[k]}</span>
-                                <span class="p-name">${prayerNames[k]}</span>
-                            </div>
+                            <span class="p-name">${prayerNames[k]}</span>
                             <span class="p-time">${pTime}</span>
                         </div>`;
             }
@@ -299,7 +311,6 @@
                 const mm = Math.floor((diff%3600000)/60000).toString().padStart(2,"0");
                 const ss = Math.floor((diff%60000)/1000).toString().padStart(2,"0");
                 document.getElementById('timer-next').innerText = `${hh}:${mm}:${ss}`;
-                document.getElementById('next-prayer-label').innerText = "الصلاة القادمة: " + nextN;
             }
             document.getElementById('list-container').innerHTML = html;
         }
