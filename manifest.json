@@ -1,12 +1,16 @@
 {
   "name": "Muslim Pro - Bastia Umbra",
   "short_name": "Muslim Pro",
-  "description": "App per orari preghiera e notifiche Ramadan",
-  "start_url": "index.html",
+  "description": "App per orari di preghiera, Ramadan e notifiche",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone"],
   "background_color": "#004F3F",
   "theme_color": "#004F3F",
   "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
   "icons": [
     {
       "src": "1000087707.png",
