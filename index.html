@@ -87,15 +87,22 @@
             width: max-content; 
             animation: scroll-hadith 90s linear infinite; 
         }
+
+        /* MODIFICA FOTO 2: Padding cambiato a 0 */
         .hadith-text { 
-            color: var(--mp-gold); font-weight: 600; font-size: 15px; 
-            white-space: nowrap; padding-right: 100vw; 
+            color: var(--mp-gold); 
+            font-weight: 600; 
+            font-size: 15px; 
+            white-space: nowrap; 
+            padding-left: 0; /* parte da sinistra */
         }
         
+        /* MODIFICA FOTO 1: Cambio animazione scroll-hadith */
         @keyframes scroll-hadith { 
-            from { transform: translateX(100%); } 
+            from { transform: translateX(-100%); } 
             to { transform: translateX(0); } 
         }
+
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
         .sidebar {
@@ -262,7 +269,8 @@
 
         const times = { 
             "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
-            "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"}
+            "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"},
+            "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"}
         };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
         const prayerIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
