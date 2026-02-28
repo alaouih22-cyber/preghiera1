@@ -84,7 +84,7 @@
         }
         .hadith-track { 
             display: flex; width: max-content; 
-            animation: scroll-hadith 90s linear infinite; 
+            animation: scroll-hadith 250s linear infinite; 
         }
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; font-size: 15px; 
@@ -164,7 +164,9 @@
 
     <div class="hadith-footer">
         <div class="hadith-track">
-            <div class="hadith-text">• Stato della Moschea: Live News attive • إنما الأعمال بالنيات • من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت • لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • اتق الله حيثما كنت • تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً • 2026 •</div>
+            <div class="hadith-text">
+                • 1: إنما الأعمال بالنيات وإنما لكل امرئ ما نوى • 2: بني الإسلام على خمس • 3: إن أحدكم يجمع خلقه في بطن أمه • 4: من أحدث في أمرنا هذا ما ليس منه فهو رد • 5: الحلال بين والحرام بين • 6: الدين النصيحة • 7: أمرت أن أقاتل الناس حتى يشهدوا أن لا إله إلا الله • 8: ما نهيتكم عنه فاجتنبوه • 9: إن الله طيب لا يقبل إلا طيبا • 10: دع ما يريبك إلى ما لا يريبك • 11: من حسن إسلام المرء تركه ما لا يعنيه • 12: لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه • 13: لا يحل دم امرئ مسلم إلا بإحدى ثلاث • 14: من كان يؤمن بالله واليوم الآخر فليقل خيرا أو ليصمت • 15: لا تغضب • 16: إن الله كتب الإحسان على كل شيء • 17: اتق الله حيثما كنت • 18: احفظ الله يحفظك • 19: إذا لم تستح فاصنع ما شئت • 20: قل آمنت بالله ثم استقم • 21: استقيموا ولن تحصوا • 22: الطهور شطر الإيمان • 23: يا عبادي إني حرمت الظلم على نفسي • 24: إن الله تجاوز لي عن أمتي الخطأ والنسيان • 25: المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف • 26: كل سلامى من الناس عليه صدقة • 27: البر حسن الخلق • 28: أوصيك بتقوى الله والسمع والطاعة • 29: لا تحاسدوا ولا تباغضوا • 30: من نفس عن مؤمن كربة • 31: اتقوا النار ولو بشق تمرة • 32: لا ضرر ولا ضرار • 33: البينة على المدعي واليمين على من أنكر • 34: من رأى منكم منكرا فليغيره • 35: المسلم أخو المسلم • 36: الله في عون العبد ما كان العبد في عون أخيه • 37: إن الله كتب الحسنات والسيئات • 38: من عادى لي وليا فقد آذنته بالحرب • 39: ارفعوا أيديكم بالدعاء • 40: كن في الدنيا كأنك غريب أو عابر سبيل • Stato della Moschea: Live News • 2026 •
+            </div>
         </div>
     </div>
 
@@ -173,12 +175,13 @@
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        function killWidget() {
+        // RESET TOTALE SESSIONE PER EVITARE IL WIDGET
+        function cleanMediaSession() {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = null;
                 navigator.mediaSession.playbackState = 'none';
-                ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'].forEach(a => {
-                    try { navigator.mediaSession.setActionHandler(a, null); } catch(e) {}
+                ['play', 'pause', 'stop', 'seekto'].forEach(action => {
+                    try { navigator.mediaSession.setActionHandler(action, null); } catch(e) {}
                 });
             }
         }
@@ -188,6 +191,7 @@
             const sourceUrl = (type === 'athan') ? document.getElementById('athan-source').value : "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3";
             
             try {
+                // AudioContext: Metodo più profondo per evitare i widget di sistema
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const response = await fetch(sourceUrl);
                 const arrayBuffer = await response.arrayBuffer();
@@ -195,14 +199,27 @@
                 const source = audioCtx.createBufferSource();
                 source.buffer = audioBuffer;
                 source.connect(audioCtx.destination);
+                
                 source.start(0);
-                killWidget();
+                cleanMediaSession();
+
+                // Chiude il contesto audio alla fine per forzare la chiusura del widget
+                source.onended = () => {
+                    audioCtx.close();
+                    cleanMediaSession();
+                };
+
                 if (type === 'athan') {
-                    setTimeout(() => { source.stop(); audioCtx.close(); killWidget(); }, 45000);
+                    setTimeout(() => { 
+                        source.stop(); 
+                        audioCtx.close(); 
+                        cleanMediaSession(); 
+                    }, 45000);
                 }
             } catch (e) {
+                // Fallback standard se AudioContext fallisce
                 const a = new Audio(sourceUrl);
-                a.play().then(() => { killWidget(); setTimeout(killWidget, 1000); });
+                a.play().then(() => { cleanMediaSession(); setTimeout(cleanMediaSession, 1000); });
             }
         }
 
@@ -240,7 +257,7 @@
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             document.getElementById('hijri-date-full').innerText = "10 رمضان 1447"; 
 
-            // Logiche Speciali Ramadan 2026
+            // Funzionalità richieste Ramadan
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE = "imsak"; sendPush("Imsak", "Avviso fine Suhoor (5:20)"); playSound(); 
             }
