@@ -1,7 +1,6 @@
 // sw.js
-const CACHE_NAME = 'mp-bastia-v2';
+const CACHE_NAME = 'mp-bastia-v3'; // Cambiato v2 in v3 per forzare il browser
 
-// Assicurati che questi nomi file siano ESATTAMENTE presenti nella tua cartella
 const assetsToCache = [
   './',
   './index.html',
@@ -13,7 +12,6 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            // Usiamo un ciclo per non far fallire tutto se un file manca
             return Promise.allSettled(
                 assetsToCache.map(url => cache.add(url))
             );
@@ -22,10 +20,17 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-    event.waitUntil(clients.claim());
+    // Rimuove le vecchie cache per evitare errori
+    event.waitUntil(
+        caches.keys().then((keyList) => {
+            return Promise.all(keyList.map((key) => {
+                if (key !== CACHE_NAME) { return caches.delete(key); }
+            }));
+        })
+    );
+    return self.clients.claim();
 });
 
-// Fetch obbligatorio per PWA
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
@@ -34,7 +39,7 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Messaggi per notifiche (Invariato)
+// Gestione notifiche invariata
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
         const options = {
@@ -43,19 +48,8 @@ self.addEventListener('message', (event) => {
             badge: '1000087707.png',
             vibrate: [500, 110, 500],
             tag: 'prayer-notif',
-            renotify: true,
             data: { url: './index.html' }
         };
         event.waitUntil(self.registration.showNotification(event.data.title, options));
     }
-});
-
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-            if (clientList.length > 0) return clientList[0].focus();
-            return clients.openWindow('./index.html');
-        })
-    );
 });
