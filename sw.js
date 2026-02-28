@@ -1,5 +1,7 @@
 // sw.js
-const CACHE_NAME = 'muslim-pro-bastia-v1';
+const CACHE_NAME = 'mp-bastia-v2';
+
+// Assicurati che questi nomi file siano ESATTAMENTE presenti nella tua cartella
 const assetsToCache = [
   './',
   './index.html',
@@ -7,22 +9,23 @@ const assetsToCache = [
   './1000087707.png'
 ];
 
-// Installazione: salva i file necessari per l'offline
 self.addEventListener('install', (event) => {
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(assetsToCache);
+            // Usiamo un ciclo per non far fallire tutto se un file manca
+            return Promise.allSettled(
+                assetsToCache.map(url => cache.add(url))
+            );
         })
     );
 });
 
-// Attivazione: pulizia vecchie cache
 self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
 });
 
-// Fetch: OBBLIGATORIO per rendere l'app installabile
+// Fetch obbligatorio per PWA
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
@@ -31,21 +34,19 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// Gestione Notifiche (rimasta invariata come richiesto)
+// Messaggi per notifiche (Invariato)
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
-        const data = event.data;
         const options = {
-            body: data.body,
+            body: event.data.body,
             icon: '1000087707.png',
             badge: '1000087707.png',
-            vibrate: [500, 110, 500, 110, 450],
+            vibrate: [500, 110, 500],
             tag: 'prayer-notif',
             renotify: true,
-            requireInteraction: true,
             data: { url: './index.html' }
         };
-        event.waitUntil(self.registration.showNotification(data.title, options));
+        event.waitUntil(self.registration.showNotification(event.data.title, options));
     }
 });
 
