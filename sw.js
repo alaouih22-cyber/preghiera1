@@ -1,30 +1,26 @@
-const CACHE_NAME = "muslim-pro-v2026-final";
+const CACHE_NAME = "muslim-pro-v2"; // Cambiato nome per forzare aggiornamento
+const ASSETS = ["./", "./index.html", "./manifest.json"];
 
-self.addEventListener("install", event => {
+self.addEventListener("install", e => {
     self.skipWaiting();
+    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
 });
 
-self.addEventListener("activate", event => {
-    event.waitUntil(clients.claim());
+self.addEventListener("activate", e => {
+    e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))));
+    self.clients.claim();
 });
 
-// GESTORE NOTIFICHE (Cruciale per APK)
-self.addEventListener("push", event => {
+self.addEventListener("push", e => {
     const options = {
-        body: event.data ? event.data.text() : "È ora della preghiera",
-        vibrate: [300, 100, 300],
-        requireInteraction: true, // La notifica non sparisce finché non la tocchi
-        data: { dateOfArrival: Date.now() }
+        body: e.data ? e.data.text() : "È ora della preghiera",
+        vibrate: [200, 100, 200],
+        requireInteraction: true // La notifica resta finché non la clicchi
     };
-    event.waitUntil(
-        self.registration.showNotification("Muslim Pro Bastia", options)
-    );
+    e.waitUntil(self.registration.showNotification("Muslim Pro Bastia", options));
 });
 
-// APERTURA APP AL CLICK
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    event.waitUntil(
-        clients.openWindow('/')
-    );
+self.addEventListener("notificationclick", e => {
+    e.notification.close();
+    e.waitUntil(clients.openWindow("./index.html"));
 });
