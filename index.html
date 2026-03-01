@@ -8,7 +8,6 @@
     <meta name="theme-color" content="#004F3F">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
@@ -173,19 +172,19 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • رمضان مبارك • Bastia Umbra • 2026 •
+                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • Bastia Umbra • 2026 •
             </div>
             <div class="hadith-text">
-                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • رمضان مبارك • Bastia Umbra • 2026 •
+                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • Bastia Umbra • 2026 •
             </div>
         </div>
     </div>
 
     <script>
-        // REGISTRAZIONE SW PER APK
+        // REGISTRAZIONE SERVICE WORKER
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js', { scope: './' })
+                navigator.serviceWorker.register('sw.js')
                 .then(reg => { reg.update(); })
                 .catch(err => console.log('SW Error', err));
             });
@@ -204,22 +203,27 @@
             } else { bipAudio.play(); }
         }
 
-        // ATTIVAZIONE POTENZIATA PER APK
+        // FUNZIONE ATTIVAZIONE NOTIFICHE POTENZIATA PER APK
         async function enableNotifs() {
-            const p = await Notification.requestPermission();
-            if (p === 'granted') {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
                 const reg = await navigator.serviceWorker.ready;
-                reg.showNotification("Muslim Pro", { body: "Notifiche attivate correttamente!" });
-                alert("🔔 Notifiche attivate!");
+                // Test immediato
+                reg.showNotification("Muslim Pro", {
+                    body: "✅ Notifiche attivate con successo!",
+                    tag: "check-test",
+                    requireInteraction: true
+                });
+                alert("🔔 Autorizzazione concessa!");
             } else {
-                alert("Permesso negato. Controlla le impostazioni Android.");
+                alert("❌ Permesso negato. Controlla le impostazioni Android.");
             }
             toggleMenu();
         }
 
         function adminDash() {
             if (prompt("PIN:") === "2026") {
-                sendPush("Test Muslim Pro", "Notifiche OK!");
+                sendPush("Test Muslim Pro", "Notifiche funzionanti!");
                 playSound();
             }
         }
@@ -227,7 +231,12 @@
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, tag: "p-alert", renotify: true });
+                    reg.showNotification(title, { 
+                        body: body, 
+                        tag: "p-alert", 
+                        renotify: true,
+                        requireInteraction: true 
+                    });
                 });
             }
         }
@@ -246,12 +255,12 @@
             
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
 
-            // FUNZIONALITÀ RAMADAN RICHIESTE
+            // NOTIFICHE RAMADAN (5:20, 17:45, 20:30)
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE="imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
+                window.lastE="imsak"; sendPush("Imsak", "Fine Suhoor - Avviso"); playSound(); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE="iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
+                window.lastE="iftar"; sendPush("Iftar", "Manca poco all'Iftar"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE="night"; document.body.classList.add('night-mode'); 
