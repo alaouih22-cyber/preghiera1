@@ -1,48 +1,21 @@
 {
-  "id": "/muslim-pro-bastia-umbra",
-  "name": "Muslim Pro - Bastia Umbra",
-  "short_name": "PrayerTimes",
-  "description": "Orari di preghiera con notifiche automatiche - Bastia Umbra",
+  "name": "Muslim Pro Bastia Umbra",
+  "short_name": "MuslimPro",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
   "background_color": "#004F3F",
   "theme_color": "#004F3F",
   "orientation": "portrait",
-  "categories": [
-    "lifestyle",
-    "utilities"
-  ],
-  "lang": "it",
-  "dir": "ltr",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/192/192/192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/512/512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "https://via.placeholder.com/1080x1920.png?text=Muslim+Pro+Bastia+Umbra",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Schermata principale orari"
-    },
-    {
-      "src": "https://via.placeholder.com/1920x1080.png?text=Vista+Desktop",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Vista orizzontale"
+      "type": "image/png"
     }
   ]
 }
