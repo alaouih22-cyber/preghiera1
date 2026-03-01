@@ -93,14 +93,14 @@
         .hadith-track { 
             display: flex; 
             width: max-content; 
-            animation: scroll-hadith 40s linear infinite; 
+            animation: scroll-hadith 45s linear infinite; 
         }
 
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; 
             font-size: 15px; 
             white-space: nowrap; 
-            padding-left: 100px; /* Spazio tra le ripetizioni */
+            padding-left: 100px;
         }
         
         @keyframes scroll-hadith { 
@@ -118,11 +118,14 @@
         .sidebar.open { left: 0; }
         .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px; }
         
+        .mp-label { display: block; margin-top: 15px; font-size: 13px; color: var(--mp-gold); font-weight: bold; }
         .mp-select, .mp-btn-side {
-            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--mp-gold);
-            color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; margin-top: 5px;
+            width: 100%; background: rgba(255,255,255,0.1); border: 1px solid var(--mp-gold);
+            color: white; padding: 12px; border-radius: 8px; font-size: 14px; outline: none; margin-top: 5px;
+            font-weight: bold;
         }
-        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; border: none; }
+        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); border: none; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .mp-btn-side:active { transform: scale(0.95); }
         
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 100; }
     </style>
@@ -140,21 +143,23 @@
             <div style="font-size:30px; cursor:pointer;" onclick="document.getElementById('sidebar').classList.remove('open')">&times;</div>
         </div>
         
-        <label style="font-size:12px;">Tipo di Avviso:</label>
+        <label class="mp-label">Tipo di Avviso:</label>
         <select id="notif-type" class="mp-select">
             <option value="athan">Athan + Notifica</option>
             <option value="bip">Bip + Notifica</option>
         </select>
 
-        <label style="font-size:12px; margin-top:10px; display:block;">Sorgente Athan:</label>
+        <label class="mp-label">Sorgente Athan:</label>
         <select id="athan-source" class="mp-select">
-            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah</option>
-            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Medina</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah (Mecca)</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Medina (Madinah)</option>
         </select>
 
         <button class="mp-btn-side" onclick="enableNotifs()">ATTIVA NOTIFICHE</button>
         <button class="mp-btn-side" style="background:white" onclick="adminTest()">TEST AUDIO PIN 2026</button>
-        <button class="mp-btn-side" style="background:transparent; color:white; border:1px solid white;" onclick="document.getElementById('sidebar').classList.remove('open')">CHIUDI</button>
+        <button class="mp-btn-side" style="background:transparent; color:white; border:1px solid white;" onclick="document.getElementById('sidebar').classList.remove('open')">CHIUDI MENU</button>
+        
+        <div style="margin-top:30px; font-size:11px; text-align:center; color:var(--mp-gold);">Muslim Pro - Bastia Umbra v2.0</div>
     </div>
 
     <div class="ramadan-header">
@@ -179,15 +184,16 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • بَاسْتِيَا أُومْبْرِيَا - 2026 •
+                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • 2026 •
             </div>
             <div class="hadith-text">
-                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • بَاسْتِيَا أُومْبْرِيَا - 2026 •
+                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • 2026 •
             </div>
         </div>
     </div>
 
     <script>
+        // Registrazione Service Worker per installazione APP
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(reg => reg.update());
         }
@@ -196,8 +202,8 @@
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 const reg = await navigator.serviceWorker.ready;
-                reg.showNotification("Muslim Pro", { body: "Notifiche attivate correttamente!" });
-                alert("🔔 Notifiche attive!");
+                reg.showNotification("Muslim Pro", { body: "Notifiche e Audio attivati correttamente!" });
+                alert("🔔 Notifiche attivate!");
             }
             document.getElementById('sidebar').classList.remove('open');
         }
@@ -207,21 +213,29 @@
             if (type === 'athan') {
                 const a = document.getElementById('athanAudio');
                 a.src = document.getElementById('athan-source').value;
-                a.play();
+                a.play().catch(e => console.log("Interazione richiesta"));
+                // Stop automatico dopo 40 secondi
                 setTimeout(() => { a.pause(); a.currentTime = 0; }, 40000);
-            } else { document.getElementById('bipAudio').play(); }
-        }
-
-        function adminTest() {
-            if (prompt("PIN:") === "2026") {
-                playSound();
-                navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification("Muslim Pro Test", { body: "Funziona tutto!" });
-                });
+            } else { 
+                document.getElementById('bipAudio').play(); 
             }
         }
 
-        // Orari 1 Marzo 2026
+        function adminTest() {
+            const pin = prompt("Inserisci PIN Amministratore:");
+            if (pin === "2026") {
+                playSound();
+                if (Notification.permission === "granted") {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification("Test Muslim Pro", { body: "Audio e notifiche funzionano perfettamente!" });
+                    });
+                }
+            } else {
+                alert("PIN Errato");
+            }
+        }
+
+        // Orari 1 Marzo 2026 - Bastia Umbra
         const times = { "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"} };
         const pNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
         const pIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
@@ -231,28 +245,48 @@
             const timeNow = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
             const today = times["1/3"];
 
-            // Notifiche Orari Speciali
-            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE="imsak"; playSound(); }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE="iftar"; playSound(); }
+            // --- Logica Notifiche e Orari Speciali ---
+            // 5:20 Allarme Imsak
+            if (timeNow === "05:20" && window.lastE !== "imsak") { 
+                window.lastE="imsak"; 
+                playSound(); 
+            }
+            // 17:45 Notifica Iftar
+            if (timeNow === "17:45" && window.lastE !== "iftar") { 
+                window.lastE="iftar"; 
+                playSound(); 
+            }
+            // 20:30 Tarawih e Notte Serena
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE="night"; document.body.classList.add('night-mode'); 
+                window.lastE="night"; 
+                document.body.classList.add('night-mode'); 
+                playSound();
             }
 
             let html = ""; let nextP = null; let nextN = "";
             for (let k in pNames) {
                 const [h, m] = today[k].split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
+                
+                // Card attiva per 10 minuti dall'inizio
                 const active = (now > pDate && now - pDate < 600000);
+                
                 if (pDate > now && !nextP) { nextP = pDate; nextN = pNames[k]; }
-                if (timeNow === today[k] && window.lastN !== k) { window.lastN = k; playSound(); }
+                
+                // Suona all'orario esatto della preghiera
+                if (timeNow === today[k] && window.lastN !== k) { 
+                    window.lastN = k; 
+                    playSound(); 
+                }
 
-                html += `<div class="prayer-card ${active ? 'active' : ''}">
-                            <div style="display:flex; align-items:center;">
-                                <span style="font-size:30px; margin-left:15px;">${pIcons[k]}</span>
-                                <span class="p-name">${pNames[k]}</span>
-                            </div>
-                            <span class="p-time">${today[k]}</span>
-                        </div>`;
+                html += `
+                    <div class="prayer-card ${active ? 'active' : ''}">
+                        <div style="display:flex; align-items:center;">
+                            <span style="font-size:30px; margin-left:15px;">${pIcons[k]}</span>
+                            <span class="p-name">${pNames[k]}</span>
+                        </div>
+                        <span class="p-time">${today[k]}</span>
+                    </div>`;
             }
             document.getElementById('list-container').innerHTML = html;
 
@@ -265,7 +299,9 @@
                 document.getElementById('next-label').innerText = "الصلاة القادمة: " + nextN;
             }
         }
-        setInterval(update, 1000); update();
+
+        setInterval(update, 1000);
+        update();
     </script>
 </body>
 </html>
