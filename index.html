@@ -110,22 +110,30 @@
 
         @keyframes swing { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
 
+        /* SIDEBAR FIXATA - VISIBILITÀ TOTALE */
         .sidebar {
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: var(--mp-dark-green); z-index: 1000; transition: 0.4s;
-            padding: 30px 20px; box-sizing: border-box; color: white; overflow-y: auto;
+            background: var(--mp-dark-green); z-index: 9999; transition: 0.4s;
+            padding: 40px 20px; box-sizing: border-box; color: white; overflow-y: auto;
+            border-right: 2px solid var(--mp-gold);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
         }
         .sidebar.open { left: 0; }
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px; }
         
-        .mp-label { display: block; margin-top: 15px; font-size: 13px; color: var(--mp-gold); font-weight: bold; }
-        .mp-select, .mp-btn-side {
-            width: 100%; background: rgba(255,255,255,0.1); border: 1px solid var(--mp-gold);
-            color: white; padding: 12px; border-radius: 8px; font-size: 14px; outline: none; margin-top: 5px;
-            font-weight: bold;
+        .mp-label { display: block; margin-top: 20px; font-size: 14px; color: var(--mp-gold); font-weight: bold; text-align: right; }
+        
+        .mp-select {
+            width: 100%; background: rgba(255,255,255,0.15); border: 1.5px solid var(--mp-gold);
+            color: white; padding: 12px; border-radius: 10px; font-size: 15px; outline: none; margin-top: 8px;
+            font-weight: bold; appearance: none; -webkit-appearance: none;
         }
-        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); border: none; cursor: pointer; margin-top: 20px; transition: 0.3s; }
-        .mp-btn-side:active { transform: scale(0.95); }
+
+        .mp-btn-side { 
+            width: 100%; background: var(--mp-gold); color: var(--mp-dark-green); 
+            border: none; padding: 15px; border-radius: 10px; font-weight: 900; 
+            font-size: 16px; cursor: pointer; margin-top: 25px; transition: 0.3s;
+        }
         
         .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 100; }
     </style>
@@ -140,26 +148,26 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2 style="color:var(--mp-gold); margin:0;">Impostazioni</h2>
-            <div style="font-size:30px; cursor:pointer;" onclick="document.getElementById('sidebar').classList.remove('open')">&times;</div>
+            <div style="font-size:35px; cursor:pointer;" onclick="document.getElementById('sidebar').classList.remove('open')">&times;</div>
         </div>
         
-        <label class="mp-label">Tipo di Avviso:</label>
+        <label class="mp-label">Tipo di Avviso (Avviso):</label>
         <select id="notif-type" class="mp-select">
             <option value="athan">Athan + Notifica</option>
             <option value="bip">Bip + Notifica</option>
         </select>
 
-        <label class="mp-label">Sorgente Athan:</label>
+        <label class="mp-label">Sorgente Athan (Sorgente):</label>
         <select id="athan-source" class="mp-select">
             <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah (Mecca)</option>
             <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Medina (Madinah)</option>
         </select>
 
         <button class="mp-btn-side" onclick="enableNotifs()">ATTIVA NOTIFICHE</button>
-        <button class="mp-btn-side" style="background:white" onclick="adminTest()">TEST AUDIO PIN 2026</button>
-        <button class="mp-btn-side" style="background:transparent; color:white; border:1px solid white;" onclick="document.getElementById('sidebar').classList.remove('open')">CHIUDI MENU</button>
         
-        <div style="margin-top:30px; font-size:11px; text-align:center; color:var(--mp-gold);">Muslim Pro - Bastia Umbra v2.0</div>
+        <button class="mp-btn-side" style="background:white; margin-top:15px;" onclick="adminTest()">TEST AUDIO PIN 2026</button>
+        
+        <button class="mp-btn-side" style="background:transparent; color:white; border:1px solid white; margin-top:15px;" onclick="document.getElementById('sidebar').classList.remove('open')">CHIUDI</button>
     </div>
 
     <div class="ramadan-header">
@@ -184,16 +192,15 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • 2026 •
+                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • بَاسْتِيَا أُومْبْرِيَا - 2026 •
             </div>
             <div class="hadith-text">
-                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • 2026 •
+                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • بَاسْتِيَا أُومْبْرِيَا - 2026 •
             </div>
         </div>
     </div>
 
     <script>
-        // Registrazione Service Worker per installazione APP
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js').then(reg => reg.update());
         }
@@ -202,7 +209,7 @@
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 const reg = await navigator.serviceWorker.ready;
-                reg.showNotification("Muslim Pro", { body: "Notifiche e Audio attivati correttamente!" });
+                reg.showNotification("Muslim Pro", { body: "Notifiche e Audio attivati!" });
                 alert("🔔 Notifiche attivate!");
             }
             document.getElementById('sidebar').classList.remove('open');
@@ -213,8 +220,7 @@
             if (type === 'athan') {
                 const a = document.getElementById('athanAudio');
                 a.src = document.getElementById('athan-source').value;
-                a.play().catch(e => console.log("Interazione richiesta"));
-                // Stop automatico dopo 40 secondi
+                a.play().catch(e => console.log("Errore riproduzione"));
                 setTimeout(() => { a.pause(); a.currentTime = 0; }, 40000);
             } else { 
                 document.getElementById('bipAudio').play(); 
@@ -227,15 +233,12 @@
                 playSound();
                 if (Notification.permission === "granted") {
                     navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification("Test Muslim Pro", { body: "Audio e notifiche funzionano perfettamente!" });
+                        reg.showNotification("Test Audio", { body: "L'audio funziona correttamente!" });
                     });
                 }
-            } else {
-                alert("PIN Errato");
-            }
+            } else { alert("PIN Errato"); }
         }
 
-        // Orari 1 Marzo 2026 - Bastia Umbra
         const times = { "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"} };
         const pNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
         const pIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
@@ -245,18 +248,9 @@
             const timeNow = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
             const today = times["1/3"];
 
-            // --- Logica Notifiche e Orari Speciali ---
-            // 5:20 Allarme Imsak
-            if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE="imsak"; 
-                playSound(); 
-            }
-            // 17:45 Notifica Iftar
-            if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE="iftar"; 
-                playSound(); 
-            }
-            // 20:30 Tarawih e Notte Serena
+            // --- Orari Speciali ---
+            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE="imsak"; playSound(); }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE="iftar"; playSound(); }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE="night"; 
                 document.body.classList.add('night-mode'); 
@@ -267,17 +261,9 @@
             for (let k in pNames) {
                 const [h, m] = today[k].split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
-                
-                // Card attiva per 10 minuti dall'inizio
                 const active = (now > pDate && now - pDate < 600000);
-                
                 if (pDate > now && !nextP) { nextP = pDate; nextN = pNames[k]; }
-                
-                // Suona all'orario esatto della preghiera
-                if (timeNow === today[k] && window.lastN !== k) { 
-                    window.lastN = k; 
-                    playSound(); 
-                }
+                if (timeNow === today[k] && window.lastN !== k) { window.lastN = k; playSound(); }
 
                 html += `
                     <div class="prayer-card ${active ? 'active' : ''}">
