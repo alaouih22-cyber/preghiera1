@@ -1,27 +1,20 @@
 {
-  "name": "Bastia umbra PrayerTimes",
+  "name": "Bastia Umbra PrayerTimes",
   "short_name": "MuslimPro",
-  "description": "Orari preghiera e Ramadan Bastia Umbra",
-  "id": "/?source=pwa",
-  "start_url": "index.html?standalone=true",
+  "start_url": "index.html",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
-  "orientation": "portrait",
   "background_color": "#004F3F",
   "theme_color": "#004F3F",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/192/192/192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/png"
     },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/512/512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     }
-  ],
-  "categories": ["productivity", "utilities"]
+  ]
 }
