@@ -1,26 +1,28 @@
-const CACHE_NAME = "muslim-pro-v2"; // Cambiato nome per forzare aggiornamento
-const ASSETS = ["./", "./index.html", "./manifest.json"];
+const CACHE_NAME = 'mp-bastia-v1';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json'
+];
 
-self.addEventListener("install", e => {
-    self.skipWaiting();
-    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS)));
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
 });
 
-self.addEventListener("activate", e => {
-    e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))));
-    self.clients.claim();
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
 });
 
-self.addEventListener("push", e => {
-    const options = {
-        body: e.data ? e.data.text() : "È ora della preghiera",
-        vibrate: [200, 100, 200],
-        requireInteraction: true // La notifica resta finché non la clicchi
-    };
-    e.waitUntil(self.registration.showNotification("Muslim Pro Bastia", options));
-});
-
-self.addEventListener("notificationclick", e => {
-    e.notification.close();
-    e.waitUntil(clients.openWindow("./index.html"));
+self.addEventListener('push', (event) => {
+  const options = {
+    body: event.data ? event.data.text() : 'Orario preghiera',
+    vibrate: [200, 100, 200]
+  };
+  event.waitUntil(self.registration.showNotification('Muslim Pro', options));
 });
