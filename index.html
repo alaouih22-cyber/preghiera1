@@ -8,6 +8,7 @@
     <meta name="theme-color" content="#004F3F">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
@@ -181,11 +182,14 @@
     </div>
 
     <script>
-        // REGISTRAZIONE SERVICE WORKER
+        // REGISTRAZIONE SERVICE WORKER FORZATA (v2)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(reg => { reg.update(); })
+                navigator.serviceWorker.register('sw.js?v=2', { scope: './' })
+                .then(reg => { 
+                    console.log('SW Registrato');
+                    reg.update(); 
+                })
                 .catch(err => console.log('SW Error', err));
             });
         }
@@ -203,27 +207,31 @@
             } else { bipAudio.play(); }
         }
 
-        // FUNZIONE ATTIVAZIONE NOTIFICHE POTENZIATA PER APK
+        // ATTIVAZIONE NOTIFICHE POTENZIATA PER APK
         async function enableNotifs() {
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 const reg = await navigator.serviceWorker.ready;
-                // Test immediato
-                reg.showNotification("Muslim Pro", {
-                    body: "✅ Notifiche attivate con successo!",
-                    tag: "check-test",
-                    requireInteraction: true
-                });
-                alert("🔔 Autorizzazione concessa!");
+                try {
+                    await reg.showNotification("Muslim Pro Bastia", {
+                        body: "✅ Notifiche attivate con successo!",
+                        tag: "activation-test",
+                        requireInteraction: true,
+                        vibrate: [100, 50, 100]
+                    });
+                    alert("🔔 Notifiche attivate! Se non vedi il messaggio, controlla le impostazioni Android.");
+                } catch(e) {
+                    alert("Errore SW: " + e.message);
+                }
             } else {
-                alert("❌ Permesso negato. Controlla le impostazioni Android.");
+                alert("❌ Permesso negato. Vai nelle impostazioni del telefono per sbloccare.");
             }
             toggleMenu();
         }
 
         function adminDash() {
             if (prompt("PIN:") === "2026") {
-                sendPush("Test Muslim Pro", "Notifiche funzionanti!");
+                sendPush("Test Muslim Pro", "Notifiche e audio funzionanti!");
                 playSound();
             }
         }
@@ -241,6 +249,7 @@
             }
         }
 
+        // DATI ORARI (Marzo 2026)
         const times = { 
             "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"},
             "2/3": {f:"05:25", dh:"12:23", a:"15:30", m:"18:01", i:"19:21"}
@@ -255,12 +264,12 @@
             
             document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
 
-            // NOTIFICHE RAMADAN (5:20, 17:45, 20:30)
+            // NOTIFICHE SPECIALI (Imsak, Iftar, Tarawih)
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE="imsak"; sendPush("Imsak", "Fine Suhoor - Avviso"); playSound(); 
+                window.lastE="imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE="iftar"; sendPush("Iftar", "Manca poco all'Iftar"); playSound(); 
+                window.lastE="iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE="night"; document.body.classList.add('night-mode'); 
