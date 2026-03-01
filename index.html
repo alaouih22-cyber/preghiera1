@@ -3,15 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <link rel="manifest" href="manifest.json">
-    
     <meta name="theme-color" content="#004F3F">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="1000087707.png">
-    
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
         :root {
@@ -120,9 +113,6 @@
         .sidebar.open { left: 0; }
         .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px; }
         
-        .settings-group { margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(197, 160, 89, 0.3); }
-        .settings-label { color: var(--mp-gold); font-size: 14px; font-weight: bold; margin-bottom: 10px; display: block; text-align: right; }
-        
         .mp-select, .mp-btn-side {
             width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--mp-gold);
             color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; margin-top: 5px;
@@ -149,31 +139,22 @@
             <span style="font-size:24px; color:var(--mp-gold); font-weight:bold;">Muslim Pro</span>
             <div style="font-size:30px; cursor:pointer;" onclick="toggleMenu()">&times;</div>
         </div>
-        <div class="settings-group">
-            <label class="settings-label">🔔 نوع التنبيه (Tipo Notifica)</label>
-            <select id="notif-type" class="mp-select">
-                <option value="athan">أذان + إشعار (Athan + Notifica)</option>
-                <option value="bip">رنين + إشعار (Bip + Notifica)</option>
-            </select>
-        </div>
-        <div class="settings-group">
-            <label class="settings-label">🔊 اختيار المؤذن (Scegli Athan)</label>
-            <select id="athan-source" class="mp-select">
-                <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">مكة المكرمة (Makkah)</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">المدينة المنورة (Medina)</option>
-                <option value="https://www.islamcan.com/audio/adhan/azan3.mp3">الأقصى (Al-Aqsa)</option>
-                <option value="adhan.mp3">افتراضي (Default Local)</option>
-            </select>
-        </div>
-        <button class="mp-btn-side" onclick="enableNotifs()">تفعيل التنبيهات (Attiva Banner)</button>
-        <button class="mp-btn-side" style="background:transparent; color:var(--mp-gold);" onclick="adminDash()">اختبار (Test Audio PIN 2026)</button>
+        <select id="notif-type" class="mp-select">
+            <option value="athan">أذان + إشعار (Athan)</option>
+            <option value="bip">رنين + إشعار (Bip)</option>
+        </select>
+        <select id="athan-source" class="mp-select">
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Medina</option>
+        </select>
+        <button class="mp-btn-side" onclick="enableNotifs()">تفعيل التنبيهات (Attiva)</button>
+        <button class="mp-btn-side" style="background:transparent; color:var(--mp-gold);" onclick="adminDash()">Test Audio PIN 2026</button>
     </div>
 
     <div class="dashboard">
         <div class="dash-card">
-            <span class="label-small">التاريخ اليوم - Data</span>
-            <span class="date-value" id="hijri-date-full">...</span>
-            <span class="date-value" id="greg-date-full" style="opacity:0.6; font-size:11px;">...</span>
+            <span class="label-small">التاريخ - Data</span>
+            <span class="date-value" id="hijri-date-full">11 رمضان 1447</span>
         </div>
         <div class="dash-card">
             <span class="label-small" id="next-prayer-label">الصلاة القادمة</span>
@@ -186,90 +167,40 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" 
-                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" 
-                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" 
-                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
-                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
-                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
-                • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
-                • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
-                • قال ﷺ: "تسحروا فإن في السحور بركة"
-                • رمضان مبارك • Bastia Umbra • 2026 •
+                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • Bastia Umbra 2026 •
             </div>
             <div class="hadith-text">
-                • عن أمير المؤمنين عمر بن الخطاب رضي الله عنه قال: سمعت رسول الله صلى الله عليه وسلم يقول: "إنما الأعمال بالنيات" 
-                • عن أبي هريرة رضي الله عنه أن رسول الله صلى الله عليه وسلم قال: "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت" 
-                • قال رسول الله ﷺ: "لا يؤمن أحدكم حتى يحب لأخيه ما يحب لنفسه" 
-                • قال ﷺ: "اتق الله حيثما كنت، وأتبع السيئة الحسنة تمحها، وخالق الناس بخلق حسن" 
-                • قال ﷺ: "من سلك طريقاً يلتمس فيه علماً سهل الله له به طريقاً إلى الجنة" 
-                • قال ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" 
-                • قال ﷺ: "بني الإسلام على خمس: شهادة أن لا إله إلا الله وأن محمداً رسول الله، وإقام الصلاة، وإيتاء الزكاة، وحج البيت، وصوم رمضان"
-                • قال ﷺ: "خيركم من تعلم القرآن وعلمه"
-                • قال ﷺ: "من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه"
-                • قال ﷺ: "تسحروا فإن في السحور بركة"
-                • رمضان مبارك • Bastia Umbra • 2026 •
+                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • Bastia Umbra 2026 •
             </div>
         </div>
     </div>
 
     <script>
-        // Registrazione Service Worker per l'App
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                .then(reg => console.log('SW pronto'))
-                .catch(err => console.log('SW Errore', err));
-            });
+            navigator.serviceWorker.register('sw.js').then(reg => reg.update());
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
 
-        function killPlayerWidget() {
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = null;
-                navigator.mediaSession.playbackState = 'none';
-                const actions = ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack'];
-                actions.forEach(action => {
-                    try { navigator.mediaSession.setActionHandler(action, null); } catch(e) {}
-                });
-            }
-        }
-
         function playSound() {
             const type = document.getElementById('notif-type').value;
-            const athanSource = document.getElementById('athan-source').value;
             const athanAudio = document.getElementById('athanAudio');
             const bipAudio = document.getElementById('bipAudio');
             if (type === 'athan') {
-                athanAudio.src = athanSource;
-                athanAudio.currentTime = 0;
-                athanAudio.play().then(() => {
-                    setTimeout(killPlayerWidget, 200);
-                }).catch(e => console.log("Audio play blocked"));
-                setTimeout(() => { athanAudio.pause(); athanAudio.currentTime = 0; killPlayerWidget(); }, 45000);
-            } else {
-                bipAudio.currentTime = 0;
-                bipAudio.play().catch(e => console.log("Bip play blocked"));
-            }
+                athanAudio.src = document.getElementById('athan-source').value;
+                athanAudio.play().catch(e => console.log("Audio block"));
+                setTimeout(() => { athanAudio.pause(); athanAudio.currentTime = 0; }, 45000);
+            } else { bipAudio.play(); }
         }
 
-        function enableNotifs() { 
-            Notification.requestPermission().then(p => {
-                if (p === 'granted') {
-                    alert("🔔 Notifiche attivate correttamente!");
-                    const a = document.getElementById('athanAudio');
-                    a.play().then(() => { a.pause(); a.currentTime = 0; }).catch(()=>{});
-                }
-            });
+        function enableNotifs() {
+            Notification.requestPermission().then(p => { if(p==='granted') alert("Attivate!"); });
             toggleMenu();
         }
 
         function adminDash() {
-            const pin = prompt("PIN:");
-            if (pin === "2026") {
-                sendPush("اختبار Muslim Pro", "تم تفعيل التنبيه بنجاح");
+            if (prompt("PIN:") === "2026") {
+                sendPush("Test Muslim Pro", "Notifiche funzionanti nell'APK");
                 playSound();
             }
         }
@@ -277,14 +208,12 @@
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, icon: '1000087707.png' });
+                    reg.showNotification(title, { body: body, tag: "p-alert" });
                 });
             }
         }
 
         const times = { 
-            "27/2": {f:"05:31", dh:"12:24", a:"15:27", m:"17:57", i:"19:16"},
-            "28/2": {f:"05:29", dh:"12:24", a:"15:28", m:"17:58", i:"19:18"},
             "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"}
         };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
@@ -292,25 +221,19 @@
 
         function update() {
             const now = new Date();
-            const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
             
-            // Impostazione 11 Ramadan
-            document.getElementById('hijri-date-full').innerText = "11 رمضان 1447"; 
-
-            // Funzionalità Ramadan richieste
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE = "imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
+                window.lastE="imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
             if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE = "iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
+                window.lastE="iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE = "night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Tarawih e Notte Serena (20:30)"); 
+                window.lastE="night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Notte Serena"); 
             }
 
-            const today = times[dateKey] || times["28/2"];
+            const today = times["1/3"] || times["1/3"];
             let html = ""; let nextP = null; let nextN = "";
             for (let k in prayerNames) {
                 const pTime = today[k];
@@ -319,9 +242,7 @@
                 let active = (now - pDate >= 0 && now - pDate < 600000);
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; 
-                    sendPush("صلاة " + prayerNames[k], "حان الآن موعد صلاة " + prayerNames[k]); 
-                    playSound(); 
+                    window.lastN = k; sendPush(prayerNames[k], "È l'ora della preghiera"); playSound(); 
                 }
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
                             <div style="display:flex; align-items:center;">
