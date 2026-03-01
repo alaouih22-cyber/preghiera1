@@ -1,25 +1,44 @@
-const CACHE_NAME = "muslim-pro-v2026-final";
+const CACHE_NAME = "muslim-pro-bastia-v2026";
 const ASSETS = ["./", "./index.html", "./manifest.json"];
 
+// Installazione e cache
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));
+    self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    );
 });
 
+// Attivazione e pulizia
 self.addEventListener("activate", event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))));
+    event.waitUntil(clients.claim());
 });
 
-self.addEventListener("fetch", event => {
-  event.respondWith(caches.match(event.request).then(res => res || fetch(event.request)));
-});
-
+// Gestione Notifiche Push (fondamentale per APK)
 self.addEventListener("push", event => {
-  const data = event.data ? event.data.json() : { title: "Muslim Pro", body: "Ora della preghiera" };
-  event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      vibrate: [200, 100, 200],
-      tag: "prayer-notification"
-    })
-  );
+    let data = { title: "Muslim Pro", body: "È ora della preghiera" };
+    if (event.data) {
+        try {
+            data = event.data.json();
+        } catch (e) {
+            data.body = event.data.text();
+        }
+    }
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, {
+            body: data.body,
+            vibrate: [200, 100, 200, 100, 200],
+            tag: "prayer-notification",
+            renotify: true
+        })
+    );
+});
+
+// Apre l'app quando clicchi sulla notifica
+self.addEventListener("notificationclick", event => {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow("./index.html")
+    );
 });
