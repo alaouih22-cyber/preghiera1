@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#004F3F">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
         :root {
@@ -26,6 +27,7 @@
             transition: background 0.5s ease;
         }
 
+        /* Modalità Notte Serena */
         body.night-mode { background-color: #001a14; color: white !important; }
         body.night-mode .p-name, body.night-mode .p-time, body.night-mode .timer-main { color: var(--mp-gold) !important; }
         body.night-mode .dash-card, body.night-mode .prayer-card { background: #00261d; border-color: var(--mp-gold); }
@@ -91,14 +93,14 @@
         .hadith-track { 
             display: flex; 
             width: max-content; 
-            animation: scroll-hadith 90s linear infinite; 
+            animation: scroll-hadith 40s linear infinite; 
         }
 
         .hadith-text { 
             color: var(--mp-gold); font-weight: 600; 
-            font-size: 14px; 
+            font-size: 15px; 
             white-space: nowrap; 
-            padding-right: 50px;
+            padding-left: 100px; /* Spazio tra le ripetizioni */
         }
         
         @keyframes scroll-hadith { 
@@ -114,9 +116,15 @@
             padding: 30px 20px; box-sizing: border-box; color: white; overflow-y: auto;
         }
         .sidebar.open { left: 0; }
-        .mp-btn-side { width: 100%; background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; padding: 15px; border-radius: 8px; border: none; margin-top: 20px; cursor: pointer; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--mp-gold); padding-bottom: 10px; }
         
-        .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 5; }
+        .mp-select, .mp-btn-side {
+            width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--mp-gold);
+            color: white; padding: 10px; border-radius: 8px; font-size: 13px; outline: none; margin-top: 5px;
+        }
+        .mp-btn-side { background: var(--mp-gold); color: var(--mp-dark-green); font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; border: none; }
+        
+        .menu-btn { position: absolute; left: 20px; top: 25px; color: var(--mp-gold); cursor: pointer; font-size: 35px; z-index: 100; }
     </style>
 </head>
 <body id="main-body">
@@ -124,18 +132,35 @@
     <audio id="athanAudio"></audio>
     <audio id="bipAudio" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
+    <div class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2 style="color:var(--mp-gold); margin:0;">Impostazioni</h2>
+            <div style="font-size:30px; cursor:pointer;" onclick="document.getElementById('sidebar').classList.remove('open')">&times;</div>
+        </div>
+        
+        <label style="font-size:12px;">Tipo di Avviso:</label>
+        <select id="notif-type" class="mp-select">
+            <option value="athan">Athan + Notifica</option>
+            <option value="bip">Bip + Notifica</option>
+        </select>
+
+        <label style="font-size:12px; margin-top:10px; display:block;">Sorgente Athan:</label>
+        <select id="athan-source" class="mp-select">
+            <option value="https://www.islamcan.com/audio/adhan/azan1.mp3">Makkah</option>
+            <option value="https://www.islamcan.com/audio/adhan/azan2.mp3">Medina</option>
+        </select>
+
+        <button class="mp-btn-side" onclick="enableNotifs()">ATTIVA NOTIFICHE</button>
+        <button class="mp-btn-side" style="background:white" onclick="adminTest()">TEST AUDIO PIN 2026</button>
+        <button class="mp-btn-side" style="background:transparent; color:white; border:1px solid white;" onclick="document.getElementById('sidebar').classList.remove('open')">CHIUDI</button>
+    </div>
+
     <div class="ramadan-header">
-        <div class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</div>
         <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
         <h1 class="ramadan-title">رمضان مبارك</h1>
         <svg class="fanous-svg" viewBox="0 0 512 512"><path d="M256 0c-17.7 0-32 14.3-32 32v32c-53 0-96 43-96 96v192l-32 32v32h256v-32l-32-32V160c0-53-43-96-96-96V32c0-17.7-14.3-32-32-32zm0 448c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"/></svg>
-    </div>
-
-    <div class="sidebar" id="sidebar">
-        <h2 style="color:var(--mp-gold)">Muslim Pro</h2>
-        <p>Bastia Umbra 2026</p>
-        <button class="mp-btn-side" onclick="enableNotifs()">ATTIVA NOTIFICHE</button>
-        <button class="mp-btn-side" style="background:white" onclick="document.getElementById('sidebar').classList.remove('open')">CHIUDI</button>
     </div>
 
     <div class="dashboard">
@@ -154,10 +179,10 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • رمضان مبارك • Bastia Umbra • 2026 •
+                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • بَاسْتِيَا أُومْبْرِيَا - 2026 •
             </div>
             <div class="hadith-text">
-                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • رمضان مبارك • Bastia Umbra • 2026 •
+                • قَالَ ﷺ: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ" • قَالَ ﷺ: "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ" • قَالَ ﷺ: "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً" • قَالَ ﷺ: "خَيْرُكُمْ مَنْ تَعَلَّمَ القُرْآنَ وَعَلَّمَهُ" • مَسْجِدُ بَاسْتِيَا أُومْبْرِيَا يَتَمَنَّى لَكُمْ رَمَضَانَ مُبَارَكًا • بَاسْتِيَا أُومْبْرِيَا - 2026 •
             </div>
         </div>
     </div>
@@ -171,23 +196,33 @@
             const permission = await Notification.requestPermission();
             if (permission === 'granted') {
                 const reg = await navigator.serviceWorker.ready;
-                reg.showNotification("Muslim Pro", { body: "Notifiche attivate per Bastia Umbra!" });
-                alert("🔔 Notifiche attivate!");
+                reg.showNotification("Muslim Pro", { body: "Notifiche attivate correttamente!" });
+                alert("🔔 Notifiche attive!");
             }
             document.getElementById('sidebar').classList.remove('open');
         }
 
-        function sendPush(title, body) {
-            if (Notification.permission === "granted") {
+        function playSound() {
+            const type = document.getElementById('notif-type').value;
+            if (type === 'athan') {
+                const a = document.getElementById('athanAudio');
+                a.src = document.getElementById('athan-source').value;
+                a.play();
+                setTimeout(() => { a.pause(); a.currentTime = 0; }, 40000);
+            } else { document.getElementById('bipAudio').play(); }
+        }
+
+        function adminTest() {
+            if (prompt("PIN:") === "2026") {
+                playSound();
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, icon: "https://cdn-icons-png.flaticon.com/512/512/512.png" });
+                    reg.showNotification("Muslim Pro Test", { body: "Funziona tutto!" });
                 });
             }
         }
 
-        const times = { 
-            "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"}
-        };
+        // Orari 1 Marzo 2026
+        const times = { "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"} };
         const pNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
         const pIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
 
@@ -196,16 +231,11 @@
             const timeNow = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
             const today = times["1/3"];
 
-            // NOTIFICHE RICHIESTE
-            if (timeNow === "05:20" && window.lastE !== "imsak") { 
-                window.lastE="imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); 
-            }
-            if (timeNow === "17:45" && window.lastE !== "iftar") { 
-                window.lastE="iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); 
-            }
+            // Notifiche Orari Speciali
+            if (timeNow === "05:20" && window.lastE !== "imsak") { window.lastE="imsak"; playSound(); }
+            if (timeNow === "17:45" && window.lastE !== "iftar") { window.lastE="iftar"; playSound(); }
             if (timeNow === "20:30" && window.lastE !== "night") { 
                 window.lastE="night"; document.body.classList.add('night-mode'); 
-                sendPush("Tarawih", "Inizio Tarawih e Notte Serena"); 
             }
 
             let html = ""; let nextP = null; let nextN = "";
@@ -214,7 +244,8 @@
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 const active = (now > pDate && now - pDate < 600000);
                 if (pDate > now && !nextP) { nextP = pDate; nextN = pNames[k]; }
-                
+                if (timeNow === today[k] && window.lastN !== k) { window.lastN = k; playSound(); }
+
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
                             <div style="display:flex; align-items:center;">
                                 <span style="font-size:30px; margin-left:15px;">${pIcons[k]}</span>
@@ -234,8 +265,7 @@
                 document.getElementById('next-label').innerText = "الصلاة القادمة: " + nextN;
             }
         }
-        setInterval(update, 1000);
-        update();
+        setInterval(update, 1000); update();
     </script>
 </body>
 </html>
