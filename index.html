@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#004F3F">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <title>Muslim Pro - Bastia Umbra</title>
     <style>
         :root {
@@ -155,6 +160,7 @@
         <div class="dash-card">
             <span class="label-small">التاريخ - Data</span>
             <span class="date-value" id="hijri-date-full">11 رمضان 1447</span>
+            <span class="date-value" id="greg-date-full" style="opacity:0.6; font-size:11px;">...</span>
         </div>
         <div class="dash-card">
             <span class="label-small" id="next-prayer-label">الصلاة القادمة</span>
@@ -167,17 +173,22 @@
     <div class="hadith-footer">
         <div class="hadith-track">
             <div class="hadith-text">
-                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • Bastia Umbra 2026 •
+                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • رمضان مبارك • Bastia Umbra • 2026 •
             </div>
             <div class="hadith-text">
-                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • Bastia Umbra 2026 •
+                • إنما الأعمال بالنيات • من صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه • تسحروا فإن في السحور بركة • خيركم من تعلم القرآن وعلمه • رمضان مبارك • Bastia Umbra • 2026 •
             </div>
         </div>
     </div>
 
     <script>
+        // REGISTRAZIONE SW PER APK
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => reg.update());
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js', { scope: './' })
+                .then(reg => { reg.update(); })
+                .catch(err => console.log('SW Error', err));
+            });
         }
 
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -193,14 +204,22 @@
             } else { bipAudio.play(); }
         }
 
-        function enableNotifs() {
-            Notification.requestPermission().then(p => { if(p==='granted') alert("Attivate!"); });
+        // ATTIVAZIONE POTENZIATA PER APK
+        async function enableNotifs() {
+            const p = await Notification.requestPermission();
+            if (p === 'granted') {
+                const reg = await navigator.serviceWorker.ready;
+                reg.showNotification("Muslim Pro", { body: "Notifiche attivate correttamente!" });
+                alert("🔔 Notifiche attivate!");
+            } else {
+                alert("Permesso negato. Controlla le impostazioni Android.");
+            }
             toggleMenu();
         }
 
         function adminDash() {
             if (prompt("PIN:") === "2026") {
-                sendPush("Test Muslim Pro", "Notifiche funzionanti nell'APK");
+                sendPush("Test Muslim Pro", "Notifiche OK!");
                 playSound();
             }
         }
@@ -208,21 +227,26 @@
         function sendPush(title, body) {
             if (Notification.permission === "granted") {
                 navigator.serviceWorker.ready.then(reg => {
-                    reg.showNotification(title, { body: body, tag: "p-alert" });
+                    reg.showNotification(title, { body: body, tag: "p-alert", renotify: true });
                 });
             }
         }
 
         const times = { 
-            "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"}
+            "1/3": {f:"05:27", dh:"12:23", a:"15:29", m:"18:00", i:"19:19"},
+            "2/3": {f:"05:25", dh:"12:23", a:"15:30", m:"18:01", i:"19:21"}
         };
         const prayerNames = { f:"الفجر", dh:"الظهر", a:"العصر", m:"المغرب", i:"العشاء" };
         const prayerIcons = { f:"🌅", dh:"☀️", a:"🌤️", m:"🌇", i:"🌙" };
 
         function update() {
             const now = new Date();
+            const dateKey = now.getDate() + "/" + (now.getMonth() + 1);
             const timeNow = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
             
+            document.getElementById('greg-date-full').innerText = now.toLocaleDateString();
+
+            // FUNZIONALITÀ RAMADAN RICHIESTE
             if (timeNow === "05:20" && window.lastE !== "imsak") { 
                 window.lastE="imsak"; sendPush("Imsak", "Fine Suhoor (5:20)"); playSound(); 
             }
@@ -230,20 +254,25 @@
                 window.lastE="iftar"; sendPush("Iftar", "Manca poco all'Iftar (17:45)"); playSound(); 
             }
             if (timeNow === "20:30" && window.lastE !== "night") { 
-                window.lastE="night"; document.body.classList.add('night-mode'); sendPush("Tarawih", "Inizio Notte Serena"); 
+                window.lastE="night"; document.body.classList.add('night-mode'); 
+                sendPush("Tarawih", "Inizio Tarawih e Notte Serena"); 
             }
 
-            const today = times["1/3"] || times["1/3"];
+            const today = times[dateKey] || times["1/3"];
             let html = ""; let nextP = null; let nextN = "";
+            
             for (let k in prayerNames) {
                 const pTime = today[k];
                 const [h, m] = pTime.split(":");
                 const pDate = new Date(); pDate.setHours(h, m, 0);
                 let active = (now - pDate >= 0 && now - pDate < 600000);
+                
                 if (pDate > now && !nextP) { nextP = pDate; nextN = prayerNames[k]; }
+                
                 if (timeNow === pTime && window.lastN !== k) {
-                    window.lastN = k; sendPush(prayerNames[k], "È l'ora della preghiera"); playSound(); 
+                    window.lastN = k; sendPush(prayerNames[k], "Adhan " + prayerNames[k]); playSound(); 
                 }
+                
                 html += `<div class="prayer-card ${active ? 'active' : ''}">
                             <div style="display:flex; align-items:center;">
                                 <span style="font-size:30px; margin-left:15px;">${prayerIcons[k]}</span>
@@ -252,6 +281,7 @@
                             <span class="p-time">${pTime}</span>
                         </div>`;
             }
+            
             if (nextP) {
                 const diff = nextP - now;
                 const hh = Math.floor(diff/3600000).toString().padStart(2,"0");
